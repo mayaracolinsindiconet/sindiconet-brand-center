@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-brand-900:     #101e37;
+    --color-brand-800:     #1f3c6e;
+    --color-brand-600:     #3e77db;
+    --color-brand-400:     #6e99e4;
+    --color-brand-300:     #9fbbed;
+    --color-brand-100:     #cfddf6;
+    --color-neutral-dark:  #3D3D3D;
+    --color-neutral-light: #F4F6F8;
+    --font-headline: var(--font-stack-sans), "Stack Sans Headline", system-ui, sans-serif;
+    --font-body:     var(--font-open-sans), "Open Sans", system-ui, sans-serif;
+
+    --color-product-primary:         #3e77db;
+    --color-product-secondary:       #3e77db;
+    --color-product-accent:          #101e37;
+    --color-product-primary-light:   #9fbbed;
+    --color-product-primary-dark:    #1f3c6e;
+    --color-product-on-primary:      #FFFFFF;
+  }
+
+  [data-product="conteudo"] {
+    --color-product-primary:         #3e77db;
+    --color-product-secondary:       #1f3c6e;
+    --color-product-accent:          #101e37;
+    --color-product-primary-light:   #cfddf6;
+    --color-product-primary-dark:    #101e37;
+    --color-product-on-primary:      #FFFFFF;
+  }
+
+  [data-product="conviver"] {
+    --color-product-primary:         #41ae89;
+    --color-product-secondary:       #318367;
+    --color-product-accent:          #102c22;
+    --color-product-primary-light:   #a0d7c4;
+    --color-product-primary-dark:    #215745;
+    --color-product-on-primary:      #FFFFFF;
+  }
+
+  [data-product="coteibem"] {
+    --color-product-primary:         #f6be52;
+    --color-product-secondary:       #b98f3e;
+    --color-product-accent:          #3e3015;
+    --color-product-primary-light:   #fbdfa9;
+    --color-product-primary-dark:    #7b5f29;
+    --color-product-on-primary:      #3D3D3D;
+  }
+
+  [data-product="cursos"] {
+    --color-product-primary:         #F57A0C;
+    --color-product-secondary:       #b85c09;
+    --color-product-accent:          #3d1f03;
+    --color-product-primary-light:   #fabd86;
+    --color-product-primary-dark:    #7b3d06;
+    --color-product-on-primary:      #FFFFFF;
+  }
+
+  [data-product="pro"] {
+    --color-product-primary:         #5D2E85;
+    --color-product-secondary:       #2A0C49;
+    --color-product-accent:          #855DEA;
+    --color-product-primary-light:   #BE9ED9;
+    --color-product-primary-dark:    #030124;
+    --color-product-on-primary:      #FFFFFF;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-neutral-dark);
+    background-color: #FFFFFF; /* Branco — superfície base; seções controlam seus próprios fundos */
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headline);
+  }
+}
