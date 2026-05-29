@@ -13,6 +13,7 @@ const allLinks = [
   { href: '/identidade',  label: 'Identidade'  },
   { href: '/fotografia',  label: 'Fotografia'  },
   { href: '/downloads',   label: 'Downloads'   },
+  { href: '/tom-de-voz',  label: 'Tom de Voz IA', highlight: true },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
