@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const SYSTEM_PROMPT = `Você é um especialista em comunicação da Síndiconet, plataforma líder de gestão condominial no Brasil. Sua missão é reescrever textos para que sigam o tom de voz oficial da marca.
 
 TOM DE VOZ SÍNDICONET:
@@ -45,6 +43,9 @@ export async function POST(request: NextRequest) {
     if (!process.env.GROQ_API_KEY) {
       return NextResponse.json({ error: 'API key não configurada.' }, { status: 500 });
     }
+
+    // Initialize inside handler to avoid build-time errors
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
     const userPrompt = `Canal: ${channel || 'institucional'}
 
