@@ -12,7 +12,7 @@ export interface Asset {
   usageContext: string
 }
 
-// ─── Helper ────────────────────────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 function logoFormats(base: string) {
   return [
     { ext: '.svg', path: `${base}.svg`, usage: 'Vetorial — recomendado' },
@@ -291,6 +291,58 @@ export const assets: Asset[] = [
     usageContext: 'Peso Regular (400) — corpo de texto padrão.',
     formats: [
       { ext: '.ttf', path: '/assets/fonts/StackSansHeadline-Regular.ttf', usage: 'Regular 400' },
+    ],
+  },
+
+  // ── Templates de Redes Sociais ────────────────────────────────────────────
+  {
+    id: 'template-planner',
+    name: 'Template Planner',
+    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
+    previewUrl: undefined,
+    usageContext: 'Template de planner para redes sociais — editável no Photoshop.',
+    formats: [
+      { ext: '.psd', path: '/assets/templates/SNT_PLANNER.psd', size: '48 MB', usage: 'Photoshop — editável' },
+    ],
+  },
+  {
+    id: 'template-capa-creators',
+    name: 'Template Capa Creators',
+    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
+    previewUrl: undefined,
+    usageContext: 'Template de capa para creators — editável no Photoshop.',
+    formats: [
+      { ext: '.psd', path: '/assets/templates/SNT_Capa Creators.psd', size: '18 MB', usage: 'Photoshop — editável' },
+    ],
+  },
+  {
+    id: 'template-live',
+    name: 'Template Live',
+    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
+    previewUrl: undefined,
+    usageContext: 'Template para divulgação de lives — editável no Photoshop.',
+    formats: [
+      { ext: '.psd', path: '/assets/templates/SNT_Live.psd', size: '34 MB', usage: 'Photoshop — editável' },
+    ],
+  },
+  {
+    id: 'template-noticia',
+    name: 'Template Notícia',
+    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
+    previewUrl: undefined,
+    usageContext: 'Template de post de notícia — editável no Photoshop.',
+    formats: [
+      { ext: '.psd', path: '/assets/templates/SNT_Noticia.psd', size: '53 MB', usage: 'Photoshop — editável' },
+    ],
+  },
+  {
+    id: 'template-dados',
+    name: 'Template Dados',
+    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
+    previewUrl: undefined,
+    usageContext: 'Template de post com dados e estatísticas — editável no Photoshop.',
+    formats: [
+      { ext: '.psd', path: '/assets/templates/SNT_Template Dados.psd', size: '2.3 MB', usage: 'Photoshop — editável' },
     ],
   },
 ]
