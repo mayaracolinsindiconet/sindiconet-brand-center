@@ -12,9 +12,9 @@ export interface Photo {
 // ─── Notas de uso ──────────────────────────────────────────────────────────────
 // Fotos de referência via Pexels CDN (gratuitas e sem download necessário).
 // Para substituir por imagens do Envato Elements ou Magnific:
-//   1. Faça o download da imagem
-//   2. Coloque em /public/assets/photos/
-//   3. Substitua o 'src' pelo caminho local: '/assets/photos/nome-do-arquivo.jpg'
+// 1. Faça o download da imagem
+// 2. Coloque em /public/assets/photos/
+// 3. Substitua o 'src' pelo caminho local: '/assets/photos/nome-do-arquivo.jpg'
 
 export const photos: Photo[] = [
 
@@ -41,8 +41,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ps-03',
-    src: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Área de lazer sofisticada com piscina e luz natural suave',
+    src: 'https://images.pexels.com/photos/35683831/pexels-photo-35683831.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Edifício residencial moderno com praia tropical e palmeiras ao fundo, Brasil',
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['LUZ NATURAL', 'PREMIUM', 'TONS NEUTROS'],
@@ -59,8 +59,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ps-05',
-    src: 'https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Lobby minimalista com luz zenital e acabamentos premium',
+    src: 'https://images.pexels.com/photos/11032469/pexels-photo-11032469.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Pátio interno moderno em São Paulo com mobiliário de design e vegetação exuberante',
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['LUZ NATURAL', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
@@ -87,12 +87,12 @@ export const photos: Photo[] = [
   },
 
   // ── PILAR 2: Editorial Corporativo Humano ─────────────────────────────────
-  // "Pessoas reais em ambientes reais" — expressões naturais, diversidade, contexto condominial
+  // "Pessoas reais em ambientes reais" — expressões naturais, diversidade brasileira, contexto condominial
 
   {
     id: 'ech-01',
-    src: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Profissional confiante em reunião de condomínio, olhar direto',
+    src: 'https://images.pexels.com/photos/7109061/pexels-photo-7109061.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Equipe multiétnica confiante em escritório moderno, representando diversidade brasileira',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
@@ -100,8 +100,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-02',
-    src: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Síndico profissional em conversa natural com moradores',
+    src: 'https://images.pexels.com/photos/7163398/pexels-photo-7163398.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Três profissionais em reunião natural em escritório bem decorado com plantas',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
@@ -109,8 +109,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-03',
-    src: 'https://images.pexels.com/photos/1181534/pexels-photo-1181534.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Mulher gestora analisando documentos, postura confiante e natural',
+    src: 'https://images.pexels.com/photos/20596938/pexels-photo-20596938.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Mulher executiva elegante em terno branco, postura confiante e natural',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
@@ -118,8 +118,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-04',
-    src: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Equipe diversa em reunião de assembleia condominial',
+    src: 'https://images.pexels.com/photos/7109063/pexels-photo-7109063.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Grupo diverso de profissionais em postura confiante em escritório moderno',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
@@ -127,8 +127,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-05',
-    src: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Profissional apresentando dados em tela com segurança',
+    src: 'https://images.pexels.com/photos/8297444/pexels-photo-8297444.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Três mulheres profissionais em escritório moderno, diversidade e segurança',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
@@ -136,8 +136,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-06',
-    src: 'https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Síndico em vistoria de área comum com expressão atenta',
+    src: 'https://images.pexels.com/photos/9363120/pexels-photo-9363120.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Jovem executivo negro com terno formal segurando documento, postura assertiva',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
@@ -145,8 +145,8 @@ export const photos: Photo[] = [
   },
   {
     id: 'ech-07',
-    src: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Pessoa com pose rígida e expressão artificial — exemplo a evitar',
+    src: 'https://images.pexels.com/photos/30464453/pexels-photo-30464453.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Grupo em pose exagerada de estúdio, expressão encenada — exemplo a evitar',
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL'],
@@ -155,7 +155,7 @@ export const photos: Photo[] = [
   },
 
   // ── PILAR 3: Arquitetura como Símbolo ─────────────────────────────────────
-  // "Solidez, verticalidade, permanência" — fachadas, áreas comuns, ângulos que valorizam
+  // "Solidez, verticalidade, permanência" — fachadas brasileiras, áreas comuns, ângulos que valorizam
 
   {
     id: 'as-01',
@@ -186,17 +186,17 @@ export const photos: Photo[] = [
   },
   {
     id: 'as-04',
-    src: 'https://images.pexels.com/photos/1029615/pexels-photo-1029615.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Área comum externa com jardim bem cuidado e arquitetura limpa',
+    src: 'https://images.pexels.com/photos/20288230/pexels-photo-20288230.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Torres residenciais com varandas e linhas verticais marcantes, tipologia brasileira',
     pillar: 'arquitetura-como-simbolo',
-    category: 'ambiente',
+    category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA', 'LUZ NATURAL'],
     isCorrect: true,
   },
   {
     id: 'as-05',
-    src: 'https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Fachada moderna com linhas verticais e iluminação natural',
+    src: 'https://images.pexels.com/photos/34147115/pexels-photo-34147115.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Varandas de apartamento moderno com guarda-corpo de vidro, São Paulo',
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
@@ -232,17 +232,17 @@ export const photos: Photo[] = [
   },
   {
     id: 'as-09',
-    src: 'https://images.pexels.com/photos/1876045/pexels-photo-1876045.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Área de lazer com academia e piscina integradas, composição com perspectiva',
+    src: 'https://images.pexels.com/photos/31597866/pexels-photo-31597866.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Piscina de cobertura com vista panorâmica da cidade, São Paulo — área de lazer premium',
     pillar: 'arquitetura-como-simbolo',
     category: 'ambiente',
-    attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
     isCorrect: true,
   },
   {
     id: 'as-10',
-    src: 'https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Entrada principal de condomínio com portaria e paisagismo cuidado',
+    src: 'https://images.pexels.com/photos/36845125/pexels-photo-36845125.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Edifício residencial contemporâneo com montanhas ao fundo, Rio de Janeiro',
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA', 'TONS NEUTROS'],
