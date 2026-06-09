@@ -5,34 +5,42 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { photos } from '@/data/photos'
 import type { Photo } from '@/data/photos'
-import { CorrectIncorrectToggle } from '@/components/shared/CorrectIncorrectToggle'
 
 const categoryLabels: Record<string, string> = {
   pessoas: 'Pessoas',
   arquitetura: 'Arquitetura',
   ambiente: 'Ambiente',
   detalhe: 'Detalhe',
+  servicos: 'Serviços',
 }
 
 const pillarLabels: Record<string, string> = {
   'premium-silencioso': 'Premium Silencioso',
   'editorial-corporativo-humano': 'Editorial Corporativo',
   'arquitetura-como-simbolo': 'Arquitetura como Símbolo',
+  'gestao-condominial': 'Gestão Condominial',
 }
 
 const pillarBadgeColors: Record<string, string> = {
   'premium-silencioso': 'bg-amber-100 text-amber-800',
   'editorial-corporativo-humano': 'bg-blue-100 text-blue-800',
   'arquitetura-como-simbolo': 'bg-slate-200 text-slate-700',
+  'gestao-condominial': 'bg-green-100 text-green-800',
 }
 
 const pillarActiveColors: Record<string, string> = {
   'premium-silencioso': 'bg-amber-500 text-white',
   'editorial-corporativo-humano': 'bg-[#3e77db] text-white',
   'arquitetura-como-simbolo': 'bg-slate-600 text-white',
+  'gestao-condominial': 'bg-green-700 text-white',
 }
 
-const attributeLabels = ['Luz natural', 'Composição limpa', 'Tons neutros', 'Editorial', 'Arquitetural', 'Humano', 'Premium']
+const sourceBadgeColors: Record<string, string> = {
+  Magnific: 'bg-purple-100 text-purple-700',
+  Pexels: 'bg-teal-100 text-teal-700',
+}
+
+const attributeLabels = ['LUZ NATURAL', 'COMPOSIÇÃO LIMPA', 'TONS NEUTROS', 'EDITORIAL', 'ARQUITETURAL', 'HUMANO', 'PREMIUM']
 
 function getHighResUrl(src: string): string {
   return src
@@ -42,20 +50,18 @@ function getHighResUrl(src: string): string {
 }
 
 export function MoodboardPanel() {
-  const [activePillar, setPillar]        = useState<string | null>(null)
-  const [activeCategory, setCategory]   = useState<string | null>(null)
-  const [activeAttributes, setAttrs]    = useState<string[]>([])
-  const [mode, setMode]                 = useState<'correct' | 'incorrect'>('correct')
-  const [comparisonMode, setComparison] = useState(false)
-  const [lightbox, setLightbox]         = useState<Photo | null>(null)
-  const [downloading, setDownloading]   = useState(false)
+  const [activePillar, setPillar] = useState<string | null>(null)
+  const [activeCategory, setCategory] = useState<string | null>(null)
+  const [activeAttributes, setAttrs] = useState<string[]>([])
+  const [lightbox, setLightbox] = useState<Photo | null>(null)
+  const [downloading, setDownloading] = useState(false)
 
   const filtered = photos.filter((p) => {
+    if (p.isCorrect === false) return false
     if (activePillar && p.pillar !== activePillar) return false
     if (activeCategory && p.category !== activeCategory) return false
     if (activeAttributes.length && !activeAttributes.some((a) => p.attributes.includes(a))) return false
-    if (comparisonMode) return true
-    return p.isCorrect === (mode === 'correct')
+    return true
   })
 
   function toggleAttr(attr: string) {
@@ -89,6 +95,7 @@ export function MoodboardPanel() {
   return (
     <div>
       <div className="flex flex-col gap-3 mb-6">
+        {/* Pillar filter */}
         <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => setPillar(null)}
@@ -106,6 +113,8 @@ export function MoodboardPanel() {
             </button>
           ))}
         </div>
+
+        {/* Category + attribute filters */}
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex flex-wrap gap-1.5">
             <button onClick={() => setCategory(null)} className={`px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors ${activeCategory === null ? 'bg-[#101e37] text-white' : 'bg-white border border-black/10 text-[#3D3D3D]/60'}`}>Todas</button>
@@ -118,18 +127,11 @@ export function MoodboardPanel() {
               <button key={attr} onClick={() => toggleAttr(attr)} className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold font-body uppercase tracking-wide transition-colors ${activeAttributes.includes(attr) ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/50'}`}>{attr}</button>
             ))}
           </div>
-          <div className="ml-auto flex items-center gap-3">
-            <label className="flex items-center gap-2 text-xs font-body text-[#3D3D3D]/60 cursor-pointer">
-              <button role="switch" aria-checked={comparisonMode} onClick={() => setComparison((v) => !v)} className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${comparisonMode ? 'bg-[#3e77db]' : 'bg-black/15'}`}>
-                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${comparisonMode ? 'translate-x-4' : 'translate-x-0.5'}`} />
-              </button>
-              Certo vs. Errado
-            </label>
-            {!comparisonMode && <CorrectIncorrectToggle value={mode} onChange={setMode} />}
-          </div>
         </div>
       </div>
+
       <p className="text-xs text-[#3D3D3D]/40 font-body mb-4">{filtered.length} foto{filtered.length !== 1 ? 's' : ''}</p>
+
       {filtered.length > 0 ? (
         <motion.div layout className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
           {filtered.map((photo) => (
@@ -137,10 +139,15 @@ export function MoodboardPanel() {
               <button onClick={() => setLightbox(photo)} aria-label={'Ver foto: ' + photo.alt} className="w-full rounded-xl overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e77db]">
                 <div className="relative bg-[#F4F6F8] aspect-[4/3]">
                   <Image src={photo.src} alt={photo.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end p-2 pointer-events-none">
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-between p-2 pointer-events-none">
                     <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + pillarBadgeColors[photo.pillar]}>
                       {pillarLabels[photo.pillar]}
                     </span>
+                    {photo.source && (
+                      <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + (sourceBadgeColors[photo.source] ?? 'bg-white/20 text-white')}>
+                        {photo.source}
+                      </span>
+                    )}
                   </div>
                 </div>
               </button>
@@ -148,6 +155,7 @@ export function MoodboardPanel() {
           ))}
         </motion.div>
       ) : (<EmptyState />)}
+
       <AnimatePresence>
         {lightbox && (
           <motion.div key="lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
@@ -159,9 +167,11 @@ export function MoodboardPanel() {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' + pillarBadgeColors[lightbox.pillar]}>{pillarLabels[lightbox.pillar]}</span>
-                    <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (lightbox.isCorrect !== false ? 'bg-green-900/40 text-green-300' : 'bg-red-900/40 text-red-300')}>
-                      {lightbox.isCorrect !== false ? '✓ Correto' : '✗ Evitar'}
-                    </span>
+                    {lightbox.source && (
+                      <span className={'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (sourceBadgeColors[lightbox.source] ?? 'bg-white/20 text-white/70')}>
+                        📷 {lightbox.source}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-white/50 font-body truncate mb-2">{lightbox.alt}</p>
                   <div className="flex flex-wrap gap-1">
@@ -200,13 +210,8 @@ function EmptyState() {
           <path d="M10 5l1.5-2h1L14 5" stroke="#3e77db" strokeWidth="1.75" strokeLinejoin="round" />
         </svg>
       </div>
-      <p className="font-headline font-semibold text-xl text-[#101e37] mb-2">Moodboard aguardando fotos</p>
-      <p className="text-sm font-body text-[#3D3D3D]/50 max-w-xs mx-auto">
-        Adicione objetos ao array em{' '}
-        <code className="font-mono bg-white px-1 py-0.5 rounded text-[#3e77db]">/data/photos.ts</code>{' '}
-        e os arquivos em{' '}
-        <code className="font-mono bg-white px-1 py-0.5 rounded text-[#3e77db]">/public/assets/photos/</code>.
-      </p>
+      <p className="font-headline font-semibold text-xl text-[#101e37] mb-2">Nenhuma foto encontrada</p>
+      <p className="text-sm font-body text-[#3D3D3D]/50 max-w-xs mx-auto">Tente ajustar os filtros para ver mais resultados.</p>
     </div>
   )
 }
