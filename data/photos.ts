@@ -1,19 +1,21 @@
 export interface Photo {
   id: string
-  src: string
+  src?: string
   alt: string
   pillar: 'premium-silencioso' | 'editorial-corporativo-humano' | 'arquitetura-como-simbolo' | 'gestao-condominial'
   category: 'pessoas' | 'arquitetura' | 'ambiente' | 'detalhe' | 'servicos'
   attributes: string[]
-  source: 'Magnific' | 'Pexels'
+  source: 'Magnific' | 'Pexels' | 'Envato'
+  envatoUrl?: string
   isCorrect?: boolean
   comparisonPair?: string
 }
 
 // ─── Notas de uso ──────────────────────────────────────────────────────────────
-// Fotos de referência via Magnific free CDN e Pexels (gratuitas, sem download necessário).
+// Fotos de referência via Magnific free CDN, Pexels e Envato Elements.
 // Magnific: https://www.magnific.com — licença free, hotlink permitido.
 // Pexels: https://www.pexels.com — licença Pexels free, hotlink permitido.
+// Envato: https://elements.envato.com — licença comercial vitalícia, clique abre Envato para download.
 
 export const photos: Photo[] = [
 
@@ -177,6 +179,59 @@ export const photos: Photo[] = [
     isCorrect: true,
   },
 
+  // ── PILAR 2: Envato — Profissionais com aparência brasileira ──────────────
+  // Fotos premium do Envato Elements. Clique → abre Envato para download.
+  {
+    id: 'env-01',
+    alt: 'Síndico profissional sorrindo para a câmera — homem de negócios de meia idade',
+    pillar: 'editorial-corporativo-humano',
+    category: 'pessoas',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Envato',
+    envatoUrl: 'https://elements.envato.com/photos/aab367ec-4b99-4994-84de-329968b13e29',
+    isCorrect: true,
+  },
+  {
+    id: 'env-02',
+    alt: 'Jovem empresário vestindo terno na cidade — síndico ou gestor condominial',
+    pillar: 'editorial-corporativo-humano',
+    category: 'pessoas',
+    attributes: ['EDITORIAL', 'HUMANO'],
+    source: 'Envato',
+    envatoUrl: 'https://elements.envato.com/photos/8d47ef00-88ca-46b9-b731-2e31ce446dac',
+    isCorrect: true,
+  },
+  {
+    id: 'env-03',
+    alt: 'Profissional imobiliária negra feliz com clientes ao fundo — corretora/gestora',
+    pillar: 'editorial-corporativo-humano',
+    category: 'pessoas',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Envato',
+    envatoUrl: 'https://elements.envato.com/photos/daeb19e8-0942-47ef-8894-3f3068e87392',
+    isCorrect: true,
+  },
+  {
+    id: 'env-04',
+    alt: 'Arquiteto em pé com confiança no canteiro de obras urbanas',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Envato',
+    envatoUrl: 'https://elements.envato.com/photos/36e221eb-9b98-45bd-9fea-27ec9ac66cb6',
+    isCorrect: true,
+  },
+  {
+    id: 'env-05',
+    alt: 'Jovem empresário falando ao telefone durante o trabalho — gestão condominial',
+    pillar: 'gestao-condominial',
+    category: 'pessoas',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Envato',
+    envatoUrl: 'https://elements.envato.com/photos/94348199-5761-4baf-98f0-f291ccd12e46',
+    isCorrect: true,
+  },
+
   // ── PILAR 3: Arquitetura como Símbolo ──────────────────────────────────────
   // "Solidez, verticalidade, permanência" — fachadas, áreas comuns, ângulos que valorizam
 
@@ -287,12 +342,13 @@ export const photos: Photo[] = [
 
   {
     id: 'gc-01',
-    src: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Profissional de manutenção com ferramentas — serviço hidráulico condominial',
+    src: 'https://img.magnific.com/free-photo/male-plumber-working-fix-problems-client-s-house_23-2150990698.jpg',
+    alt: 'Encanador profissional realizando serviço hidráulico — ianutenção condominial',
     pillar: 'gestao-condominial',
     category: 'servicos',
     attributes: ['HUMANO'],
-    source: 'Pexels',
+    source: 'Magnific',
+    isCorrect: true,
   },
   {
     id: 'gc-02',
@@ -302,15 +358,17 @@ export const photos: Photo[] = [
     category: 'servicos',
     attributes: ['HUMANO'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-03',
-    src: 'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Equipe de obras em canteiro de construção com equipamentos de segurança',
+    src: 'https://img.magnific.com/free-photo/electrician-installing-laying-electrical-cables-ceiling-inside-house_169016-53070.jpg',
+    alt: 'Eletrici instalando cabos elétricos no teto — manutenção condominial',
     pillar: 'gestao-condominial',
     category: 'servicos',
     attributes: ['HUMANO'],
-    source: 'Pexels',
+    source: 'Magnific',
+    isCorrect: true,
   },
   {
     id: 'gc-04',
@@ -320,6 +378,7 @@ export const photos: Photo[] = [
     category: 'servicos',
     attributes: ['HUMANO'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-05',
@@ -329,15 +388,17 @@ export const photos: Photo[] = [
     category: 'servicos',
     attributes: ['HUMANO', 'EDITORIAL'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-06',
     src: 'https://images.pexels.com/photos/1181403/pexels-photo-1181403.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Assembleia condominial — boradores e síndico em reunião de pauta',
+    alt: 'Assembleia condominial — moradores e síndico em reunião de pauta',
     pillar: 'gestao-condominial',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-07',
@@ -347,6 +408,7 @@ export const photos: Photo[] = [
     category: 'ambiente',
     attributes: ['LUZ NATURAL', 'PREMIUM', 'COMPOSIÇÃO LIMPA'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-08',
@@ -356,6 +418,7 @@ export const photos: Photo[] = [
     category: 'servicos',
     attributes: ['HUMANO', 'LUZ NATURAL'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-09',
@@ -365,14 +428,16 @@ export const photos: Photo[] = [
     category: 'ambiente',
     attributes: ['TONS NEUTROS', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
     source: 'Pexels',
+    isCorrect: true,
   },
   {
     id: 'gc-10',
-    src: 'https://images.pexels.com/photos/1974523/pexels-photo-1974523.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    alt: 'Síndico profissional em reunião com prestadores de serviço',
+    src: 'https://img.magnific.com/free-photo/modern-man-with-tablet-urban-environment_23-2147961617.jpg',
+    alt: 'Síndico profissional com tablet em ambiente urbano moderno',
     pillar: 'gestao-condominial',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
-    source: 'Pexels',
+    source: 'Magnific',
+    isCorrect: true,
   },
 ]
