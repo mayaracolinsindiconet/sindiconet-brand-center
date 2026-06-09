@@ -10,11 +10,6 @@ function ConstructionGrid() {
         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-1">
           Grade de Construção
         </p>
-        <p className="font-body text-sm text-[#3D3D3D]/60 max-w-lg">
-          O logotipo é construído em uma grade modular. O módulo base{' '}
-          <strong className="text-[#101e37]">X</strong> é derivado da altura da
-          letra "i" do wordmark e determina todas as proporções internas.
-        </p>
       </div>
       <div className="py-10 px-8 bg-white flex items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
