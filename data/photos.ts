@@ -2,24 +2,22 @@ export interface Photo {
   id: string
   src: string
   alt: string
-  pillar: 'premium-silencioso' | 'editorial-corporativo-humano' | 'arquitetura-como-simbolo'
-  category: 'pessoas' | 'arquitetura' | 'ambiente' | 'detalhe'
+  pillar: 'premium-silencioso' | 'editorial-corporativo-humano' | 'arquitetura-como-simbolo' | 'gestao-condominial'
+  category: 'pessoas' | 'arquitetura' | 'ambiente' | 'detalhe' | 'servicos'
   attributes: string[]
+  source: 'Magnific' | 'Pexels'
   isCorrect?: boolean
   comparisonPair?: string
 }
 
 // ─── Notas de uso ──────────────────────────────────────────────────────────────
-// Fotos de referência via Magnific free CDN (gratuitas, sem download necessário).
-// Fonte: https://www.magnific.com — licença free, hotlink permitido.
-// Para substituir por imagens do Envato Elements:
-//   1. Faça o download da imagem
-//   2. Coloque em /public/assets/photos/
-//   3. Substitua o 'src' pelo caminho local: '/assets/photos/nome-do-arquivo.jpg'
+// Fotos de referência via Magnific free CDN e Pexels (gratuitas, sem download necessário).
+// Magnific: https://www.magnific.com — licença free, hotlink permitido.
+// Pexels: https://www.pexels.com — licença Pexels free, hotlink permitido.
 
 export const photos: Photo[] = [
 
-  // ── PILAR 1: Premium Silencioso ───────────────────────────────────────────
+  // ── PILAR 1: Premium Silencioso ────────────────────────────────────────────
   // "Sofisticação sem ostentação" — luz natural, composição limpa, materiais de qualidade
 
   {
@@ -29,6 +27,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['LUZ NATURAL', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -38,6 +37,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['TONS NEUTROS', 'PREMIUM', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -47,6 +47,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['LUZ NATURAL', 'PREMIUM', 'TONS NEUTROS'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -56,6 +57,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['COMPOSIÇÃO LIMPA', 'PREMIUM', 'TONS NEUTROS'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -65,6 +67,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'detalhe',
     attributes: ['LUZ NATURAL', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -74,6 +77,7 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['TONS NEUTROS', 'PREMIUM', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -83,11 +87,12 @@ export const photos: Photo[] = [
     pillar: 'premium-silencioso',
     category: 'ambiente',
     attributes: ['COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: false,
     comparisonPair: 'ps-02',
   },
 
-  // ── PILAR 2: Editorial Corporativo Humano ─────────────────────────────────
+  // ── PILAR 2: Editorial Corporativo Humano ──────────────────────────────────
   // "Pessoas reais em ambientes reais" — expressões naturais, diversidade, contexto condominial
 
   {
@@ -97,6 +102,7 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -106,6 +112,7 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -115,15 +122,7 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
-    isCorrect: true,
-  },
-  {
-    id: 'ech-04',
-    src: 'https://img.magnific.com/free-photo/portrait-confidence-athlete-young-man-looking-camera-standing-against-building_23-2148124068.jpg',
-    alt: 'Homem jovem confiante diante de edifício — olhar direto, postura segura',
-    pillar: 'editorial-corporativo-humano',
-    category: 'pessoas',
-    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -133,6 +132,7 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL', 'HUMANO'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -142,6 +142,7 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -151,11 +152,32 @@ export const photos: Photo[] = [
     pillar: 'editorial-corporativo-humano',
     category: 'pessoas',
     attributes: ['EDITORIAL'],
+    source: 'Magnific',
     isCorrect: false,
     comparisonPair: 'ech-01',
   },
+  {
+    id: 'ech-08',
+    src: 'https://img.magnific.com/free-photo/medium-shot-smiley-woman-outdoors_23-2150322074.jpg',
+    alt: 'Profissional sorridente em ambiente urbano — naturalidade e presença',
+    pillar: 'editorial-corporativo-humano',
+    category: 'pessoas',
+    attributes: ['HUMANO', 'EDITORIAL', 'LUZ NATURAL'],
+    source: 'Magnific',
+    isCorrect: true,
+  },
+  {
+    id: 'ech-09',
+    src: 'https://img.magnific.com/free-photo/full-length-business-people-meeting-office_23-2148121713.jpg',
+    alt: 'Reunião de equipe em escritório — ambiente corporativo autêntico',
+    pillar: 'editorial-corporativo-humano',
+    category: 'pessoas',
+    attributes: ['EDITORIAL', 'HUMANO', 'TONS NEUTROS'],
+    source: 'Magnific',
+    isCorrect: true,
+  },
 
-  // ── PILAR 3: Arquitetura como Símbolo ─────────────────────────────────────
+  // ── PILAR 3: Arquitetura como Símbolo ──────────────────────────────────────
   // "Solidez, verticalidade, permanência" — fachadas, áreas comuns, ângulos que valorizam
 
   {
@@ -165,6 +187,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -174,6 +197,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'LUZ NATURAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -183,6 +207,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -192,6 +217,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA', 'LUZ NATURAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -201,6 +227,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -210,6 +237,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'LUZ NATURAL'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -219,6 +247,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -228,6 +257,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'detalhe',
     attributes: ['ARQUITETURAL'],
+    source: 'Magnific',
     isCorrect: false,
     comparisonPair: 'as-01',
   },
@@ -238,6 +268,7 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Magnific',
     isCorrect: true,
   },
   {
@@ -247,6 +278,101 @@ export const photos: Photo[] = [
     pillar: 'arquitetura-como-simbolo',
     category: 'arquitetura',
     attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA', 'TONS NEUTROS'],
+    source: 'Magnific',
     isCorrect: true,
+  },
+
+  // ── PILAR 4: Gestão Condominial ────────────────────────────────────────────
+  // "Serviços, manutenção e vida condominial" — profissionais, obras, áreas comuns em uso
+
+  {
+    id: 'gc-01',
+    src: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Profissional de manutenção com ferramentas — serviço hidráulico condominial',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-02',
+    src: 'https://images.pexels.com/photos/2244746/pexels-photo-2244746.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Eletricista realizando manutenção elétrica em painel de condomínio',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-03',
+    src: 'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Equipe de obras em canteiro de construção com equipamentos de segurança',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-04',
+    src: 'https://images.pexels.com/photos/4108715/pexels-photo-4108715.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Profissional de limpeza higienizando área comum do condomínio',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-05',
+    src: 'https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Profissional de segurança em posto de vigilância de condomínio',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-06',
+    src: 'https://images.pexels.com/photos/1181403/pexels-photo-1181403.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Assembleia condominial — boradores e síndico em reunião de pauta',
+    pillar: 'gestao-condominial',
+    category: 'pessoas',
+    attributes: ['HUMANO', 'EDITORIAL'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-07',
+    src: 'https://images.pexels.com/photos/261327/pexels-photo-261327.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Área de piscina do condomínio — lazer bem conservado e iluminado',
+    pillar: 'gestao-condominial',
+    category: 'ambiente',
+    attributes: ['LUZ NATURAL', 'PREMIUM', 'COMPOSIÇÃO LIMPA'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-08',
+    src: 'https://images.pexels.com/photos/1301585/pexels-photo-1301585.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Jardinagem e paisagismo em área verde de condomínio residencial',
+    pillar: 'gestao-condominial',
+    category: 'servicos',
+    attributes: ['HUMANO', 'LUZ NATURAL'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-09',
+    src: 'https://images.pexels.com/photos/209251/pexels-photo-209251.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Hall de entrada de condomínio com portaria e recepção organizada',
+    pillar: 'gestao-condominial',
+    category: 'ambiente',
+    attributes: ['TONS NEUTROS', 'COMPOSIÇÃO LIMPA', 'PREMIUM'],
+    source: 'Pexels',
+  },
+  {
+    id: 'gc-10',
+    src: 'https://images.pexels.com/photos/1974523/pexels-photo-1974523.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    alt: 'Síndico profissional em reunião com prestadores de serviço',
+    pillar: 'gestao-condominial',
+    category: 'pessoas',
+    attributes: ['EDITORIAL', 'HUMANO'],
+    source: 'Pexels',
   },
 ]
