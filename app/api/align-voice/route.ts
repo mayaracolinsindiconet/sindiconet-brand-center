@@ -26,10 +26,10 @@ EVITAR:
 
 RETORNE APENAS JSON válido com este formato exato:
 {
-  "score_original": <número 0-100 indicando alinhamento do texto original>,
-  "score_label": "<Fraco|Regular|Bom|Ótimo>",
+  "score_original": <número de 0 a 100 indicando o alinhamento do texto original ao tom Síndiconet>,
+  "score_label": "<baixo|médio|alto> — use 'baixo' para score 0-40, 'médio' para 41-70, 'alto' para 71-100",
   "text_aligned": "<texto reescrito alinhado ao tom de voz>",
-  "changes": ["<mudança 1>", "<mudança 2>", "<mudança 3>"]
+  "changes": ["<mudança principal 1>", "<mudança principal 2>", "<mudança principal 3>"]
 }`;
 
 export async function POST(request: NextRequest) {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 Texto para analisar e reescrever:
 ${text}
 
-Analise o alinhamento do texto original ao tom de voz Síndiconet (score_original), reescreva-o (text_aligned) e liste as principais mudanças (changes). Retorne apenas JSON válido.`;
+Analise o alinhamento do texto original ao tom de voz Síndiconet (score_original de 0-100), classifique como baixo/médio/alto (score_label), reescreva-o (text_aligned) e liste as 2-3 principais mudanças realizadas (changes como array de strings). Retorne apenas JSON válido.`;
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
@@ -65,7 +65,7 @@ Analise o alinhamento do texto original ao tom de voz Síndiconet (score_origina
     });
 
     const raw = completion.choices[0]?.message?.content || '{}';
-    
+
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: 'Resposta inválida da IA.' }, { status: 500 });
