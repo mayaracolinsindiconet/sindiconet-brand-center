@@ -9,7 +9,7 @@ interface AlignResult {
   score_original: number
   score_label: ScoreLabel
   text_aligned: string
-  changes: string
+  changes: string | string[]
 }
 
 const CHANNELS: { id: Channel; label: string }[] = [
@@ -24,6 +24,14 @@ const SCORE_STYLES: Record<ScoreLabel, { bg: string; text: string; label: string
   baixo: { bg: 'bg-red-50',    text: 'text-red-800',   label: 'Alinhamento baixo' },
   médio: { bg: 'bg-amber-50',  text: 'text-amber-800', label: 'Alinhamento médio' },
   alto:  { bg: 'bg-green-50',  text: 'text-green-800', label: 'Alinhamento alto'  },
+}
+
+// Normalise score_label values that the LLM might return
+function normaliseLabel(raw: string): ScoreLabel {
+  const s = raw?.toLowerCase() ?? ''
+  if (s === 'alto' || s === 'ótimo' || s === 'otimo' || s === 'bom') return 'alto'
+  if (s === 'baixo' || s === 'fraco' || s === 'ruim') return 'baixo'
+  return 'médio'
 }
 
 const EXAMPLES = [
@@ -82,7 +90,22 @@ export default function TomDeVozPage() {
 
   function handleExample(ex: string) { setText(ex); setResult(null) }
 
-  const scoreStyle = result ? SCORE_STYLES[result.score_label] ?? SCORE_STYLES.médio : null
+  const normLabel = result ? normaliseLabel(result.score_label) : null
+  const scoreStyle = normLabel ? SCORE_STYLES[normLabel] : null
+
+  // Render changes — API may return string[] or a single string
+  function renderChanges(changes: string | string[]) {
+    if (Array.isArray(changes) && changes.length > 0) {
+      return (
+        <ul className="list-disc pl-4 space-y-1">
+          {changes.map((c, i) => (
+            <li key={i} className="text-sm text-blue-700 leading-relaxed">{c}</li>
+          ))}
+        </ul>
+      )
+    }
+    return <p className="text-sm text-blue-700 leading-relaxed">{String(changes)}</p>
+  }
 
   return (
     <main className="min-h-screen bg-neutral-50">
@@ -142,14 +165,18 @@ export default function TomDeVozPage() {
           <div ref={resultRef} className="mt-8">
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-sm font-semibold text-neutral-700 uppercase tracking-wider">Resultado</h2>
-              {scoreStyle && <span className={`text-xs font-semibold px-3 py-1 rounded-full ${scoreStyle.bg} ${scoreStyle.text}`}>{scoreStyle.label} · {result.score_original}/10</span>}
+              {scoreStyle && (
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${scoreStyle.bg} ${scoreStyle.text}`}>
+                  {scoreStyle.label} · {result.score_original}/100
+                </span>
+              )}
             </div>
             <div className="bg-white rounded-2xl border border-neutral-200 p-6 mb-4">
               <p className="text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap">{result.text_aligned}</p>
             </div>
             <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl px-5 py-4 mb-5">
-              <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">O que foi ajustado</p>
-              <p className="text-sm text-blue-700 leading-relaxed">{result.changes}</p>
+              <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">O que foi ajustado</p>
+              {renderChanges(result.changes)}
             </div>
             <div className="flex gap-3">
               <button onClick={handleCopy} className="flex-1 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors">{copied ? '✓ Copiado!' : 'Copiar texto'}</button>
