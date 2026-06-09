@@ -38,6 +38,7 @@ const pillarActiveColors: Record<string, string> = {
 const sourceBadgeColors: Record<string, string> = {
   Magnific: 'bg-purple-100 text-purple-700',
   Pexels: 'bg-teal-100 text-teal-700',
+  Envato: 'bg-[#84cc16]/20 text-[#3f6212]',
 }
 
 const attributeLabels = ['LUZ NATURAL', 'COMPOSIÇÃO LIMPA', 'TONS NEUTROS', 'EDITORIAL', 'ARQUITETURAL', 'HUMANO', 'PREMIUM']
@@ -47,6 +48,57 @@ function getHighResUrl(src: string): string {
     .replace('w=1200', 'w=4000')
     .replace('h=630', '')
     .replace('fit=crop&', '')
+}
+
+// ── Envato placeholder card ───────────────────────────────────────────────────
+function EnvatoCard({ photo }: { photo: Photo }) {
+  return (
+    <a
+      href={photo.envatoUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Ver no Envato: ${photo.alt}`}
+      className="group w-full rounded-xl overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#84cc16]"
+    >
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#1a2e05] to-[#14532d] flex flex-col items-center justify-center p-4 text-center overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-3 left-3 w-16 h-16 rounded-full border border-[#84cc16]" />
+          <div className="absolute bottom-5 right-5 w-10 h-10 rounded-full border border-[#84cc16]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border border-[#84cc16]" />
+        </div>
+
+        {/* Envato E logo mark */}
+        <div className="w-10 h-10 rounded-lg bg-[#84cc16] flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-200">
+          <span className="text-[#1a1a1a] font-bold text-lg leading-none" aria-hidden>e</span>
+        </div>
+
+        <p className="text-white/90 text-[11px] font-medium leading-snug line-clamp-3 mb-3 font-body">
+          {photo.alt}
+        </p>
+
+        <div className="flex items-center gap-1 text-[#84cc16] text-[10px] font-semibold font-body opacity-0 group-hover:opacity-100 transition-opacity">
+          <span>Ver no Envato</span>
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-[#84cc16]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+        {/* Bottom badges */}
+        <div className="absolute bottom-2 left-2 right-2 flex items-end justify-between pointer-events-none">
+          <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + pillarBadgeColors[photo.pillar]}>
+            {pillarLabels[photo.pillar]}
+          </span>
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#84cc16]/20 text-[#84cc16] opacity-0 group-hover:opacity-100 transition-opacity">
+            Envato ↗
+          </span>
+        </div>
+      </div>
+    </a>
+  )
 }
 
 export function MoodboardPanel() {
@@ -70,7 +122,19 @@ export function MoodboardPanel() {
     )
   }
 
+  function handleCardClick(photo: Photo) {
+    if (photo.source === 'Envato') {
+      // Envato cards are <a> tags that handle their own navigation
+      return
+    }
+    setLightbox(photo)
+  }
+
   async function handleDownload(photo: Photo) {
+    if (photo.source === 'Envato' || !photo.src) {
+      if (photo.envatoUrl) window.open(photo.envatoUrl, '_blank')
+      return
+    }
     setDownloading(true)
     try {
       const highResUrl = getHighResUrl(photo.src)
@@ -86,7 +150,7 @@ export function MoodboardPanel() {
       document.body.removeChild(a)
       URL.revokeObjectURL(objectUrl)
     } catch {
-      window.open(getHighResUrl(photo.src), '_blank')
+      window.open(getHighResUrl(photo.src!), '_blank')
     } finally {
       setDownloading(false)
     }
@@ -136,28 +200,32 @@ export function MoodboardPanel() {
         <motion.div layout className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
           {filtered.map((photo) => (
             <motion.div key={photo.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="group w-full break-inside-avoid">
-              <button onClick={() => setLightbox(photo)} aria-label={'Ver foto: ' + photo.alt} className="w-full rounded-xl overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e77db]">
-                <div className="relative bg-[#F4F6F8] aspect-[4/3]">
-                  <Image src={photo.src} alt={photo.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-between p-2 pointer-events-none">
-                    <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + pillarBadgeColors[photo.pillar]}>
-                      {pillarLabels[photo.pillar]}
-                    </span>
-                    {photo.source && (
-                      <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + (sourceBadgeColors[photo.source] ?? 'bg-white/20 text-white')}>
-                        {photo.source}
+              {photo.source === 'Envato' ? (
+                <EnvatoCard photo={photo} />
+              ) : (
+                <button onClick={() => handleCardClick(photo)} aria-label={'Ver foto: ' + photo.alt} className="w-full rounded-xl overflow-hidden block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e77db]">
+                  <div className="relative bg-[#F4F6F8] aspect-[4/3]">
+                    <Image src={photo.src!} alt={photo.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200 flex items-end justify-between p-2 pointer-events-none">
+                      <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + pillarBadgeColors[photo.pillar]}>
+                        {pillarLabels[photo.pillar]}
                       </span>
-                    )}
+                      {photo.source && (
+                        <span className={'text-[9px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ' + (sourceBadgeColors[photo.source] ?? 'bg-white/20 text-white')}>
+                          {photo.source}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </button>
+                </button>
+              )}
             </motion.div>
           ))}
         </motion.div>
       ) : (<EmptyState />)}
 
       <AnimatePresence>
-        {lightbox && (
+        {lightbox && lightbox.src && (
           <motion.div key="lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setLightbox(null)} className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
             <motion.div initial={{ scale: 0.92, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 8 }} onClick={(e) => e.stopPropagation()} className="relative max-w-4xl w-full rounded-2xl overflow-hidden bg-[#0d1929]">
               <div className="relative w-full aspect-[16/9]">
