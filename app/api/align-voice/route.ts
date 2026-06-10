@@ -1,80 +1,103 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
+import { NextRequest, NextResponse } from 'next/server'
+import Groq from 'groq-sdk'
 
-const SYSTEM_PROMPT = `Você é um especialista em comunicação da Síndiconet, plataforma líder de gestão condominial no Brasil. Sua missão é reescrever textos para que sigam o tom de voz oficial da marca.
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
-TOM DE VOZ SÍNDICONET:
-- Claro e direto: frases objetivas, sem rodeios
-- Humano e próximo: fala como gente, não como robô ou advogado
-- Confiante sem arrogância: sabe o que faz, mas não se vangloria
-- Empático com síndicos e moradores: entende os desafios do dia a dia condominial
-- Educativo sem ser didático demais: ensina sem infantilizar
+const BRAND_VOICE_SYSTEM = `VocÃª Ã© o assistente de tom de voz da SÃ­ndiconet.
+Sua funÃ§Ã£o Ã© reescrever textos alinhados Ã s diretrizes da marca, retornando sempre um JSON vÃ¡lido.
 
-CANAIS E AJUSTES:
-- institucional: formal, seguro, vocabulário técnico quando necessário
-- redes-sociais: leve, engajador, pode usar emojis com moderação
-- email: cordial, claro, CTA direto
-- suporte: empático, solucional, tranquilizador
-- produto: funcional, objetivo, orientado a ação
+PERSONALIDADE DA MARCA SÃNDICONET:
+- Especialista acessÃ­vel: autoridade com clareza, nunca arrogÃ¢ncia
+- Parceiro do sÃ­ndico: empoderamos, nÃ£o assustamos
+- Baseado em dados e fatos, nunca em achismos
+- Direto e claro: sem jargÃ£o corporativo vazio
 
-EVITAR:
-- Jargões excessivos ou linguagem jurídica desnecessária
-- Tom agressivo ou ansioso
-- Excesso de exclamações
-- Palavras muito formais: "outrossim", "destarte", "consoante"
-- Clichês: "solução completa", "revolucionário", "de ponta"
+PROIBIDO usar:
+- Alarmismo e medo: "VocÃª pode ser multado!", "URGENTE!", "Ãltima chance"
+- Venda agressiva: "Melhor do mercado", "IncomparÃ¡vel", "NÃ£o perca"
+- OpiniÃµes sem embasamento: "Acreditamos que somos os melhores"
+- JargÃ£o vazio: "soluÃ§Ãµes inovadoras de ponta", "ecossistema sinÃ©rgico"
+- ExclamaÃ§Ãµes excessivas e CAPS LOCK
 
-RETORNE APENAS JSON válido com este formato exato:
+OBRIGATÃRIO:
+- Embasamento concreto quando possÃ­vel ("dados mostram que...", "mais de X sÃ­ndicos...")
+- BenefÃ­cio claro e direto para o sÃ­ndico
+- Segunda pessoa: "vocÃª", "seu condomÃ­nio"
+- Frases curtas e escaneÃ¡veis
+- CTA claro sem pressÃ£o
+
+EXEMPLOS:
+â Errado: "Cuidado! A nova lei pode te multar â aja agora!"
+â Certo:  "A nova legislaÃ§Ã£o exige adaptaÃ§Ãµes atÃ© marÃ§o. Veja o que muda."
+
+â Errado: "Nossa plataforma Ã© a melhor do Brasil!"
+â Certo:  "Mais de 200 mil sÃ­ndicos usam o SÃ­ndiconet para simplificar a gestÃ£o."
+
+â Errado: "GRÃTIS por tempo limitado â nÃ£o perca!"
+â Certo:  "Teste grÃ¡tis por 30 dias, sem compromisso."
+
+Retorne SOMENTE um JSON vÃ¡lido, sem markdown, sem texto extra:
 {
-  "score_original": <número de 0 a 100 indicando o alinhamento do texto original ao tom Síndiconet>,
-  "score_label": "<baixo|médio|alto> — use 'baixo' para score 0-40, 'médio' para 41-70, 'alto' para 71-100",
-  "text_aligned": "<texto reescrito alinhado ao tom de voz>",
-  "changes": ["<mudança principal 1>", "<mudança principal 2>", "<mudança principal 3>"]
-}`;
+  "score_original": <1-10>,
+  "score_label": "<baixo|mÃ©dio|alto>",
+  "text_aligned": "<texto reescrito>",
+  "changes": "<2-3 frases curtas explicando os ajustes>"
+}`
 
-export async function POST(request: NextRequest) {
+const CHANNEL_CONTEXT: Record<string, string> = {
+  institucional: 'Institucional (stakeholders, imprensa, parceiros). Tom: sÃ©rio, objetivo, confiante â mas nunca burocrÃ¡tico.',
+  redes:         'Redes sociais (LinkedIn, Instagram). Tom: leve, educativo, prÃ³ximo, levemente informal.',
+  email:         'E-mail ou newsletter para sÃ­ndicos. Tom: informativo, consultivo, orientado Ã  leitura rÃ¡pida.',
+  suporte:       'ComunicaÃ§Ã£o de suporte ou atendimento. Tom: empÃ¡tico, direto ao problema, focado na soluÃ§Ã£o.',
+  produto:       'Interface do produto (microcopy, mensagens de sistema). Tom: conciso, orientador, sem fricÃ§Ã£o.',
+  comercial:     'Copy comercial (anÃºncios, landing pages, propostas, argumentos de venda). Tom: persuasivo mas honesto â destaca benefÃ­cios reais, usa provas sociais e dados, CTA claro e direto, sem pressÃ£o artificial. Evitar urgÃªncia falsa; usar argumentos racionais e emocionais equilibrados.',
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const { text, channel } = await request.json();
+    const { text, channel } = await req.json()
 
-    if (!text || text.trim().length < 10) {
-      return NextResponse.json({ error: 'Texto muito curto.' }, { status: 400 });
+    if (!text || typeof text !== 'string' || text.trim().length < 5) {
+      return NextResponse.json({ error: 'Texto muito curto.' }, { status: 400 })
     }
 
-    if (!process.env.GROQ_API_KEY) {
-      return NextResponse.json({ error: 'API key não configurada.' }, { status: 500 });
+    if (text.length > 3000) {
+      return NextResponse.json({ error: 'Texto muito longo. MÃ¡ximo 3000 caracteres.' }, { status: 400 })
     }
 
-    // Initialize inside handler to avoid build-time errors
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-    const userPrompt = `Canal: ${channel || 'institucional'}
-
-Texto para analisar e reescrever:
-${text}
-
-Analise o alinhamento do texto original ao tom de voz Síndiconet (score_original de 0-100), classifique como baixo/médio/alto (score_label), reescreva-o (text_aligned) e liste as 2-3 principais mudanças realizadas (changes como array de strings). Retorne apenas JSON válido.`;
+    const channelCtx = CHANNEL_CONTEXT[channel] ?? CHANNEL_CONTEXT.institucional
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: userPrompt },
-      ],
       temperature: 0.4,
       max_tokens: 1024,
-    });
+      messages: [
+        { role: 'system', content: BRAND_VOICE_SYSTEM },
+        {
+          role: 'user',
+          content: `CANAL: ${channelCtx}\n\nTEXTO ORIGINAL:\n"${text.trim()}"\n\nReescreva alinhado ao tom SÃ­ndiconet e retorne o JSON.`,
+        },
+      ],
+    })
 
-    const raw = completion.choices[0]?.message?.content || '{}';
+    const raw = completion.choices[0]?.message?.content ?? ''
 
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    // Extrai JSON mesmo que venha com markdown
+    const jsonMatch = raw.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      return NextResponse.json({ error: 'Resposta inválida da IA.' }, { status: 500 });
+      return NextResponse.json({ error: 'Resposta invÃ¡lida da IA. Tente novamente.' }, { status: 502 })
     }
 
-    const result = JSON.parse(jsonMatch[0]);
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error('align-voice error:', error);
-    return NextResponse.json({ error: 'Erro interno. Tente novamente.' }, { status: 500 });
+    const data = JSON.parse(jsonMatch[0])
+    return NextResponse.json(data)
+
+  } catch (err: unknown) {
+    console.error('[align-voice] error:', err)
+
+    if (err instanceof SyntaxError) {
+      return NextResponse.json({ error: 'NÃ£o foi possÃ­vel processar a resposta.' }, { status: 502 })
+    }
+
+    return NextResponse.json({ error: 'Erro interno. Tente novamente.' }, { status: 500 })
   }
 }
