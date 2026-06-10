@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 
 type Channel = 'institucional' | 'redes' | 'email' | 'suporte' | 'produto' | 'comercial'
-type ScoreLabel = 'baixo' | 'mÃ©dio' | 'alto'
+type ScoreLabel = 'baixo' | 'médio' | 'alto'
 
 interface AlignResult {
   score_original: number
@@ -23,14 +23,14 @@ const CHANNELS: { id: Channel; label: string }[] = [
 
 const SCORE_STYLES: Record<ScoreLabel, { bg: string; text: string; label: string }> = {
   baixo: { bg: 'bg-red-50',    text: 'text-red-800',   label: 'Alinhamento baixo' },
-  mÃ©dio: { bg: 'bg-amber-50',  text: 'text-amber-800', label: 'Alinhamento mÃ©dio' },
+  médio: { bg: 'bg-amber-50',  text: 'text-amber-800', label: 'Alinhamento médio' },
   alto:  { bg: 'bg-green-50',  text: 'text-green-800', label: 'Alinhamento alto'  },
 }
 
 const EXAMPLES = [
-  'Cuidado! A nova lei pode te multar â aja agora antes que seja tarde!',
-  'Nossa plataforma Ã© a melhor soluÃ§Ã£o inovadora do mercado condominial!',
-  'ÃLTIMO DIA: acesse grÃ¡tis e transforme a gestÃ£o do seu condomÃ­nio hoje!',
+  'Cuidado! A nova lei pode te multar — aja agora antes que seja tarde!',
+  'Nossa plataforma é a melhor solução inovadora do mercado condominial!',
+  'ÚLTIMO DIA: acesse grátis e transforme a gestão do seu condomínio hoje!',
 ]
 
 export default function TomDeVozPage() {
@@ -68,7 +68,7 @@ export default function TomDeVozPage() {
       setResult(data)
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
     } catch {
-      setError('Falha de conexÃ£o. Verifique sua internet e tente novamente.')
+      setError('Falha de conexão. Verifique sua internet e tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -93,11 +93,11 @@ export default function TomDeVozPage() {
     setResult(null)
   }
 
-  const scoreStyle = result ? SCORE_STYLES[result.score_label] ?? SCORE_STYLES.mÃ©dio : null
+  const scoreStyle = result ? SCORE_STYLES[result.score_label] ?? SCORE_STYLES.médio : null
 
   return (
     <main className="min-h-screen bg-neutral-50">
-      {/* ââ Header ââ */}
+      {/* ── Header ── */}
       <div className="bg-[#0d1a30] px-6 py-10 md:px-16">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
@@ -105,26 +105,26 @@ export default function TomDeVozPage() {
               S
             </div>
             <span className="text-blue-300 text-sm font-medium tracking-wide uppercase">
-              Brand Center Â· Tom de Voz
+              Brand Center · Tom de Voz
             </span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Agente de Tom de Voz
           </h1>
           <p className="text-blue-200 text-base leading-relaxed max-w-xl">
-            Cole qualquer texto e a IA reescreve no tom correto da SÃ­ndiconet â
-            sem alarmismo, sem jargÃ£o, sem venda agressiva.
+            Cole qualquer texto e a IA reescreve no tom correto da Síndiconet —
+            sem alarmismo, sem jargão, sem venda agressiva.
           </p>
         </div>
       </div>
 
-      {/* ââ Body ââ */}
+      {/* ── Body ── */}
       <div className="max-w-3xl mx-auto px-6 md:px-16 py-10">
 
         {/* Channel selector */}
         <div className="mb-6">
           <label className="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
-            Canal de comunicaÃ§Ã£o
+            Canal de comunicação
           </label>
           <div className="flex flex-wrap gap-2">
             {CHANNELS.map(ch => (
@@ -151,7 +151,7 @@ export default function TomDeVozPage() {
           <textarea
             value={text}
             onChange={e => setText(e.target.value)}
-            placeholder="Cole o texto que deseja alinhar ao tom da SÃ­ndiconet..."
+            placeholder="Cole o texto que deseja alinhar ao tom da Síndiconet..."
             rows={6}
             className={`w-full resize-none rounded-xl border text-sm leading-relaxed p-4 text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
               overLimit ? 'border-red-300 bg-red-50' : 'border-neutral-200 bg-neutral-50'
@@ -202,7 +202,7 @@ export default function TomDeVozPage() {
               Analisando e reescrevendo...
             </>
           ) : (
-            'Alinhar ao tom SÃ­ndiconet'
+            'Alinhar ao tom Síndiconet'
           )}
         </button>
 
@@ -222,7 +222,7 @@ export default function TomDeVozPage() {
               </h2>
               {scoreStyle && (
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${scoreStyle.bg} ${scoreStyle.text}`}>
-                  {scoreStyle.label} Â· {result.score_original}/10
+                  {scoreStyle.label} · {result.score_original}/10
                 </span>
               )}
             </div>
@@ -250,7 +250,7 @@ export default function TomDeVozPage() {
                 onClick={handleCopy}
                 className="flex-1 py-2.5 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
               >
-                {copied ? 'â Copiado!' : 'Copiar texto'}
+                {copied ? '✓ Copiado!' : 'Copiar texto'}
               </button>
               <button
                 onClick={handleRefine}
@@ -265,7 +265,7 @@ export default function TomDeVozPage() {
         {/* Info footer */}
         <div className="mt-12 pt-6 border-t border-neutral-200">
           <p className="text-xs text-neutral-400 text-center">
-            Powered by Llama 3.3 via Groq Â· As respostas sÃ£o geradas por IA e devem ser revisadas antes do uso final
+            Powered by Llama 3.3 via Groq · As respostas são geradas por IA e devem ser revisadas antes do uso final
           </p>
         </div>
       </div>
