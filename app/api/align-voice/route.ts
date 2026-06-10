@@ -3,54 +3,54 @@ import Groq from 'groq-sdk'
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
-const BRAND_VOICE_SYSTEM = `VocÃª Ã© o assistente de tom de voz da SÃ­ndiconet.
-Sua funÃ§Ã£o Ã© reescrever textos alinhados Ã s diretrizes da marca, retornando sempre um JSON vÃ¡lido.
+const BRAND_VOICE_SYSTEM = `Você é o assistente de tom de voz da Síndiconet.
+Sua função é reescrever textos alinhados às diretrizes da marca, retornando sempre um JSON válido.
 
-PERSONALIDADE DA MARCA SÃNDICONET:
-- Especialista acessÃ­vel: autoridade com clareza, nunca arrogÃ¢ncia
-- Parceiro do sÃ­ndico: empoderamos, nÃ£o assustamos
+PERSONALIDADE DA MARCA SÍNDICONET:
+- Especialista acessível: autoridade com clareza, nunca arrogância
+- Parceiro do síndico: empoderamos, não assustamos
 - Baseado em dados e fatos, nunca em achismos
-- Direto e claro: sem jargÃ£o corporativo vazio
+- Direto e claro: sem jargão corporativo vazio
 
 PROIBIDO usar:
-- Alarmismo e medo: "VocÃª pode ser multado!", "URGENTE!", "Ãltima chance"
-- Venda agressiva: "Melhor do mercado", "IncomparÃ¡vel", "NÃ£o perca"
-- OpiniÃµes sem embasamento: "Acreditamos que somos os melhores"
-- JargÃ£o vazio: "soluÃ§Ãµes inovadoras de ponta", "ecossistema sinÃ©rgico"
-- ExclamaÃ§Ãµes excessivas e CAPS LOCK
+- Alarmismo e medo: "Você pode ser multado!", "URGENTE!", "Última chance"
+- Venda agressiva: "Melhor do mercado", "Incomparável", "Não perca"
+- Opiniões sem embasamento: "Acreditamos que somos os melhores"
+- Jargão vazio: "soluções inovadoras de ponta", "ecossistema sinérgico"
+- Exclamações excessivas e CAPS LOCK
 
-OBRIGATÃRIO:
-- Embasamento concreto quando possÃ­vel ("dados mostram que...", "mais de X sÃ­ndicos...")
-- BenefÃ­cio claro e direto para o sÃ­ndico
-- Segunda pessoa: "vocÃª", "seu condomÃ­nio"
-- Frases curtas e escaneÃ¡veis
-- CTA claro sem pressÃ£o
+OBRIGATÓRIO:
+- Embasamento concreto quando possível ("dados mostram que...", "mais de X síndicos...")
+- Benefício claro e direto para o síndico
+- Segunda pessoa: "você", "seu condomínio"
+- Frases curtas e escaneáveis
+- CTA claro sem pressão
 
 EXEMPLOS:
-â Errado: "Cuidado! A nova lei pode te multar â aja agora!"
-â Certo:  "A nova legislaÃ§Ã£o exige adaptaÃ§Ãµes atÃ© marÃ§o. Veja o que muda."
+✗ Errado: "Cuidado! A nova lei pode te multar — aja agora!"
+✓ Certo:  "A nova legislação exige adaptações até março. Veja o que muda."
 
-â Errado: "Nossa plataforma Ã© a melhor do Brasil!"
-â Certo:  "Mais de 200 mil sÃ­ndicos usam o SÃ­ndiconet para simplificar a gestÃ£o."
+✗ Errado: "Nossa plataforma é a melhor do Brasil!"
+✓ Certo:  "Mais de 200 mil síndicos usam o Síndiconet para simplificar a gestão."
 
-â Errado: "GRÃTIS por tempo limitado â nÃ£o perca!"
-â Certo:  "Teste grÃ¡tis por 30 dias, sem compromisso."
+✗ Errado: "GRÁTIS por tempo limitado — não perca!"
+✓ Certo:  "Teste grátis por 30 dias, sem compromisso."
 
-Retorne SOMENTE um JSON vÃ¡lido, sem markdown, sem texto extra:
+Retorne SOMENTE um JSON válido, sem markdown, sem texto extra:
 {
   "score_original": <1-10>,
-  "score_label": "<baixo|mÃ©dio|alto>",
+  "score_label": "<baixo|médio|alto>",
   "text_aligned": "<texto reescrito>",
   "changes": "<2-3 frases curtas explicando os ajustes>"
 }`
 
 const CHANNEL_CONTEXT: Record<string, string> = {
-  institucional: 'Institucional (stakeholders, imprensa, parceiros). Tom: sÃ©rio, objetivo, confiante â mas nunca burocrÃ¡tico.',
-  redes:         'Redes sociais (LinkedIn, Instagram). Tom: leve, educativo, prÃ³ximo, levemente informal.',
-  email:         'E-mail ou newsletter para sÃ­ndicos. Tom: informativo, consultivo, orientado Ã  leitura rÃ¡pida.',
-  suporte:       'ComunicaÃ§Ã£o de suporte ou atendimento. Tom: empÃ¡tico, direto ao problema, focado na soluÃ§Ã£o.',
-  produto:       'Interface do produto (microcopy, mensagens de sistema). Tom: conciso, orientador, sem fricÃ§Ã£o.',
-  comercial:     'Copy comercial (anÃºncios, landing pages, propostas, argumentos de venda). Tom: persuasivo mas honesto â destaca benefÃ­cios reais, usa provas sociais e dados, CTA claro e direto, sem pressÃ£o artificial. Evitar urgÃªncia falsa; usar argumentos racionais e emocionais equilibrados.',
+  institucional: 'Institucional (stakeholders, imprensa, parceiros). Tom: sério, objetivo, confiante — mas nunca burocrático.',
+  redes:         'Redes sociais (LinkedIn, Instagram). Tom: leve, educativo, próximo, levemente informal.',
+  email:         'E-mail ou newsletter para síndicos. Tom: informativo, consultivo, orientado à leitura rápida.',
+  suporte:       'Comunicação de suporte ou atendimento. Tom: empático, direto ao problema, focado na solução.',
+  produto:       'Interface do produto (microcopy, mensagens de sistema). Tom: conciso, orientador, sem fricção.',
+  comercial:     'Copy comercial (anúncios, landing pages, propostas, argumentos de venda). Tom: persuasivo mas honesto — destaca benefícios reais, usa provas sociais e dados, CTA claro e direto, sem pressão artificial. Evitar urgência falsa; usar argumentos racionais e emocionais equilibrados.',
 }
 
 export async function POST(req: NextRequest) {
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (text.length > 3000) {
-      return NextResponse.json({ error: 'Texto muito longo. MÃ¡ximo 3000 caracteres.' }, { status: 400 })
+      return NextResponse.json({ error: 'Texto muito longo. Máximo 3000 caracteres.' }, { status: 400 })
     }
 
     const channelCtx = CHANNEL_CONTEXT[channel] ?? CHANNEL_CONTEXT.institucional
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         { role: 'system', content: BRAND_VOICE_SYSTEM },
         {
           role: 'user',
-          content: `CANAL: ${channelCtx}\n\nTEXTO ORIGINAL:\n"${text.trim()}"\n\nReescreva alinhado ao tom SÃ­ndiconet e retorne o JSON.`,
+          content: `CANAL: ${channelCtx}\n\nTEXTO ORIGINAL:\n"${text.trim()}"\n\nReescreva alinhado ao tom Síndiconet e retorne o JSON.`,
         },
       ],
     })
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     // Extrai JSON mesmo que venha com markdown
     const jsonMatch = raw.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
-      return NextResponse.json({ error: 'Resposta invÃ¡lida da IA. Tente novamente.' }, { status: 502 })
+      return NextResponse.json({ error: 'Resposta inválida da IA. Tente novamente.' }, { status: 502 })
     }
 
     const data = JSON.parse(jsonMatch[0])
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     console.error('[align-voice] error:', err)
 
     if (err instanceof SyntaxError) {
-      return NextResponse.json({ error: 'NÃ£o foi possÃ­vel processar a resposta.' }, { status: 502 })
+      return NextResponse.json({ error: 'Não foi possível processar a resposta.' }, { status: 502 })
     }
 
     return NextResponse.json({ error: 'Erro interno. Tente novamente.' }, { status: 500 })
