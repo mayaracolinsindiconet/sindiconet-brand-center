@@ -440,4 +440,16 @@ export const photos: Photo[] = [
   source: 'Magnific',
   isCorrect: true,
 },
+  // ── ENVATO (via proxy) ────────────────────────────────────────────────────
+  {
+    id: 'env-envato-01',
+    src: '/api/envato-thumbnail?uuid=0be4db7d-7763-42eb-8543-091ed9ad554f',
+    alt: 'Prédio de apartamentos moderno em ângulo ascendente — arquitetura condominial',
+    pillar: 'arquitetura-como-simbolo',
+    category: 'arquitetura',
+    attributes: ['ARQUITETURAL', 'COMPOSIÇÃO LIMPA'],
+    source: 'Envato',
+    envatoUrl: 'https://app.envato.com/search/photos/0be4db7d-7763-42eb-8543-091ed9ad554f?itemType=photos&term=condominium',
+    isCorrect: true,
+  },
 ]
