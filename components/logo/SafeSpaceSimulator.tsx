@@ -4,9 +4,9 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 
-type LogoVariant   = 'mista' | 'simbolo' | 'mista-headline'
+type LogoVariant = 'mista' | 'simbolo' | 'mista-headline'
 type LogoColorMode = 'colorida' | 'preta' | 'branca'
-type BgOption      = 'branco' | 'cinza' | 'preto' | 'azul' | 'foto'
+type BgOption = 'branco' | 'cinza' | 'preto' | 'azul' | 'foto'
 
 export interface SafeSpaceSimulatorProps {
   initialVariant?: LogoVariant
@@ -14,11 +14,11 @@ export interface SafeSpaceSimulatorProps {
 }
 
 const bgStyles: Record<BgOption, { style: React.CSSProperties; label: string; dark: boolean }> = {
-  branco: { style: { backgroundColor: '#FFFFFF' },           label: 'Branco',          dark: false },
-  cinza:  { style: { backgroundColor: '#F4F6F8' },           label: 'Cinza claro',     dark: false },
-  preto:  { style: { backgroundColor: '#0d0d0d' },           label: 'Preto',           dark: true  },
-  azul:   { style: { backgroundColor: '#3e77db' },           label: 'Azul Principal',  dark: true  },
-  foto:   {
+  branco: { style: { backgroundColor: '#FFFFFF' }, label: 'Branco', dark: false },
+  cinza: { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro', dark: false },
+  preto: { style: { backgroundColor: '#0d0d0d' }, label: 'Preto', dark: true },
+  azul: { style: { backgroundColor: '#3e77db' }, label: 'Azul Principal', dark: true },
+  foto: {
     style: {
       backgroundColor: '#5a6a7a',
       backgroundImage: 'url(/assets/photos/bg-foto.jpg)',
@@ -30,7 +30,7 @@ const bgStyles: Record<BgOption, { style: React.CSSProperties; label: string; da
   },
 }
 
-const variantLabels: Record<LogoVariant, string>    = { mista: 'Mista', simbolo: 'Símbolo', 'mista-headline': 'Com Headline' }
+const variantLabels: Record<LogoVariant, string> = { mista: 'Mista', simbolo: 'Símbolo', 'mista-headline': 'Com Headline' }
 const colorModeLabels: Record<LogoColorMode, string> = { colorida: 'Colorida', preta: 'Preta', branca: 'Branca' }
 
 // ─── safe-area label colour: always contrast against the current background
@@ -47,18 +47,18 @@ function getGuideColor(bgKey: BgOption) {
 }
 
 export function SafeSpaceSimulator({
-  initialVariant   = 'mista',
+  initialVariant = 'mista',
   initialColorMode = 'colorida',
 }: SafeSpaceSimulatorProps) {
-  const [variant,       setVariant]       = useState<LogoVariant>(initialVariant)
-  const [colorMode,     setColorMode]     = useState<LogoColorMode>(initialColorMode)
-  const [bg,            setBg]            = useState<BgOption>('branco')
-  const [scale,         setScale]         = useState(100)
-  const [showGuides,    setShowGuides]    = useState(true)
+  const [variant, setVariant] = useState<LogoVariant>(initialVariant)
+  const [colorMode, setColorMode] = useState<LogoColorMode>(initialColorMode)
+  const [bg, setBg] = useState<BgOption>('branco')
+  const [scale, setScale] = useState(100)
+  const [showGuides, setShowGuides] = useState(true)
   const [showSafeSpace, setShowSafeSpace] = useState(true)
-  const [logoSize,      setLogoSize]      = useState({ w: 0, h: 0 })
+  const [logoSize, setLogoSize] = useState({ w: 0, h: 0 })
 
-  const logoRef     = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
   const observerRef = useRef<ResizeObserver | null>(null)
 
   const measure = useCallback(() => {
@@ -85,7 +85,7 @@ export function SafeSpaceSimulator({
   }, [variant, measure])
 
   // Module X = 1/8 of logo height (approximate)
-  const unitX     = logoSize.h > 0 ? logoSize.h / 8 : 0
+  const unitX = logoSize.h > 0 ? logoSize.h / 8 : 0
   const safeSpace = unitX * 2
 
   // Whether variant needs the Y-divider (symbol has none)
@@ -95,9 +95,9 @@ export function SafeSpaceSimulator({
   const [imgError, setImgError] = useState(false)
   useEffect(() => { setImgError(false) }, [logoSrc])
 
-  const guideColor    = getGuideColor(bg)
-  const labelBg       = getLabelBg(bg)
-  const labelColor    = getLabelColor(bg)
+  const guideColor = getGuideColor(bg)
+  const labelBg = getLabelBg(bg)
+  const labelColor = getLabelColor(bg)
 
   const isSymbol = variant === 'simbolo'
   // For symbol the safe-area unit is Z, not X
@@ -184,18 +184,6 @@ export function SafeSpaceSimulator({
             <Toggle checked={showGuides} onChange={setShowGuides} label="Grade de construção" />
             <Toggle checked={showSafeSpace} onChange={setShowSafeSpace} label="Área de segurança" />
           </div>
-
-          {/* Metrics */}
-          {unitX > 0 && (
-            <div className="rounded-xl bg-[#F4F6F8] px-4 py-3 space-y-1.5">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body">
-                Métricas calculadas
-              </p>
-              <MetricRow label="Altura do logo" value={`${Math.round(logoSize.h)}px`} />
-              <MetricRow label={`Módulo ${moduleLabel}`}  value={`${Math.round(unitX)}px`} />
-              <MetricRow label={`Área de segurança (${safeLabel})`} value={`${Math.round(safeSpace)}px`} />
-            </div>
-          )}
         </div>
 
         {/* ── Preview ────────────────────────────────────────────────── */}
@@ -306,25 +294,6 @@ export function SafeSpaceSimulator({
           </div>
         </div>
       </div>
-
-      {/* Module legend footer */}
-      <div className="px-6 py-5 border-t border-black/8">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { mod: 'X', rule: 'Altura da letra "i" do logotipo. Unidade base de todas as proporções.' },
-            { mod: 'Y', rule: 'Espaço entre monograma e tipografia = largura de Y.' },
-            { mod: 'W', rule: 'Espaço entre monograma e tipografia = altura de W.' },
-            { mod: 'Z', rule: 'Módulo Z = altura da letra "S" do monograma (símbolo).' },
-          ].map((item) => (
-            <div key={item.mod} className="flex items-center gap-3 bg-[#F4F6F8] rounded-xl px-3 py-2.5">
-              <span className="w-6 h-6 rounded-lg bg-[#3e77db]/10 flex items-center justify-center font-mono text-[10px] font-bold text-[#3e77db] shrink-0">
-                {item.mod}
-              </span>
-              <p className="font-body text-[11px] text-[#3D3D3D]/65 leading-snug">{item.rule}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }
@@ -339,10 +308,10 @@ function SafeLabel({
 }) {
   const base = 'absolute text-[9px] font-mono font-bold whitespace-nowrap px-1 py-0.5 rounded leading-none'
   const pos =
-    side === 'top'    ? '-top-4 left-1/2 -translate-x-1/2' :
+    side === 'top' ? '-top-4 left-1/2 -translate-x-1/2' :
     side === 'bottom' ? '-bottom-4 left-1/2 -translate-x-1/2' :
-    side === 'left'   ? 'top-1/2 -translate-y-1/2 -left-7' :
-                        'top-1/2 -translate-y-1/2 -right-7'
+    side === 'left' ? 'top-1/2 -translate-y-1/2 -left-7' :
+    'top-1/2 -translate-y-1/2 -right-7'
   return (
     <span className={`${base} ${pos}`} style={{ background: bg, color }}>
       {text}
@@ -406,21 +375,12 @@ function Toggle({
   )
 }
 
-function MetricRow({ label, value }: { label: string; value: string }) {
-  return (
-    <p className="text-xs font-body text-[#3D3D3D]/70 flex justify-between gap-2">
-      {label}
-      <span className="font-mono text-[#101e37] shrink-0">{value}</span>
-    </p>
-  )
-}
-
 function LogoFallback({
   variant, colorMode, bg,
 }: {
   variant: LogoVariant; colorMode: LogoColorMode; bg: BgOption
 }) {
-  const isDark   = bgStyles[bg].dark
+  const isDark = bgStyles[bg].dark
   const mainColor = colorMode === 'branca' ? '#FFFFFF' : colorMode === 'preta' ? '#000000' : '#3e77db'
   const textColor = colorMode === 'branca' ? '#FFFFFF' : isDark ? '#FFFFFF' : '#101e37'
 
