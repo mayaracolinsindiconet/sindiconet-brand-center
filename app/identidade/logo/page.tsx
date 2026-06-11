@@ -75,9 +75,111 @@ export default function LogoPage() {
           />
         </div>
       </SectionWrapper>
+
+      <SectionWrapper
+        id="usos-incorretos"
+        title="Exemplos de uso incorreto"
+        description="Nunca aplique o logotipo nestas situações."
+        background="white"
+      >
+        <IncorrectUsageGrid />
+      </SectionWrapper>
     </main>
   )
 }
+
+// ─── Incorrect usage examples ──────────────────────────────────────────────
+
+const INCORRECT_EXAMPLES = [
+  {
+    id: 'distorted',
+    label: 'Não distorcer proporções',
+    description: 'O logo nunca deve ser esticado ou comprimido horizontalmente.',
+    imgStyle: { transform: 'scaleX(1.65)', transformOrigin: 'center' },
+    bg: '#F4F6F8',
+  },
+  {
+    id: 'rotated',
+    label: 'Não rotacionar',
+    description: 'O logo deve sempre estar na posição horizontal padrão.',
+    imgStyle: { transform: 'rotate(20deg)' },
+    bg: '#F4F6F8',
+  },
+  {
+    id: 'low-contrast',
+    label: 'Não usar em baixo contraste',
+    description: 'Evite fundos que se confundam com as cores do logotipo.',
+    imgStyle: {},
+    bg: '#A8C0E8',
+  },
+  {
+    id: 'shadow',
+    label: 'Não adicionar sombra ou efeitos',
+    description: 'Nenhum efeito visual deve ser aplicado sobre o logo.',
+    imgStyle: { filter: 'drop-shadow(4px 6px 10px rgba(0,0,0,0.55))' },
+    bg: '#F4F6F8',
+  },
+  {
+    id: 'recolored',
+    label: 'Não alterar as cores',
+    description: 'Usar apenas as variações de cor oficiais do sistema de identidade.',
+    imgStyle: { filter: 'hue-rotate(130deg) saturate(2.2)' },
+    bg: '#F4F6F8',
+  },
+  {
+    id: 'opacity',
+    label: 'Não usar com baixa opacidade',
+    description: 'O logotipo nunca deve ser aplicado com transparência.',
+    imgStyle: { opacity: 0.22 },
+    bg: '#F4F6F8',
+  },
+]
+
+function IncorrectUsageGrid() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {INCORRECT_EXAMPLES.map((ex) => (
+        <div
+          key={ex.id}
+          className="rounded-2xl overflow-hidden border border-[#e89e95]/50"
+        >
+          {/* Preview area */}
+          <div
+            className="relative flex items-center justify-center h-32 overflow-hidden"
+            style={{ backgroundColor: ex.bg }}
+          >
+            {/* Red X badge */}
+            <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#D13D2A] flex items-center justify-center z-10 shadow-sm">
+              <span className="text-white text-[10px] font-bold leading-none">✕</span>
+            </div>
+            {/* Logo with incorrect treatment */}
+            <div style={ex.imgStyle as React.CSSProperties}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/logos/sindiconet-mista-colorida.svg"
+                alt={ex.label}
+                width={140}
+                height={40}
+                className="object-contain"
+              />
+            </div>
+          </div>
+          {/* Label */}
+          <div className="bg-[#f3cfca]/30 px-4 py-3 border-t border-[#e89e95]/30">
+            <p className="text-xs font-semibold font-body text-[#691f15] mb-0.5">
+              {ex.label}
+            </p>
+            <p className="text-xs font-body text-[#3D3D3D]/60 leading-relaxed">
+              {ex.description}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Rule card ─────────────────────────────────────────────────────────────
 
 function RuleCard({ type, title, rules }: { type: 'correct' | 'incorrect'; title: string; rules: string[] }) {
   const isCorrect = type === 'correct'
