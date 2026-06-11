@@ -14,23 +14,23 @@ interface ProductPanelProps {
 }
 
 const productDescriptions: Record<ProductSlug, { tagline: string; description: string }> = {
-  conteudo: { tagline: 'Conhecimento para quem administra.', description: 'A principal fonte de conteúdo especializado para síndicos e gestores condominiais do Brasil.' },
-  conviver:  { tagline: 'Comunidade e criação em um só lugar.', description: 'Plataforma que aproxima moradores, facilita a comunicação e dá voz aos criadores de conteúdo do universo condominial.' },
-  coteibem:  { tagline: 'O melhor preço para o seu condomínio.', description: 'Conecte seu condomínio aos melhores fornecedores e serviços com cotações transparentes.' },
-  cursos:    { tagline: 'Capacite-se para liderar melhor.', description: 'Cursos e certificações para síndicos que querem se profissionalizar e ampliar sua atuação.' },
-  pro:       { tagline: 'Gestão profissional de alto nível.', description: 'A solução completa para síndicos profissionais que precisam de ferramentas robustas e suporte dedicado.' },
+  conteudo:  { tagline: 'Conhecimento para quem administra.',        description: 'A principal fonte de conteúdo especializado para síndicos e gestores condominiais do Brasil.' },
+  conviver:  { tagline: 'Comunidade e criação em um só lugar.',       description: 'Plataforma que aproxima moradores, facilita a comunicação e dá voz aos criadores de conteúdo do universo condominial.' },
+  coteibem:  { tagline: 'O melhor preço para o seu condomínio.',      description: 'Conecte seu condomínio aos melhores fornecedores e serviços com cotações transparentes.' },
+  cursos:    { tagline: 'Capacite-se para liderar melhor.',           description: 'Cursos e certificações para síndicos que querem se profissionalizar e ampliar sua atuação.' },
+  pro:       { tagline: 'Gestão profissional de alto nível.',         description: 'A solução completa para síndicos profissionais que precisam de ferramentas robustas e suporte dedicado.' },
 }
 
 const sections = [
-  { id: 'hero',       label: 'Visão geral' },
-  { id: 'cores',      label: 'Cores' },
-  { id: 'logo',       label: 'Logo aplicado' },
-  { id: 'icones',     label: 'Ícones' },
-  { id: 'exemplos',   label: 'Exemplos' },
+  { id: 'hero',     label: 'Visão geral' },
+  { id: 'cores',    label: 'Cores'       },
+  { id: 'logo',     label: 'Logo'        },
+  { id: 'icones',   label: 'Ícones'      },
+  { id: 'exemplos', label: 'Exemplos'    },
 ]
 
 export function ProductPanel({ slug }: ProductPanelProps) {
-  const p = products[slug]
+  const p    = products[slug]
   const info = productDescriptions[slug]
   const [activeSection, setActiveSection] = useState('hero')
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
@@ -41,9 +41,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
       const el = sectionRefs.current[id]
       if (!el) return
       const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveSection(id)
-        },
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
         { rootMargin: '-30% 0px -60% 0px' }
       )
       observer.observe(el)
@@ -69,9 +67,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           {/* Depth glow */}
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `radial-gradient(ellipse 70% 60% at 80% 30%, ${p.colors.accent}55, transparent 65%)`,
-            }}
+            style={{ background: `radial-gradient(ellipse 70% 60% at 80% 30%, ${p.colors.accent}55, transparent 65%)` }}
           />
 
           {/* Product info */}
@@ -114,16 +110,23 @@ export function ProductPanel({ slug }: ProductPanelProps) {
             </motion.p>
           </div>
 
-          {/* ── Section nav — inside hero, becomes sticky on scroll ── */}
+          {/* ── Section nav — sticky inside hero ── */}
           <nav
             aria-label="Seções do produto"
             className="sticky top-0 z-30 border-t"
-            style={{
-              backgroundColor: p.colors.primary,
-              borderColor: `${p.colors.onPrimary}18`,
-            }}
+            style={{ backgroundColor: p.colors.primary, borderColor: `${p.colors.onPrimary}18` }}
           >
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-[1280px] mx-auto px-8 flex items-center gap-4">
+              {/* Fixed product name */}
+              <span
+                className="shrink-0 text-sm font-semibold font-body whitespace-nowrap"
+                style={{ color: p.colors.onPrimary }}
+              >
+                {p.name}
+              </span>
+              {/* Divider */}
+              <div className="shrink-0 w-px h-4" style={{ backgroundColor: `${p.colors.onPrimary}30` }} />
+              {/* Section links */}
               <ul className="flex gap-1 py-2 overflow-x-auto">
                 {sections.map(({ id, label }) => (
                   <li key={id} className="shrink-0">
@@ -132,10 +135,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium font-body whitespace-nowrap transition-all ${
                         activeSection === id ? 'bg-white/15 font-semibold' : 'hover:bg-white/10'
                       }`}
-                      style={{
-                        color: p.colors.onPrimary,
-                        opacity: activeSection === id ? 1 : 0.6,
-                      }}
+                      style={{ color: p.colors.onPrimary, opacity: activeSection === id ? 1 : 0.6 }}
                     >
                       {label}
                     </button>
@@ -164,10 +164,11 @@ export function ProductPanel({ slug }: ProductPanelProps) {
         >
           <div className="max-w-[1280px] mx-auto">
             <SectionTitle color={p.colors.primary}>Logo aplicado</SectionTitle>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <LogoApplicationCard product={slug} logoVariant="mista" mode="correct" note="Versão branca sobre cor primária do produto." />
-              <LogoApplicationCard product={slug} logoVariant="simbolo" mode="correct" note="Símbolo em contextos reduzidos, sobre fundo primário." />
-              <LogoApplicationCard product={slug} logoVariant="mista" mode="incorrect" note="Evite usar a versão colorida sobre fundo colorido." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <LogoApplicationCard product={slug} logoVariant="mista"   mode="correct"   note="Versão branca sobre cor primária do produto." />
+              <LogoApplicationCard product={slug} logoVariant="simbolo" mode="correct"   note="Símbolo em contextos reduzidos, sobre fundo primário." />
+              <LogoApplicationCard product={slug} logoVariant="mista"   mode="sombra"    note="Logo branca sobre o fundo sombra — maior contraste." />
+              <LogoApplicationCard product={slug} logoVariant="mista"   mode="incorrect" note="Evite usar a versão colorida sobre fundo colorido." />
             </div>
           </div>
         </section>
@@ -181,7 +182,6 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           <SectionTitle color={p.colors.primary}>Ícones do produto</SectionTitle>
           <ProductIconGrid product={slug} />
         </section>
-
 
         {/* Exemplos */}
         <section
