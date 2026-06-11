@@ -14,15 +14,15 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
   const isPro = product === 'pro'
 
   const mainColors = [
-    { hex: p.colors.primary,   name: 'Primária',   role: '60% Primária' },
+    { hex: p.colors.primary,   name: 'Primária',   role: '60% Primária'   },
     { hex: p.colors.secondary, name: 'Secundária', role: '30% Secundária' },
-    { hex: p.colors.accent,    name: 'Accent',     role: '10% Accent' },
+    { hex: p.colors.accent,    name: 'Accent',     role: '10% Accent'     },
   ]
 
   const supportColors = [
-    { hex: p.colors.primaryLight, name: 'Primária Light', role: 'Background' },
-    { hex: p.colors.primaryDark,  name: 'Primária Dark',  role: 'Texto' },
-    { hex: p.colors.onPrimary,    name: 'On Primary',     role: 'Texto sobre primária' },
+    { hex: p.colors.luz,       name: 'Luz',        role: 'Fundo claro / tint'  },
+    { hex: p.colors.sombra,    name: 'Sombra',     role: 'Fundo escuro / shade' },
+    { hex: p.colors.onPrimary, name: 'On Primary', role: 'Texto sobre primária' },
   ]
 
   return (
@@ -56,11 +56,17 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
         </div>
       </div>
 
-      {/* Cores de suporte */}
+      {/* Luz · Sombra · Subtons */}
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
-          Cores de suporte
+          Luz · Sombra · Subtons
         </p>
+        {/* Subtons strip */}
+        <div className="flex rounded-xl overflow-hidden mb-4 h-10">
+          {(p.colors.subtons as readonly string[]).map((hex) => (
+            <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+          ))}
+        </div>
         <div className="grid grid-cols-3 gap-3">
           {supportColors.map((color) => (
             <ColorPaletteCard key={color.name} hex={color.hex} name={color.name} role={color.role} />
@@ -80,7 +86,7 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
           />
           <div className="grid grid-cols-2 gap-3">
             <ColorPaletteCard hex={PRO_GRADIENT.start} name="Gradient Start" role="Início" />
-            <ColorPaletteCard hex={PRO_GRADIENT.end}   name="Gradient End"   role="Fim" />
+            <ColorPaletteCard hex={PRO_GRADIENT.end}   name="Gradient End"   role="Fim"    />
           </div>
           <p className="mt-3 text-[11px] font-body text-[#3D3D3D]/50 leading-relaxed">
             O gradiente é exclusivo da versão símbolo do PRO e não deve ser usado como cor de fundo em textos ou layouts — apenas como elemento gráfico diferenciador.
