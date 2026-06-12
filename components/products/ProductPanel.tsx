@@ -92,37 +92,39 @@ export function ProductPanel({ slug }: ProductPanelProps) {
       {/* ── Product Switcher — sticky below site header ───────────────── */}
       <nav
         aria-label="Navegar entre produtos"
-        className="sticky top-16 z-40 bg-white border-b border-black/8 overflow-x-auto"
+        className="sticky top-16 z-40 bg-[#EEF1F5] border-b border-black/8 overflow-x-auto"
       >
-        <ul className="flex items-center gap-1 px-4 py-2 min-w-max">
-          {productList.map((s) => {
-            const prod    = products[s]
-            const isActive = s === slug
-            return (
-              <li key={s}>
-                <button
-                  onClick={() => router.push(`/identidade/produtos/${s}`)}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium font-body whitespace-nowrap transition-all ${
-                    isActive
-                      ? 'text-white shadow-sm'
-                      : 'text-[#3D3D3D]/60 hover:bg-[#F4F6F8] hover:text-[#3D3D3D]'
-                  }`}
-                  style={isActive ? { backgroundColor: prod.colors.primary } : undefined}
-                >
-                  {/* Color dot — visible when not active */}
-                  {!isActive && (
-                    <span
-                      className="w-2 h-2 rounded-full shrink-0"
-                      style={{ backgroundColor: prod.colors.primary }}
-                    />
-                  )}
-                  {shortNames[s]}
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+        <div className="px-5 py-2.5">
+          <ul className="flex items-center gap-1 bg-white rounded-2xl px-2 py-1.5 min-w-max shadow-sm">
+            {productList.map((s) => {
+              const prod    = products[s]
+              const isActive = s === slug
+              return (
+                <li key={s}>
+                  <button
+                    onClick={() => router.push(`/identidade/produtos/${s}`)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold font-body whitespace-nowrap transition-all ${
+                      isActive
+                        ? 'text-white shadow-sm'
+                        : 'text-[#3D3D3D]/55 hover:bg-[#F4F6F8] hover:text-[#3D3D3D]'
+                    }`}
+                    style={isActive ? { backgroundColor: prod.colors.primary } : undefined}
+                  >
+                    {/* Color dot — visible when not active */}
+                    {!isActive && (
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: prod.colors.primary }}
+                      />
+                    )}
+                    {shortNames[s]}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
       </nav>
 
       <main>
