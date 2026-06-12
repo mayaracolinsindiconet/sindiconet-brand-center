@@ -1,79 +1,118 @@
+/**
+ * SÍNDICONET — Design Tokens: Produtos
+ * Atualizado: junho/2026
+ *
+ * ESTRUTURA DE CORES:
+ * - primary:    cor principal (índice 3 da paleta de 7)
+ * - sombra:     secundária escura (índice 1)
+ * - luz:        secundária clara (índice 5)
+ * - onPrimary:  texto sobre fundo primário
+ * - palette:    paleta completa (7 cores para produtos, 5 para PRO)
+ *
+ * PRO: campos adicionais primarias, secundarias e gradiente
+ */
+
+export type ProductSlug =
+  | 'conteudo'
+  | 'conviver'
+  | 'coteibem'
+  | 'cursos'
+  | 'empregos'
+  | 'pro'
+
 export const products = {
+
+  // ── CONTEÚDO / MARCA PRINCIPAL ───────────────────────────────────────────
   conteudo: {
-    name: 'Síndiconet Conteúdo',
-    slug: 'conteudo',
+    name: 'Síndiconet e Conteúdo',
+    slug: 'conteudo' as const,
     colors: {
-      primary: '#3e77db',
-      secondary: '#1f3c6e',
-      accent: '#101e37',
-      primaryLight: '#cfddf6',
-      primaryDark: '#101e37',
+      primary:   '#3e77db',
+      sombra:    '#1f3c6e',
+      luz:       '#9fbbed',
       onPrimary: '#FFFFFF',
-      luz: '#EDF2FC',
-      sombra: '#1f3c6e',
-      subtons: ['#cfddf6', '#8aadec', '#3e77db', '#1f3c6e', '#101e37'] as const,
+      palette:   ['#101e37', '#1f3c6e', '#2f59a4', '#3e77db', '#6e99e4', '#9fbbed', '#cfddf6'] as const,
     },
   },
+
+  // ── CONVIVER E CREATORS ──────────────────────────────────────────────────
   conviver: {
-    name: 'Síndiconet Conviver/Creator',
-    slug: 'conviver',
+    name: 'Síndiconet Conviver e Creators',
+    slug: 'conviver' as const,
     colors: {
-      primary: '#41ae89',
-      secondary: '#318367',
-      accent: '#102c22',
-      primaryLight: '#a0d7c4',
-      primaryDark: '#215745',
+      primary:   '#41ae89',
+      sombra:    '#215745',
+      luz:       '#a0d7c4',
       onPrimary: '#FFFFFF',
-      luz: '#E5F5F0',
-      sombra: '#215745',
-      subtons: ['#a0d7c4', '#5ec4a2', '#41ae89', '#318367', '#215745'] as const,
+      palette:   ['#102c22', '#215745', '#318367', '#41ae89', '#71c2a7', '#a0d7c4', '#d0ebe2'] as const,
     },
   },
+
+  // ── COTEIBEM ─────────────────────────────────────────────────────────────
   coteibem: {
     name: 'Síndiconet Coteibem',
-    slug: 'coteibem',
+    slug: 'coteibem' as const,
     colors: {
-      primary: '#f6be52',
-      secondary: '#b98f3e',
-      accent: '#3e3015',
-      primaryLight: '#fbdfa9',
-      primaryDark: '#7b5f29',
+      primary:   '#f6be52',
+      sombra:    '#7b5f29',
+      luz:       '#fbdfa9',
       onPrimary: '#3D3D3D',
-      luz: '#FEF6E1',
-      sombra: '#7b5f29',
-      subtons: ['#fbdfa9', '#f6d07c', '#f6be52', '#b98f3e', '#7b5f29'] as const,
+      palette:   ['#3e3015', '#7b5f29', '#b98f3e', '#f6be52', '#f8ce7d', '#fbdfa9', '#fdefd4'] as const,
     },
   },
+
+  // ── CURSOS ───────────────────────────────────────────────────────────────
   cursos: {
     name: 'Síndiconet Cursos',
-    slug: 'cursos',
+    slug: 'cursos' as const,
     colors: {
-      primary: '#F57A0C',
-      secondary: '#b85c09',
-      accent: '#3d1f03',
-      primaryLight: '#fabd86',
-      primaryDark: '#7b3d06',
+      primary:   '#F57A0C',
+      sombra:    '#7b3d06',
+      luz:       '#fabd86',
       onPrimary: '#FFFFFF',
-      luz: '#FEF0E1',
-      sombra: '#7b3d06',
-      subtons: ['#fabd86', '#f89d4d', '#F57A0C', '#b85c09', '#7b3d06'] as const,
+      palette:   ['#3d1f03', '#7b3d06', '#b85c09', '#F57A0C', '#f89b49', '#fabd86', '#fddec2'] as const,
     },
   },
+
+  // ── EMPREGOS ─────────────────────────────────────────────────────────────
+  empregos: {
+    name: 'Síndiconet Empregos',
+    slug: 'empregos' as const,
+    colors: {
+      primary:   '#D13D2A',
+      sombra:    '#691f15',
+      luz:       '#e89e95',
+      onPrimary: '#FFFFFF',
+      palette:   ['#340f0b', '#691f15', '#9d2e20', '#D13D2A', '#dd6e5f', '#e89e95', '#f3cfca'] as const,
+    },
+  },
+
+  // ── PRO ──────────────────────────────────────────────────────────────────
   pro: {
     name: 'Síndiconet PRO',
-    slug: 'pro',
+    slug: 'pro' as const,
     colors: {
-      primary: '#5D2E85',
-      secondary: '#3E1F59',
-      accent: '#BE9ED9',
-      primaryLight: '#EDE1F5',
-      primaryDark: '#1A0C30',
-      onPrimary: '#FFFFFF',
-      luz: '#F5EDFB',
-      sombra: '#2A0C49',
-      subtons: ['#e8d5f5', '#BE9ED9', '#8C5FC2', '#5D2E85', '#3E1F59'] as const,
+      primary:     '#5D2E85',
+      sombra:      '#2A0C49',
+      luz:         '#BE9ED9',
+      onPrimary:   '#FFFFFF',
+      palette:     ['#030124', '#2A0C49', '#5D2E85', '#9664C1', '#BE9ED9'] as const,
+      primarias:   ['#030124', '#2A0C49', '#5D2E85', '#9664C1', '#BE9ED9'] as const,
+      secundarias: ['#251956', '#855DEA', '#7C3DB2', '#B36CFF', '#F6F0FC'] as const,
+      gradiente:   { start: '#2A0C49', end: '#BE9ED9' } as const,
     },
   },
+
 } as const
 
-export type ProductSlug = keyof typeof products
+export type Products = typeof products
+
+/** Lista de produtos em ordem de exibição no Brand Center */
+export const productList: ProductSlug[] = [
+  'conteudo',
+  'conviver',
+  'coteibem',
+  'cursos',
+  'empregos',
+  'pro',
+]
