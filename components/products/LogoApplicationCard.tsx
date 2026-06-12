@@ -9,22 +9,22 @@ type LogoVariant = 'mista' | 'simbolo' | 'mista-headline'
 type LogoMode   = 'correct' | 'incorrect' | 'sombra'
 
 interface LogoApplicationCardProps {
-  product: ProductSlug
+  product:     ProductSlug
   logoVariant?: LogoVariant
-  mode?: LogoMode
-  note?: string
+  mode?:        LogoMode
+  note?:        string
 }
 
 const variantLabel: Record<LogoVariant, string> = {
-  mista: 'Mista',
-  simbolo: 'Símbolo',
-  'mista-headline': 'Com Headline',
+  mista:             'Mista',
+  simbolo:           'Símbolo',
+  'mista-headline':  'Com Headline',
 }
 
 export function LogoApplicationCard({
   product,
   logoVariant = 'mista',
-  mode = 'correct',
+  mode        = 'correct',
   note,
 }: LogoApplicationCardProps) {
   const p = products[product]
@@ -33,9 +33,9 @@ export function LogoApplicationCard({
   const isPositive    = mode === 'correct' || mode === 'sombra'
   const logoColorMode = mode === 'incorrect' ? 'colorida' : 'branca'
   const bgColor =
-    mode === 'sombra'    ? p.colors.sombra      :
-    mode === 'correct'   ? p.colors.primary     :
-    /* incorrect */        p.colors.primaryLight
+    mode === 'sombra'   ? p.colors.sombra  :
+    mode === 'correct'  ? p.colors.primary :
+    /* incorrect */       p.colors.luz
 
   const logoSrc = `/assets/logos/sindiconet-${logoVariant}-${logoColorMode}.svg`
 
