@@ -7,16 +7,26 @@ import { assets } from '@/data/assets'
 import type { Asset } from '@/data/assets'
 import type { ProductSlug } from '@/tokens/products'
 
-const typeOptions = ['logo', 'icon', 'font', 'template'] as const
+const typeOptions = ['logo', 'icon', 'font'] as const
 const formatOptions = ['svg', 'png'] as const
-const productOptions: (ProductSlug | 'brand')[] = ['brand', 'conteudo', 'conviver', 'coteibem', 'cursos', 'pro']
+const productOptions: (ProductSlug | 'brand')[] = [
+  'brand', 'conteudo', 'conviver', 'coteibem', 'cursos', 'empregos', 'pro',
+]
 
-const typeLabels: Record<string, string> = { logo: 'Logo', icon: 'Ícone', font: 'Fonte', template: 'Template' }
-const productLabels: Record<string, string> = { brand: 'Marca Principal', conteudo: 'Conteúdo', conviver: 'Conviver/Creator', coteibem: 'Coteibem', cursos: 'Cursos', pro: 'PRO' }
+const typeLabels: Record<string, string> = { logo: 'Logo', icon: 'Ícone', font: 'Fonte' }
+const productLabels: Record<string, string> = {
+  brand:     'Marca Principal',
+  conteudo:  'Conteúdo',
+  conviver:  'Conviver/Creator',
+  coteibem:  'Coteibem',
+  cursos:    'Cursos',
+  empregos:  'Empregos',
+  pro:       'PRO',
+}
 
 interface Filters {
-  types:    string[]
-  formats:  string[]
+  types: string[]
+  formats: string[]
   products: string[]
 }
 
