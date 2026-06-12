@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 
 const sidebarItems = [
   {
-    href:  '/identidade/logo',
+    href: '/identidade/logo',
     label: 'Logo',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -17,7 +17,7 @@ const sidebarItems = [
     ),
   },
   {
-    href:  '/identidade/cores',
+    href: '/identidade/cores',
     label: 'Paleta',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -28,7 +28,7 @@ const sidebarItems = [
     ),
   },
   {
-    href:  '/identidade/tipografia',
+    href: '/identidade/tipografia',
     label: 'Tipografia',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -37,7 +37,7 @@ const sidebarItems = [
     ),
   },
   {
-    href:  '/identidade/produtos',
+    href: '/identidade/produtos',
     label: 'Produtos',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -47,22 +47,12 @@ const sidebarItems = [
     ),
   },
   {
-    href:  '/identidade/icones',
+    href: '/identidade/icones',
     label: 'Ícones',
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path d="M8 1.5L9.8 6.2H14.5L10.7 8.9L12 13.5L8 10.8L4 13.5L5.3 8.9L1.5 6.2H6.2L8 1.5Z"
           stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    href:  '/identidade/mockups',
-    label: 'Mockups',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <rect x="1.5" y="2" width="13" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M5 13.5h6M8 11v2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       </svg>
     ),
   },
