@@ -15,8 +15,8 @@ export interface Asset {
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function logoFormats(base: string) {
   return [
-    { ext: '.svg', path: `${base}.svg`, usage: 'Vetorial — recomendado' },
-    { ext: '.png', path: `${base}.png`, usage: '480px — digital' },
+    { ext: '.svg',     path: `${base}.svg`,    usage: 'Vetorial — recomendado' },
+    { ext: '.png',     path: `${base}.png`,    usage: '480px — digital' },
     { ext: '.png @2x', path: `${base}@2x.png`, usage: '960px — retina' },
     { ext: '.png @4x', path: `${base}@4x.png`, usage: '1920px — impressão' },
   ]
@@ -24,8 +24,8 @@ function logoFormats(base: string) {
 
 function iconFormats(base: string) {
   return [
-    { ext: '.svg', path: `${base}.svg`, usage: 'Vetorial' },
-    { ext: '.png', path: `${base}.png`, usage: '64px' },
+    { ext: '.svg',     path: `${base}.svg`,    usage: 'Vetorial' },
+    { ext: '.png',     path: `${base}.png`,    usage: '64px' },
     { ext: '.png @2x', path: `${base}@2x.png`, usage: '128px — retina' },
   ]
 }
@@ -294,55 +294,4 @@ export const assets: Asset[] = [
     ],
   },
 
-  // ── Templates de Redes Sociais ────────────────────────────────────────────
-  {
-    id: 'template-planner',
-    name: 'Template Planner',
-    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
-    previewUrl: undefined,
-    usageContext: 'Template de planner para redes sociais — editável no Photoshop.',
-    formats: [
-      { ext: '.psd', path: '/assets/templates/SNT_PLANNER.psd', size: '48 MB', usage: 'Photoshop — editável' },
-    ],
-  },
-  {
-    id: 'template-capa-creators',
-    name: 'Template Capa Creators',
-    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
-    previewUrl: undefined,
-    usageContext: 'Template de capa para creators — editável no Photoshop.',
-    formats: [
-      { ext: '.psd', path: '/assets/templates/SNT_Capa Creators.psd', size: '18 MB', usage: 'Photoshop — editável' },
-    ],
-  },
-  {
-    id: 'template-live',
-    name: 'Template Live',
-    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
-    previewUrl: undefined,
-    usageContext: 'Template para divulgação de lives — editável no Photoshop.',
-    formats: [
-      { ext: '.psd', path: '/assets/templates/SNT_Live.psd', size: '34 MB', usage: 'Photoshop — editável' },
-    ],
-  },
-  {
-    id: 'template-noticia',
-    name: 'Template Notícia',
-    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
-    previewUrl: undefined,
-    usageContext: 'Template de post de notícia — editável no Photoshop.',
-    formats: [
-      { ext: '.psd', path: '/assets/templates/SNT_Noticia.psd', size: '53 MB', usage: 'Photoshop — editável' },
-    ],
-  },
-  {
-    id: 'template-dados',
-    name: 'Template Dados',
-    type: 'template', product: 'brand', version: '1.0', updatedAt: '2026-06-01',
-    previewUrl: undefined,
-    usageContext: 'Template de post com dados e estatísticas — editável no Photoshop.',
-    formats: [
-      { ext: '.psd', path: '/assets/templates/SNT_Template Dados.psd', size: '2.3 MB', usage: 'Photoshop — editável' },
-    ],
-  },
 ]
