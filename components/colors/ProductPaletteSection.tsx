@@ -6,93 +6,136 @@ interface ProductPaletteSectionProps {
   product: ProductSlug
 }
 
-// PRO brand gradient (extracted from pro-simbolo-gradient.svg)
-const PRO_GRADIENT = { start: '#3E1F59', end: '#BE9ED9' }
-
 export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
   const p = products[product]
   const isPro = product === 'pro'
 
-  const mainColors = [
-    { hex: p.colors.primary,   name: 'Primária',   role: '60% Primária'   },
-    { hex: p.colors.secondary, name: 'Secundária', role: '30% Secundária' },
-    { hex: p.colors.accent,    name: 'Accent',     role: '10% Accent'     },
-  ]
+  // ── PRO ────────────────────────────────────────────────────────────────────
+  if (isPro) {
+    const proColors = products.pro.colors
 
-  const supportColors = [
-    { hex: p.colors.luz,       name: 'Luz',        role: 'Fundo claro / tint'  },
-    { hex: p.colors.sombra,    name: 'Sombra',     role: 'Fundo escuro / shade' },
-    { hex: p.colors.onPrimary, name: 'On Primary', role: 'Texto sobre primária' },
-  ]
+    return (
+      <div className="space-y-8">
+
+        {/* Primárias */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+            Primárias
+          </p>
+          <div className="flex rounded-xl overflow-hidden mb-4 h-12">
+            {proColors.primarias.map((hex) => (
+              <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {proColors.primarias.map((hex, i) => (
+              <ColorPaletteCard key={hex} hex={hex} name={`Primária ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Secundárias */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+            Secundárias
+          </p>
+          <div className="flex rounded-xl overflow-hidden mb-4 h-12">
+            {proColors.secundarias.map((hex) => (
+              <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {proColors.secundarias.map((hex, i) => (
+              <ColorPaletteCard key={hex} hex={hex} name={`Secundária ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Gradiente */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+            Gradiente
+          </p>
+          <div
+            className="h-14 rounded-xl mb-4"
+            style={{
+              background: `linear-gradient(to right, ${proColors.gradiente.start}, ${proColors.gradiente.end})`,
+            }}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <ColorPaletteCard hex={proColors.gradiente.start} name="Início" role="Gradient Start" />
+            <ColorPaletteCard hex={proColors.gradiente.end} name="Fim" role="Gradient End" />
+          </div>
+        </div>
+
+      </div>
+    )
+  }
+
+  // ── Produtos não-PRO ────────────────────────────────────────────────────────
+  const palette = p.colors.palette as readonly string[]
+  // subtons = índices 0, 2, 4, 6 (o que não é primary, sombra ou luz)
+  const subtons = [palette[0], palette[2], palette[4], palette[6]]
 
   return (
     <div className="space-y-8">
 
-      {/* Proporção 60·30·10 */}
+      {/* Paleta completa — 7 cores */}
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
-          Proporção 60 · 30 · 10
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-3">
+          Paleta completa
         </p>
-        <div className="flex rounded-xl overflow-hidden mb-4 h-14">
-          {mainColors.map((c, i) => (
-            <div
-              key={c.hex}
-              className="flex items-center justify-center text-[10px] font-semibold font-body"
-              style={{
-                backgroundColor: c.hex,
-                flex: i === 0 ? 6 : i === 1 ? 3 : 1,
-              }}
-            >
-              <span style={{ color: p.colors.onPrimary, opacity: 0.8 }}>
-                {i === 0 ? '60%' : i === 1 ? '30%' : '10%'}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          {mainColors.map((color) => (
-            <ColorPaletteCard key={color.hex} hex={color.hex} name={color.name} role={color.role} />
-          ))}
-        </div>
-      </div>
-
-      {/* Luz · Sombra · Subtons */}
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
-          Luz · Sombra · Subtons
-        </p>
-        {/* Subtons strip */}
-        <div className="flex rounded-xl overflow-hidden mb-4 h-10">
-          {(p.colors.subtons as readonly string[]).map((hex) => (
+        <div className="flex rounded-xl overflow-hidden h-10">
+          {palette.map((hex) => (
             <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-3">
-          {supportColors.map((color) => (
-            <ColorPaletteCard key={color.name} hex={color.hex} name={color.name} role={color.role} />
-          ))}
+      </div>
+
+      {/* Cor Principal */}
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+          Cor principal
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <ColorPaletteCard
+            hex={p.colors.primary}
+            name="Principal"
+            role="Cor da marca"
+          />
         </div>
       </div>
 
-      {/* Gradiente PRO — exclusivo */}
-      {isPro && (
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
-            Gradiente da marca
-          </p>
-          <div
-            className="h-14 rounded-xl mb-4"
-            style={{ background: `linear-gradient(to right, ${PRO_GRADIENT.start}, ${PRO_GRADIENT.end})` }}
+      {/* Secundárias — Sombra + Luz */}
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+          Secundárias
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <ColorPaletteCard
+            hex={p.colors.sombra}
+            name="Sombra"
+            role="Escuro · contraste"
           />
-          <div className="grid grid-cols-2 gap-3">
-            <ColorPaletteCard hex={PRO_GRADIENT.start} name="Gradient Start" role="Início" />
-            <ColorPaletteCard hex={PRO_GRADIENT.end}   name="Gradient End"   role="Fim"    />
-          </div>
-          <p className="mt-3 text-[11px] font-body text-[#3D3D3D]/50 leading-relaxed">
-            O gradiente é exclusivo da versão símbolo do PRO e não deve ser usado como cor de fundo em textos ou layouts — apenas como elemento gráfico diferenciador.
-          </p>
+          <ColorPaletteCard
+            hex={p.colors.luz}
+            name="Luz"
+            role="Claro · fundo tint"
+          />
         </div>
-      )}
+      </div>
+
+      {/* Subtons */}
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+          Subtons
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {subtons.map((hex, i) => (
+            <ColorPaletteCard key={hex} hex={hex} name={`Subtom ${i + 1}`} />
+          ))}
+        </div>
+      </div>
 
     </div>
   )
