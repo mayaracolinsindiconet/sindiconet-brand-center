@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { products } from '@/tokens/products'
+import { products, productList } from '@/tokens/products'
 import type { ProductSlug } from '@/tokens/products'
 import { ProductPaletteSection } from '@/components/colors/ProductPaletteSection'
 import { ProductIconGrid } from './ProductIconGrid'
@@ -14,24 +15,55 @@ interface ProductPanelProps {
 }
 
 const productDescriptions: Record<ProductSlug, { tagline: string; description: string }> = {
-  conteudo:  { tagline: 'Conhecimento para quem administra.',        description: 'A principal fonte de conteúdo especializado para síndicos e gestores condominiais do Brasil.' },
-  conviver:  { tagline: 'Comunidade e criação em um só lugar.',       description: 'Plataforma que aproxima moradores, facilita a comunicação e dá voz aos criadores de conteúdo do universo condominial.' },
-  coteibem:  { tagline: 'O melhor preço para o seu condomínio.',      description: 'Conecte seu condomínio aos melhores fornecedores e serviços com cotações transparentes.' },
-  cursos:    { tagline: 'Capacite-se para liderar melhor.',           description: 'Cursos e certificações para síndicos que querem se profissionalizar e ampliar sua atuação.' },
-  pro:       { tagline: 'Gestão profissional de alto nível.',         description: 'A solução completa para síndicos profissionais que precisam de ferramentas robustas e suporte dedicado.' },
+  conteudo: {
+    tagline: 'Conhecimento para quem administra.',
+    description: 'A principal fonte de conteúdo especializado para síndicos e gestores condominiais do Brasil.',
+  },
+  conviver: {
+    tagline: 'Comunidade e criação em um só lugar.',
+    description: 'Plataforma que aproxima moradores, facilita a comunicação e dá voz aos criadores de conteúdo do universo condominial.',
+  },
+  coteibem: {
+    tagline: 'O melhor preço para o seu condomínio.',
+    description: 'Conecte seu condomínio aos melhores fornecedores e serviços com cotações transparentes.',
+  },
+  cursos: {
+    tagline: 'Capacite-se para liderar melhor.',
+    description: 'Cursos e certificações para síndicos que querem se profissionalizar e ampliar sua atuação.',
+  },
+  empregos: {
+    tagline: 'As melhores vagas do universo condominial.',
+    description: 'Conectamos síndicos e gestores às oportunidades de emprego e contratação do setor condominial.',
+  },
+  pro: {
+    tagline: 'Gestão profissional de alto nível.',
+    description: 'A solução completa para síndicos profissionais que precisam de ferramentas robustas e suporte dedicado.',
+  },
 }
 
 const sections = [
   { id: 'hero',     label: 'Visão geral' },
-  { id: 'cores',    label: 'Cores'       },
-  { id: 'logo',     label: 'Logo'        },
-  { id: 'icones',   label: 'Ícones'      },
-  { id: 'exemplos', label: 'Exemplos'    },
+  { id: 'cores',    label: 'Cores' },
+  { id: 'logo',     label: 'Logo' },
+  { id: 'icones',   label: 'Ícones' },
+  { id: 'exemplos', label: 'Exemplos' },
 ]
 
+// ─── Short name labels shown in the switcher ──────────────────────────────────
+const shortNames: Record<ProductSlug, string> = {
+  conteudo: 'Conteúdo',
+  conviver: 'Conviver',
+  coteibem: 'Coteibem',
+  cursos:   'Cursos',
+  empregos: 'Empregos',
+  pro:      'PRO',
+}
+
 export function ProductPanel({ slug }: ProductPanelProps) {
+  const router = useRouter()
   const p    = products[slug]
   const info = productDescriptions[slug]
+
   const [activeSection, setActiveSection] = useState('hero')
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
 
@@ -56,22 +88,59 @@ export function ProductPanel({ slug }: ProductPanelProps) {
 
   return (
     <div data-product={slug} className="min-h-screen">
+
+      {/* ── Product Switcher — sticky below site header ───────────────── */}
+      <nav
+        aria-label="Navegar entre produtos"
+        className="sticky top-16 z-40 bg-white border-b border-black/8 overflow-x-auto"
+      >
+        <ul className="flex items-center gap-1 px-4 py-2 min-w-max">
+          {productList.map((s) => {
+            const prod    = products[s]
+            const isActive = s === slug
+            return (
+              <li key={s}>
+                <button
+                  onClick={() => router.push(`/identidade/produtos/${s}`)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium font-body whitespace-nowrap transition-all ${
+                    isActive
+                      ? 'text-white shadow-sm'
+                      : 'text-[#3D3D3D]/60 hover:bg-[#F4F6F8] hover:text-[#3D3D3D]'
+                  }`}
+                  style={isActive ? { backgroundColor: prod.colors.primary } : undefined}
+                >
+                  {/* Color dot — visible when not active */}
+                  {!isActive && (
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: prod.colors.primary }}
+                    />
+                  )}
+                  {shortNames[s]}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+
       <main>
-        {/* ── Hero banner ─────────────────────────────────────────── */}
+        {/* ── Hero banner ───────────────────────────────────────────────── */}
         <section
           id="hero"
           ref={(el) => { sectionRefs.current['hero'] = el }}
           className="relative overflow-hidden"
           style={{ backgroundColor: p.colors.primary }}
         >
-          {/* Depth glow */}
+          {/* Depth glow using sombra */}
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse 70% 60% at 80% 30%, ${p.colors.accent}55, transparent 65%)` }}
+            style={{ background: `radial-gradient(ellipse 70% 60% at 80% 30%, ${p.colors.sombra}55, transparent 65%)` }}
           />
 
           {/* Product info */}
-          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-32">
+          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-16">
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -110,10 +179,10 @@ export function ProductPanel({ slug }: ProductPanelProps) {
             </motion.p>
           </div>
 
-          {/* ── Section nav — sticky inside hero ── */}
+          {/* ── Section nav — sticky inside product color area ── */}
           <nav
             aria-label="Seções do produto"
-            className="sticky top-0 z-30 border-t"
+            className="sticky top-[calc(2.5rem+2.5rem)] z-30 border-t"
             style={{ backgroundColor: p.colors.primary, borderColor: `${p.colors.onPrimary}18` }}
           >
             <div className="max-w-[1280px] mx-auto px-8 flex items-center gap-4">
@@ -146,7 +215,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           </nav>
         </section>
 
-        {/* Paleta */}
+        {/* ── Paleta ─────────────────────────────────────────────────── */}
         <section
           id="cores"
           ref={(el) => { sectionRefs.current['cores'] = el }}
@@ -156,7 +225,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           <ProductPaletteSection product={slug} />
         </section>
 
-        {/* Logo aplicado */}
+        {/* ── Logo aplicado ───────────────────────────────────────────── */}
         <section
           id="logo"
           ref={(el) => { sectionRefs.current['logo'] = el }}
@@ -173,7 +242,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           </div>
         </section>
 
-        {/* Ícones */}
+        {/* ── Ícones ──────────────────────────────────────────────────── */}
         <section
           id="icones"
           ref={(el) => { sectionRefs.current['icones'] = el }}
@@ -183,7 +252,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           <ProductIconGrid product={slug} />
         </section>
 
-        {/* Exemplos */}
+        {/* ── Exemplos ────────────────────────────────────────────────── */}
         <section
           id="exemplos"
           ref={(el) => { sectionRefs.current['exemplos'] = el }}
