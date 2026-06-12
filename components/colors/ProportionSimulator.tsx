@@ -16,11 +16,11 @@ export function ProportionSimulator() {
   const p  = products[activeProduct]
   const p2 = products[secondProduct]
 
-  const secondaryPct = Math.round((100 - primaryPct) * 0.75)
-  const accentPct    = 100 - primaryPct - secondaryPct
+  const sombraPct = Math.round((100 - primaryPct) * 0.75)
+  const luzPct    = 100 - primaryPct - sombraPct
 
-  const inRange  = primaryPct >= 50 && primaryPct <= 70
-  const badgeOk  = inRange && !freeMode
+  const inRange = primaryPct >= 50 && primaryPct <= 70
+  const badgeOk = inRange && !freeMode
 
   return (
     <div className="rounded-2xl border border-black/8 bg-white overflow-hidden">
@@ -104,8 +104,8 @@ export function ProportionSimulator() {
                     className="w-full accent-[#3e77db]"
                   />
                   <div className="flex justify-between text-[10px] text-[#3D3D3D]/30 font-mono mt-0.5">
-                    <span>Sec: {secondaryPct}%</span>
-                    <span>Acc: {accentPct}%</span>
+                    <span>Som: {sombraPct}%</span>
+                    <span>Luz: {luzPct}%</span>
                   </div>
                 </div>
 
@@ -148,14 +148,14 @@ export function ProportionSimulator() {
               <ProportionBar
                 colors={freeMode
                   ? [
-                      { color: p.colors.primary,   pct: primaryPct,   label: `${primaryPct}% Primária` },
-                      { color: p.colors.secondary, pct: secondaryPct, label: `${secondaryPct}% Secundária` },
-                      { color: p.colors.accent,    pct: accentPct,    label: `${accentPct}% Accent` },
+                      { color: p.colors.primary, pct: primaryPct, label: `${primaryPct}% Primária` },
+                      { color: p.colors.sombra,  pct: sombraPct,  label: `${sombraPct}% Sombra`   },
+                      { color: p.colors.luz,     pct: luzPct,     label: `${luzPct}% Luz`          },
                     ]
                   : [
-                      { color: p.colors.primary,   pct: 60, label: '60% Primária' },
-                      { color: p.colors.secondary, pct: 30, label: '30% Secundária' },
-                      { color: p.colors.accent,    pct: 10, label: '10% Accent' },
+                      { color: p.colors.primary, pct: 60, label: '60% Primária' },
+                      { color: p.colors.sombra,  pct: 30, label: '30% Sombra'   },
+                      { color: p.colors.luz,     pct: 10, label: '10% Luz'      },
                     ]
                 }
                 onPrimary={p.colors.onPrimary}
@@ -164,18 +164,18 @@ export function ProportionSimulator() {
               <div className="space-y-3">
                 <ProportionBar
                   colors={[
-                    { color: p.colors.primary,   pct: 60, label: '60%' },
-                    { color: p.colors.secondary, pct: 30, label: '30%' },
-                    { color: p.colors.accent,    pct: 10, label: '10%' },
+                    { color: p.colors.primary, pct: 60, label: '60%' },
+                    { color: p.colors.sombra,  pct: 30, label: '30%' },
+                    { color: p.colors.luz,     pct: 10, label: '10%' },
                   ]}
                   onPrimary={p.colors.onPrimary}
                   label={p.name}
                 />
                 <ProportionBar
                   colors={[
-                    { color: p2.colors.primary,   pct: 60, label: '60%' },
-                    { color: p2.colors.secondary, pct: 30, label: '30%' },
-                    { color: p2.colors.accent,    pct: 10, label: '10%' },
+                    { color: p2.colors.primary, pct: 60, label: '60%' },
+                    { color: p2.colors.sombra,  pct: 30, label: '30%' },
+                    { color: p2.colors.luz,     pct: 10, label: '10%' },
                   ]}
                   onPrimary={p2.colors.onPrimary}
                   label={p2.name}
@@ -238,7 +238,7 @@ function MockupCard({
   product: (typeof products)[ProductSlug]
   freePct: number
 }) {
-  const secondaryPct = Math.round((100 - freePct) * 0.75)
+  const sombraPct = Math.round((100 - freePct) * 0.75)
 
   return (
     <motion.div
@@ -260,13 +260,13 @@ function MockupCard({
         <motion.div
           layout
           className="rounded-lg"
-          style={{ backgroundColor: product.colors.secondary, width: `${secondaryPct}%`, height: 12 }}
+          style={{ backgroundColor: product.colors.sombra, width: `${sombraPct}%`, height: 12 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
         <motion.div
           layout
           className="rounded-lg"
-          style={{ backgroundColor: product.colors.accent, width: `${100 - freePct - secondaryPct}%`, height: 12 }}
+          style={{ backgroundColor: product.colors.luz, width: `${100 - freePct - sombraPct}%`, height: 12 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       </div>
