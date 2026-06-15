@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
-const allLinks = [
+const allLinks = 
   { href: '/branding',    label: 'Branding'    },
   { href: '/identidade',  label: 'Identidade'  },
   { href: '/fotografia',  label: 'Fotografia'  },
@@ -49,7 +49,7 @@ export function BrandNav() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled || mobileOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+          scrolled || mobileOpen ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-[#1f3c6e] border-b border-white/10'
         }`}
       >
         <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
