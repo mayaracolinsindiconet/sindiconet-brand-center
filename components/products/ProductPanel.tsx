@@ -92,10 +92,11 @@ export function ProductPanel({ slug }: ProductPanelProps) {
       {/* ── Product Switcher — sticky below site header ───────────────── */}
       <nav
         aria-label="Navegar entre produtos"
-        className="sticky top-16 z-40 overflow-x-auto"
+        className="sticky top-16 z-40 overflow-x-auto border-b border-black/5"
+        style={{ backgroundColor: p.colors.primary }}
       >
         <div className="px-5 py-3">
-          <ul className="inline-flex items-center gap-1 bg-white border border-black/10 rounded-2xl px-2 py-1.5 min-w-max shadow-sm">
+          <ul className="inline-flex items-center gap-1 bg-white/10 border border-white/25 rounded-2xl px-2 py-1.5 min-w-max">
             {productList.map((s) => {
               const prod    = products[s]
               const isActive = s === slug
@@ -106,17 +107,14 @@ export function ProductPanel({ slug }: ProductPanelProps) {
                     aria-current={isActive ? 'page' : undefined}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold font-body whitespace-nowrap transition-all ${
                       isActive
-                        ? 'text-white shadow-sm'
-                        : 'text-[#3D3D3D]/55 hover:bg-[#F4F6F8] hover:text-[#3D3D3D]'
+                        ? 'bg-white shadow-sm'
+                        : 'text-white/65 hover:bg-white/10 hover:text-white'
                     }`}
-                    style={isActive ? { backgroundColor: prod.colors.primary } : undefined}
+                    style={isActive ? { color: prod.colors.primary } : undefined}
                   >
                     {/* Color dot — visible when not active */}
                     {!isActive && (
-                      <span
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: prod.colors.primary }}
-                      />
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-white/50" />
                     )}
                     {shortNames[s]}
                   </button>
@@ -238,13 +236,14 @@ export function ProductPanel({ slug }: ProductPanelProps) {
 
             {slug === 'pro' ? (
               /* ── PRO: logos específicas do produto ── */
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                {/* ─ Corretas ─ */}
                 <LogoApplicationCard
                   product={slug}
                   logoVariant="mista"
                   mode="gradient"
                   customLogoSrc="/assets/logos/pro/pro-mista-dark.svg"
-                  note="Logo PRO branca sobre gradient escuro — aplicação principal em fundos escuros."
+                  note="Logo branca sobre fundo degradê — aplicação principal."
                 />
                 <LogoApplicationCard
                   product={slug}
@@ -252,7 +251,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
                   mode="correct"
                   customLogoSrc="/assets/logos/pro/pro-mista-colorida.svg"
                   customBg="#FFFFFF"
-                  note="Logo PRO colorida sobre fundo branco — aplicação em fundos claros."
+                  note="Logo colorida em fundo branco — versão para fundos claros."
                 />
                 <LogoApplicationCard
                   product={slug}
@@ -260,14 +259,22 @@ export function ProductPanel({ slug }: ProductPanelProps) {
                   mode="correct"
                   customLogoSrc="/assets/logos/pro/pro-simbolo-gradient.svg"
                   customBg="#FFFFFF"
-                  note="Símbolo gradient em contextos reduzidos, sobre fundo branco."
+                  note="Símbolo gradient em contextos reduzidos e ícones."
                 />
+                {/* ─ Incorretas ─ */}
                 <LogoApplicationCard
                   product={slug}
                   logoVariant="mista"
                   mode="sombra"
                   customLogoSrc="/assets/logos/pro/pro-mista-colorida.svg"
-                  note="Evite usar a logo colorida sobre fundo escuro — baixo contraste."
+                  note="Evite logo colorida sobre fundo escuro — baixo contraste."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="incorrect"
+                  customLogoSrc="/assets/logos/pro/pro-mista-colorida.svg"
+                  note="Evite logo colorida sobre fundo da cor sombra do produto."
                 />
               </div>
             ) : (
