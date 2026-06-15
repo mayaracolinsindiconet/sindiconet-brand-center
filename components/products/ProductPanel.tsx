@@ -233,12 +233,70 @@ export function ProductPanel({ slug }: ProductPanelProps) {
         >
           <div className="max-w-[1280px] mx-auto">
             <SectionTitle color={p.colors.primary}>Logo aplicado</SectionTitle>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <LogoApplicationCard product={slug} logoVariant="mista"   mode="correct"   note="Versão branca sobre cor primária do produto." />
-              <LogoApplicationCard product={slug} logoVariant="simbolo" mode="correct"   note="Símbolo em contextos reduzidos, sobre fundo primário." />
-              <LogoApplicationCard product={slug} logoVariant="mista"   mode="sombra"    note="Logo branca sobre o fundo sombra — maior contraste." />
-              <LogoApplicationCard product={slug} logoVariant="mista"   mode="incorrect" note="Evite usar a versão colorida sobre fundo colorido." />
-            </div>
+
+            {slug === 'pro' ? (
+              /* ── PRO: logos específicas do produto ── */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="gradient"
+                  customLogoSrc="/assets/logos/pro/pro-mista-dark.svg"
+                  note="Logo PRO branca sobre gradient escuro — aplicação principal em fundos escuros."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="correct"
+                  customLogoSrc="/assets/logos/pro/pro-mista-colorida.svg"
+                  customBg="#FFFFFF"
+                  note="Logo PRO colorida sobre fundo branco — aplicação em fundos claros."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="simbolo"
+                  mode="correct"
+                  customLogoSrc="/assets/logos/pro/pro-simbolo-gradient.svg"
+                  customBg="#FFFFFF"
+                  note="Símbolo gradient em contextos reduzidos, sobre fundo branco."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="sombra"
+                  customLogoSrc="/assets/logos/pro/pro-mista-colorida.svg"
+                  note="Evite usar a logo colorida sobre fundo escuro — baixo contraste."
+                />
+              </div>
+            ) : (
+              /* ── Demais produtos ── */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="correct"
+                  note="Versão branca sobre cor primária do produto."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="sombra-logo"
+                  note="Logo na cor sombra sobre fundo primário — variação monocromática."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="sombra"
+                  note="Evite usar logo branca sobre fundo sombra do produto."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="incorrect"
+                  note="Evite usar a versão colorida sobre fundo colorido."
+                />
+              </div>
+            )}
           </div>
         </section>
 
