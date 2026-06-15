@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
-const allLinks = 
+const allLinks = [
   { href: '/branding',    label: 'Branding'    },
   { href: '/identidade',  label: 'Identidade'  },
   { href: '/fotografia',  label: 'Fotografia'  },
