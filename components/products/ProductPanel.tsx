@@ -92,9 +92,9 @@ export function ProductPanel({ slug }: ProductPanelProps) {
       {/* ── Product Switcher — sticky below site header ───────────────── */}
       <nav
         aria-label="Navegar entre produtos"
-        className="sticky top-16 z-40 bg-white border-b border-black/8 overflow-x-auto"
+        className="sticky top-16 z-40 overflow-x-auto"
       >
-        <div className="px-5 py-2.5">
+        <div className="px-5 py-3">
           <ul className="inline-flex items-center gap-1 bg-white border border-black/10 rounded-2xl px-2 py-1.5 min-w-max shadow-sm">
             {productList.map((s) => {
               const prod    = products[s]
@@ -142,7 +142,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           />
 
           {/* Product info */}
-          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-8">
+          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-14">
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
