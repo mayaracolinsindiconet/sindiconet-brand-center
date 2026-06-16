@@ -197,7 +197,7 @@ export default function TomDeVozPage() {
         {/* Examples */}
         {!text && (
           <div className="mb-6">
-            <p className="text-xs text-neutral-400 mb-2">Experimente com um exemplo para <strong>{CHANNELS[channel as keyof typeof CHANNELS]?.label ?? channel}</strong>:</p>
+            <p className="text-xs text-neutral-400 mb-2">Experimente com um exemplo para <strong>{channel}</strong>:</p>
             <div className="flex flex-col gap-2">
               {(EXAMPLES_BY_CHANNEL[channel] ?? []).map((ex, i) => (
                 <button
