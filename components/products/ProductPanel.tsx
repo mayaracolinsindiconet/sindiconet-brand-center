@@ -140,7 +140,7 @@ export function ProductPanel({ slug }: ProductPanelProps) {
           />
 
           {/* Product info */}
-          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-14">
+          <div className="relative max-w-[1280px] mx-auto px-8 pb-10 pt-28">
             <motion.p
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
