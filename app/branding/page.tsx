@@ -454,7 +454,7 @@ export default function FundacaoPage() {
             {/* 08 · Liderança */}
             <SectionBlock id="lideranca" eyebrow="08 · Liderança" title="Liderança como Parte da Marca">
               <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
-                A liderança do SíndicoNet não é apenas gestão — é posicionamento de marca. Dois perfis complementares que representam o passado e o futuro da plataforma.
+                A liderança do SíndicoNet não é apenas gestão — é posicionamento de marca. Perfis complementares que representam o passado, o presente e o futuro da plataforma.
               </p>
 
               {/* Perfis individuais */}
@@ -465,12 +465,14 @@ export default function FundacaoPage() {
                   <div className="bg-[#101e37] p-8 flex flex-col justify-between min-h-[280px]">
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 font-body mb-6">Fundador & Diretor Executivo</p>
-                      {/* Photo placeholder */}
-                      <div className="w-full aspect-[3/4] max-h-44 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 overflow-hidden">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
-                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
+                      <div className="w-full aspect-[3/4] max-h-44 rounded-xl bg-white/5 border border-white/10 mb-6 overflow-hidden relative">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
+                            <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        <img src="/team/julio.jpg" alt="Julio Paim" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
                       </div>
                     </div>
                     <blockquote>
@@ -502,11 +504,14 @@ export default function FundacaoPage() {
                   <div className="bg-[#1f3c6e] p-8 flex flex-col justify-between min-h-[280px]">
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 font-body mb-6">CEO</p>
-                      <div className="w-full aspect-[3/4] max-h-44 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 overflow-hidden">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
-                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
+                      <div className="w-full aspect-[3/4] max-h-44 rounded-xl bg-white/5 border border-white/10 mb-6 overflow-hidden relative">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
+                            <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        <img src="/team/marjorie.jpg" alt="Marjorie Albuquerque" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
                       </div>
                     </div>
                     <blockquote>
@@ -532,6 +537,38 @@ export default function FundacaoPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Equipe de Liderança */}
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Equipe de Liderança</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                {[
+                  { slug: 'bruno', name: 'Bruno',  role: 'Liderança' },
+                  { slug: 'andre', name: 'André',  role: 'Liderança' },
+                  { slug: 'carla', name: 'Carla',  role: 'Liderança' },
+                  { slug: 'diego', name: 'Diego',  role: 'Liderança' },
+                ].map((member) => (
+                  <div key={member.slug} className="rounded-2xl overflow-hidden border border-black/8">
+                    <div className="relative bg-[#101e37]" style={{ paddingBottom: '100%' }}>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
+                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <img
+                        src={'/team/' + member.slug + '.jpg'}
+                        alt={member.name}
+                        className="absolute inset-0 w-full h-full object-cover object-top"
+                        onError={(e) => (e.currentTarget.style.display='none')}
+                      />
+                    </div>
+                    <div className="bg-white p-4">
+                      <p className="font-headline font-bold text-base text-[#101e37]">{member.name}</p>
+                      <p className="font-body text-xs text-[#3D3D3D]/55 mt-0.5">{member.role}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Posicionamento comparativo */}
