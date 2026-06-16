@@ -472,7 +472,7 @@ export default function FundacaoPage() {
                             <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                         </div>
-                        <img src="/team/julio.jpg" alt="Julio Paim" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
+                        <img src="/team/julio-paim.jpg" alt="Julio Paim" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
                       </div>
                     </div>
                     <blockquote>
@@ -511,7 +511,7 @@ export default function FundacaoPage() {
                             <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                         </div>
-                        <img src="/team/marjorie.jpg" alt="Marjorie Albuquerque" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
+                        <img src="/team/marjorie-albuquerque.jpg" alt="Marjorie Albuquerque" className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
                       </div>
                     </div>
                     <blockquote>
