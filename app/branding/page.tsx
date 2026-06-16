@@ -427,26 +427,35 @@ export default function FundacaoPage() {
               <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">As quatro personas que servimos — cada uma com necessidades e expectativas distintas.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { num: '01', name: 'Síndico Morador',        busca: 'Praticidade, segurança jurídica e apoio para conciliar a gestão do condomínio com sua vida pessoal e profissional.',                                tags: ['Praticidade', 'Segurança jurídica', 'Equilíbrio'] },
-                  { num: '02', name: 'Síndico Profissional',   busca: 'Escala, eficiência operacional, networking qualificado e ferramentas de alta performance para gerir múltiplos condomínios.',                        tags: ['Escala', 'Eficiência', 'Alta performance'] },
-                  { num: '03', name: 'Administradora',         busca: 'Otimização de processos, atualização constante e soluções integradas para oferecer o melhor serviço aos seus condomínios clientes.',              tags: ['Otimização', 'Integração', 'Atualização'] },
-                  { num: '04', name: 'Morador',                busca: 'Transparência, conveniência, valorização do patrimônio e ferramentas que facilitem a boa convivência.',                                             tags: ['Transparência', 'Conveniência', 'Patrimônio'] },
+                  { num: '01', name: 'Síndico Morador',        photo: 'bruno.jpg',  busca: 'Praticidade, segurança jurídica e apoio para conciliar a gestão do condomínio com sua vida pessoal e profissional.',                                tags: ['Praticidade', 'Segurança jurídica', 'Equilíbrio'] },
+                  { num: '02', name: 'Síndico Profissional',   photo: 'andre.jpg',  busca: 'Escala, eficiência operacional, networking qualificado e ferramentas de alta performance para gerir múltiplos condomínios.',                        tags: ['Escala', 'Eficiência', 'Alta performance'] },
+                  { num: '03', name: 'Administradora',         photo: 'carla.jpg',  busca: 'Otimização de processos, atualização constante e soluções integradas para oferecer o melhor serviço aos seus condomínios clientes.',              tags: ['Otimização', 'Integração', 'Atualização'] },
+                  { num: '04', name: 'Morador',                photo: 'diego.jpg',  busca: 'Transparência, conveniência, valorização do patrimônio e ferramentas que facilitem a boa convivência.',                                             tags: ['Transparência', 'Conveniência', 'Patrimônio'] },
                 ].map((p) => (
-                  <Card key={p.num} className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <span className="w-9 h-9 rounded-xl bg-[#3e77db]/10 flex items-center justify-center font-headline font-bold text-sm text-[#3e77db]">{p.num}</span>
+                  <div key={p.num} className="bg-white rounded-2xl border border-black/8 overflow-hidden flex flex-col">
+                    <div className="relative bg-[#101e37]" style={{ paddingBottom: '66%' }}>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
+                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <img src={'/team/' + p.photo} alt={p.name} className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
+                      <span className="absolute top-3 left-3 w-8 h-8 rounded-lg bg-[#3e77db] flex items-center justify-center font-headline font-bold text-xs text-white">{p.num}</span>
+                    </div>
+                    <div className="p-6 flex flex-col gap-4">
                       <p className="font-headline font-bold text-lg text-[#101e37]">{p.name}</p>
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-1.5">Busca</p>
+                        <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed">{p.busca}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {p.tags.map((tag) => (
+                          <span key={tag} className="text-[10px] font-semibold font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">{tag}</span>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-1.5">Busca</p>
-                      <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed">{p.busca}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.tags.map((tag) => (
-                        <span key={tag} className="text-[10px] font-semibold font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">{tag}</span>
-                      ))}
-                    </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             </SectionBlock>
@@ -539,37 +548,7 @@ export default function FundacaoPage() {
                 </div>
               </div>
 
-              {/* Equipe de Liderança */}
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Equipe de Liderança</p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                {[
-                  { slug: 'bruno', name: 'Bruno',  role: 'Liderança' },
-                  { slug: 'andre', name: 'André',  role: 'Liderança' },
-                  { slug: 'carla', name: 'Carla',  role: 'Liderança' },
-                  { slug: 'diego', name: 'Diego',  role: 'Liderança' },
-                ].map((member) => (
-                  <div key={member.slug} className="rounded-2xl overflow-hidden border border-black/8">
-                    <div className="relative bg-[#101e37]" style={{ paddingBottom: '100%' }}>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
-                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                      </div>
-                      <img
-                        src={'/team/' + member.slug + '.jpg'}
-                        alt={member.name}
-                        className="absolute inset-0 w-full h-full object-cover object-top"
-                        onError={(e) => (e.currentTarget.style.display='none')}
-                      />
-                    </div>
-                    <div className="bg-white p-4">
-                      <p className="font-headline font-bold text-base text-[#101e37]">{member.name}</p>
-                      <p className="font-body text-xs text-[#3D3D3D]/55 mt-0.5">{member.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+
 
               {/* Posicionamento comparativo */}
               <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Perfis de Liderança — Posicionamento</p>
