@@ -27,11 +27,38 @@ const SCORE_STYLES: Record<ScoreLabel, { bg: string; text: string; label: string
   alto:  { bg: 'bg-green-50',  text: 'text-green-800', label: 'Alinhamento alto'  },
 }
 
-const EXAMPLES = [
-  'Cuidado! A nova lei pode te multar — aja agora antes que seja tarde!',
-  'Nossa plataforma é a melhor solução inovadora do mercado condominial!',
-  'ÚLTIMO DIA: acesse grátis e transforme a gestão do seu condomínio hoje!',
-]
+const EXAMPLES_BY_CHANNEL: Record<Channel, string[]> = {
+  institucional: [
+    'Nossa empresa é líder absoluta no setor — ninguém faz o que fazemos!',
+    'Temos orgulho de ser a escolha número 1 de todos os síndicos do Brasil.',
+    'Somos a única plataforma perfeita para qualquer tipo de condomínio.',
+  ],
+  redes: [
+    'Cuidado! A nova lei pode te multar — aja agora antes que seja tarde!',
+    'Síndico, você vai ficar pra trás se não usar isso HOJE! 🚨',
+    'Isso vai mudar tudo na sua gestão. Clique e descubra agora!!!',
+  ],
+  email: [
+    'URGENTE: Leia antes que sua gestão seja prejudicada!',
+    'Última chance — oferta expira em 24h e você vai perder tudo!',
+    'Atenção síndico: você está cometendo um erro grave na gestão.',
+  ],
+  suporte: [
+    'Isso não é problema nosso, verifique sua conexão.',
+    'Já te falei como resolver isso antes, é só seguir o manual.',
+    'Não posso fazer nada a respeito, entre em contato com o financeiro.',
+  ],
+  produto: [
+    'Clique aqui para explorar todas as nossas incríveis funcionalidades revolucionárias!',
+    'A melhor e mais completa solução do universo condominial — experimente grátis!',
+    'Tecnologia de ponta com inteligência artificial para transformar sua gestão completamente.',
+  ],
+  comercial: [
+    'Nossa plataforma é a melhor e mais inovadora solução do mercado condominial!',
+    'ÚLTIMO DIA: acesse grátis e transforme completamente sua gestão hoje mesmo!',
+    'Não perca! O software que vai revolucionar seu condomínio — oferta por tempo limitado.',
+  ],
+}
 
 export default function TomDeVozPage() {
   const [channel, setChannel]   = useState<Channel>('institucional')
@@ -130,7 +157,7 @@ export default function TomDeVozPage() {
             {CHANNELS.map(ch => (
               <button
                 key={ch.id}
-                onClick={() => setChannel(ch.id)}
+                onClick={() => { setChannel(ch.id); setResult(null) }}
                 className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
                   channel === ch.id
                     ? 'bg-blue-600 text-white border-blue-600'
@@ -170,9 +197,9 @@ export default function TomDeVozPage() {
         {/* Examples */}
         {!text && (
           <div className="mb-6">
-            <p className="text-xs text-neutral-400 mb-2">Experimente com um exemplo:</p>
+            <p className="text-xs text-neutral-400 mb-2">Experimente com um exemplo para <strong>{CHANNELS[channel]?.label ?? channel}</strong>:</p>
             <div className="flex flex-col gap-2">
-              {EXAMPLES.map((ex, i) => (
+              {(EXAMPLES_BY_CHANNEL[channel] ?? []).map((ex, i) => (
                 <button
                   key={i}
                   onClick={() => handleExample(ex)}
