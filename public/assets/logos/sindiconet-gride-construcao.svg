@@ -2,18 +2,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 539.44 265.27">
   <defs>
     <style>
-      .cls-1 { fill: #3971b6; }
-      .cls-2 { stroke-width: .5px; }
-      .cls-2, .cls-3, .cls-4, .cls-5 { fill: none; stroke: #00a4ff; stroke-miterlimit: 10; }
-      .cls-3, .cls-4, .cls-5 { stroke-width: .4px; }
-      .cls-4 { stroke-dasharray: 1 1; }
-      .cls-5 { stroke-dasharray: 1 1; }
-      .cls-6 { fill: #3d3d3d; }
-      .cls-7 { fill: #00aa84; }
-      .cls-8 { fill: #e32a1c; }
-      .cls-9 { fill: #fab838; }
-      .cls-10 { fill: #ed7402; }
-      .cls-11 { fill: #704393; }
+      .cls-1 {
+        fill: #3971b6;
+      }
+
+      .cls-2 {
+        stroke-width: .5px;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        fill: none;
+        stroke: #00a4ff;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3, .cls-4, .cls-5 {
+        stroke-width: .4px;
+      }
+
+      .cls-4 {
+        stroke-dasharray: 1 1;
+      }
+
+      .cls-5 {
+        stroke-dasharray: 1 1;
+      }
+
+      .cls-6 {
+        fill: #3d3d3d;
+      }
+
+      .cls-7 {
+        fill: #00aa84;
+      }
+
+      .cls-8 {
+        fill: #e32a1c;
+      }
+
+      .cls-9 {
+        fill: #fab838;
+      }
+
+      .cls-10 {
+        fill: #ed7402;
+      }
+
+      .cls-11 {
+        fill: #704393;
+      }
     </style>
   </defs>
   <g id="Camada_1" data-name="Camada 1">
