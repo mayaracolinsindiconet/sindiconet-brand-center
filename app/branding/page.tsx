@@ -432,30 +432,24 @@ export default function FundacaoPage() {
                   { num: '03', name: 'Administradora',         photo: 'carla.jpg',  busca: 'Otimização de processos, atualização constante e soluções integradas para oferecer o melhor serviço aos seus condomínios clientes.',              tags: ['Otimização', 'Integração', 'Atualização'] },
                   { num: '04', name: 'Morador',                photo: 'diego.jpg',  busca: 'Transparência, conveniência, valorização do patrimônio e ferramentas que facilitem a boa convivência.',                                             tags: ['Transparência', 'Conveniência', 'Patrimônio'] },
                 ].map((p) => (
-                  <div key={p.num} className="bg-white rounded-2xl border border-black/8 overflow-hidden flex flex-col">
-                    <div className="relative bg-[#101e37]" style={{ paddingBottom: '66%' }}>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
-                          <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
+                  <Card key={p.num} className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#3e77db]/10 shrink-0 flex items-center justify-center">
+                        <span className="font-headline font-bold text-xs text-[#3e77db]">{p.num}</span>
+                        <img src={'/team/' + p.photo} alt={p.name} className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
                       </div>
-                      <img src={'/team/' + p.photo} alt={p.name} className="absolute inset-0 w-full h-full object-cover object-top" onError={(e) => (e.currentTarget.style.display='none')} />
-                      <span className="absolute top-3 left-3 w-8 h-8 rounded-lg bg-[#3e77db] flex items-center justify-center font-headline font-bold text-xs text-white">{p.num}</span>
-                    </div>
-                    <div className="p-6 flex flex-col gap-4">
                       <p className="font-headline font-bold text-lg text-[#101e37]">{p.name}</p>
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-1.5">Busca</p>
-                        <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed">{p.busca}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {p.tags.map((tag) => (
-                          <span key={tag} className="text-[10px] font-semibold font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">{tag}</span>
-                        ))}
-                      </div>
                     </div>
-                  </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-1.5">Busca</p>
+                      <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed">{p.busca}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {p.tags.map((tag) => (
+                        <span key={tag} className="text-[10px] font-semibold font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">{tag}</span>
+                      ))}
+                    </div>
+                  </Card>
                 ))}
               </div>
             </SectionBlock>
