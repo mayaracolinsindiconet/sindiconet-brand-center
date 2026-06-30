@@ -34,7 +34,7 @@ const variantLabel: Record<LogoVariant, string> = {
 
 const colorModeLabel: Record<LogoColorMode, string> = {
   colorida: 'Colorida',
-  preta:    'Preta',
+  preta:    'Cinza',
   branca:   'Branca',
 }
 

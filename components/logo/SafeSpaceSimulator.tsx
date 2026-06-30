@@ -36,7 +36,7 @@ const variantLabels: Record<LogoVariant, string> = {
   mista: 'Mista', simbolo: 'Símbolo', 'mista-headline': 'Com Headline',
 }
 const colorModeLabels: Record<LogoColorMode, string> = {
-  colorida: 'Colorida', preta: 'Preta', branca: 'Branca',
+  colorida: 'Colorida', preta: 'Cinza', branca: 'Branca',
 }
 
 // ─── Combinação correta? ───────────────────────────────────────────────────
@@ -301,7 +301,7 @@ function LogoFallback({ variant, colorMode, brand, isDark }: {
   variant: LogoVariant; colorMode: LogoColorMode; brand: Brand; isDark: boolean
 }) {
   const accentColor = brand === 'pro' ? '#7441AC' : '#3e77db'
-  const mainColor = colorMode === 'branca' ? '#FFFFFF' : colorMode === 'preta' ? '#000000' : accentColor
+  const mainColor = colorMode === 'branca' ? '#FFFFFF' : colorMode === 'preta' ? '#3D3D3D' : accentColor
   const textColor = colorMode === 'branca' ? '#FFFFFF' : isDark ? '#FFFFFF' : '#101e37'
   const innerColor = colorMode === 'branca' ? accentColor : 'white'
 
