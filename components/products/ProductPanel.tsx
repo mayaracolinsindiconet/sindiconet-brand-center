@@ -243,7 +243,16 @@ export function ProductPanel({ slug }: ProductPanelProps) {
                   logoVariant="mista"
                   mode="gradient"
                   customLogoSrc="/assets/logos/pro/pro-mista-dark.svg"
-                  note="Logo branca sobre fundo degradê — aplicação principal."
+                  customBg="#3A2156"
+                  note="Logo branca sobre fundo sombra — aplicação principal."
+                />
+                <LogoApplicationCard
+                  product={slug}
+                  logoVariant="mista"
+                  mode="gradient"
+                  customLogoSrc="/assets/logos/pro/pro-mista-dark.svg"
+                  customBg="#1D102B"
+                  note="Logo branca sobre fundo escuro — uso em interfaces dark."
                 />
                 <LogoApplicationCard
                   product={slug}

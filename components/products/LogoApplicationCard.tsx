@@ -44,17 +44,15 @@ export function LogoApplicationCard({
   const logoColorMode = mode === 'incorrect' ? 'colorida' : 'branca'
 
   // Background style
-  const bgStyle: React.CSSProperties =
-    mode === 'gradient'
-      ? { background: `linear-gradient(135deg, ${p.colors.sombra}, ${p.colors.primary})` }
-      : {
-          backgroundColor: customBg ?? (
-            mode === 'sombra'      ? p.colors.sombra  :
-            mode === 'correct'     ? p.colors.primary :
-            mode === 'sombra-logo' ? p.colors.primary :
-            /* incorrect */          p.colors.luz
-          ),
-        }
+  const bgStyle: React.CSSProperties = {
+    backgroundColor: customBg ?? (
+      mode === 'gradient'   ? p.colors.sombra  :
+      mode === 'sombra'     ? p.colors.sombra  :
+      mode === 'correct'    ? p.colors.primary :
+      mode === 'sombra-logo'? p.colors.primary :
+      /* incorrect */         p.colors.luz
+    ),
+  }
 
   const logoSrc = customLogoSrc ?? `/assets/logos/sindiconet-${logoVariant}-${logoColorMode}.svg`
 
@@ -68,7 +66,7 @@ export function LogoApplicationCard({
   const modeSuffix =
     mode === 'sombra'      ? '· Fundo sombra'   :
     mode === 'sombra-logo' ? '· Fundo primário'  :
-    mode === 'gradient'    ? '· Fundo gradient'  :
+    mode === 'gradient'    ? '· Fundo sombra'     :
     null
 
   return (
