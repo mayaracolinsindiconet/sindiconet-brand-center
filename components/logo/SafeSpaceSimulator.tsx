@@ -317,9 +317,11 @@ function ControlGroup({ label, aside, children }: { label: string; aside?: React
 function Chip({ active, onClick, accent, children }: { active: boolean; onClick: () => void; accent: string; children: React.ReactNode }) {
   return (
     <button onClick={onClick} aria-pressed={active}
-      className="px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors"
-      style={active ? { backgroundColor: accent, color: '#fff' } : undefined}
-      {...(!active ? { className: 'px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]' } : {})}>
+      className={active
+        ? 'px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors'
+        : 'px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]'
+      }
+      style={active ? { backgroundColor: accent, color: '#fff' } : undefined}>
       {children}
     </button>
   )
