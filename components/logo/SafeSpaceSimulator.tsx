@@ -20,18 +20,18 @@ interface LogoOption {
 
 // ─── Síndiconet logos ─────────────────────────────────────────────────────────
 const sindiLogos: LogoOption[] = [
-  { key: 'mista-colorida',          label: 'Mista · Colorida',          src: '/assets/logos/sindiconet-mista-colorida.svg',          darkRecommended: false, alwaysCorrect: true,  group: 'mista' },
+  { key: 'mista-colorida',          label: 'Mista · Colorida',          src: '/assets/logos/sindiconet-mista-colorida.svg',          darkRecommended: false, group: 'mista' },
   { key: 'mista-cinza',             label: 'Mista · Cinza',             src: '/assets/logos/sindiconet-mista-cinza.svg',             darkRecommended: false, group: 'mista' },
   { key: 'mista-branca',            label: 'Mista · Branca',            src: '/assets/logos/sindiconet-mista-branca.svg',            darkRecommended: true,  group: 'mista' },
-  { key: 'mista-preta',             label: 'Mista · Preta',             src: '/assets/logos/sindiconet-mista-preta.svg',             darkRecommended: false, group: 'mista' },
-  { key: 'mista-headline-colorida', label: 'Com Headline · Colorida',   src: '/assets/logos/sindiconet-mista-headline-colorida.svg', darkRecommended: false, alwaysCorrect: true,  group: 'mista' },
+  { key: 'mista-preta',             label: 'Mista · Preta',             src: '/assets/logos/sindiconet-mista-preta.svg',             darkRecommended: true,  group: 'mista' },
+  { key: 'mista-headline-colorida', label: 'Com Headline · Colorida',   src: '/assets/logos/sindiconet-mista-headline-colorida.svg', darkRecommended: false, group: 'mista' },
   { key: 'mista-headline-cinza',    label: 'Com Headline · Cinza',      src: '/assets/logos/sindiconet-mista-headline-cinza.svg',    darkRecommended: false, group: 'mista' },
   { key: 'mista-headline-branca',   label: 'Com Headline · Branca',     src: '/assets/logos/sindiconet-mista-headline-branca.svg',   darkRecommended: true,  group: 'mista' },
-  { key: 'mista-headline-preta',    label: 'Com Headline · Preta',      src: '/assets/logos/sindiconet-mista-headline-preta.svg',    darkRecommended: false, group: 'mista' },
-  { key: 'simbolo-colorida',        label: 'Símbolo · Colorida',        src: '/assets/logos/sindiconet-simbolo-colorida.svg',        darkRecommended: false, alwaysCorrect: true,  group: 'simbolo' },
+  { key: 'mista-headline-preta',    label: 'Com Headline · Preta',      src: '/assets/logos/sindiconet-mista-headline-preta.svg',    darkRecommended: true,  group: 'mista' },
+  { key: 'simbolo-colorida',        label: 'Símbolo · Colorida',        src: '/assets/logos/sindiconet-simbolo-colorida.svg',        darkRecommended: false, group: 'simbolo' },
   { key: 'simbolo-cinza',           label: 'Símbolo · Cinza',           src: '/assets/logos/sindiconet-simbolo-cinza.svg',           darkRecommended: false, group: 'simbolo' },
   { key: 'simbolo-branca',          label: 'Símbolo · Branca',          src: '/assets/logos/sindiconet-simbolo-branca.svg',          darkRecommended: true,  group: 'simbolo' },
-  { key: 'simbolo-preta',           label: 'Símbolo · Preta',           src: '/assets/logos/sindiconet-simbolo-preta.svg',           darkRecommended: false, group: 'simbolo' },
+  { key: 'simbolo-preta',           label: 'Símbolo · Preta',           src: '/assets/logos/sindiconet-simbolo-preta.svg',           darkRecommended: true,  group: 'simbolo' },
 ]
 
 // ─── PRO logos ────────────────────────────────────────────────────────────────
