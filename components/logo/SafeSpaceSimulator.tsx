@@ -18,16 +18,7 @@ const bgStyles: Record<BgOption, { style: React.CSSProperties; label: string; da
   cinza:  { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro', dark: false },
   preto:  { style: { backgroundColor: '#0d0d0d' }, label: 'Preto', dark: true },
   azul:   { style: { backgroundColor: '#3e77db' }, label: 'Azul Principal', dark: true },
-  foto: {
-    style: {
-      backgroundColor: '#5a6a7a',
-      backgroundImage: 'url(/assets/photos/bg-foto.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    },
-    label: 'Fotografia',
-    dark: true,
-  },
+  foto: { style: { backgroundColor: '#3d3d3d' }, label: 'Cinza escuro', dark: true },
 }
 
 const variantLabels: Record<LogoVariant, string> = { mista: 'Mista', simbolo: 'Símbolo', 'mista-headline': 'Com Headline' }
