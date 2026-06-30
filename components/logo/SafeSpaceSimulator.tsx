@@ -3,27 +3,66 @@
 import { useState } from 'react'
 import Image from 'next/image'
 
-type LogoVariant   = 'mista' | 'simbolo' | 'mista-headline'
-type LogoColorMode = 'colorida' | 'preta' | 'branca'
-type BgOption      = 'branco' | 'cinza' | 'preto' | 'azul' | 'escuro'
-type ProBgOption   = 'branco' | 'cinza' | 'sombra' | 'escuro' | 'primario'
-type Brand         = 'sindiconet' | 'pro'
+// ─── Types ────────────────────────────────────────────────────────────────────
+type Brand    = 'sindiconet' | 'pro'
+type BgOption = 'branco' | 'cinza' | 'preto' | 'azul' | 'escuro'
+type ProBgOption = 'branco' | 'cinza' | 'primario' | 'sombra' | 'escuro'
+type LogoGroup = 'all' | 'mista' | 'simbolo' | 'box'
 
-export interface SafeSpaceSimulatorProps {
-  initialVariant?:   LogoVariant
-  initialColorMode?: LogoColorMode
+interface LogoOption {
+  key:             string
+  label:           string
+  src:             string
+  darkRecommended: boolean  // true = branca/dark = para fundos escuros
+  group:           Exclude<LogoGroup, 'all'>
 }
 
-// ─── Síndiconet backgrounds ────────────────────────────────────────────────
+// ─── Síndiconet logos ─────────────────────────────────────────────────────────
+const sindiLogos: LogoOption[] = [
+  { key: 'mista-colorida',          label: 'Mista · Colorida',          src: '/assets/logos/sindiconet-mista-colorida.svg',          darkRecommended: false, group: 'mista' },
+  { key: 'mista-cinza',             label: 'Mista · Cinza',             src: '/assets/logos/sindiconet-mista-cinza.svg',             darkRecommended: false, group: 'mista' },
+  { key: 'mista-branca',            label: 'Mista · Branca',            src: '/assets/logos/sindiconet-mista-branca.svg',            darkRecommended: true,  group: 'mista' },
+  { key: 'mista-preta',             label: 'Mista · Preta',             src: '/assets/logos/sindiconet-mista-preta.svg',             darkRecommended: false, group: 'mista' },
+  { key: 'mista-headline-colorida', label: 'Com Headline · Colorida',   src: '/assets/logos/sindiconet-mista-headline-colorida.svg', darkRecommended: false, group: 'mista' },
+  { key: 'mista-headline-cinza',    label: 'Com Headline · Cinza',      src: '/assets/logos/sindiconet-mista-headline-cinza.svg',    darkRecommended: false, group: 'mista' },
+  { key: 'mista-headline-branca',   label: 'Com Headline · Branca',     src: '/assets/logos/sindiconet-mista-headline-branca.svg',   darkRecommended: true,  group: 'mista' },
+  { key: 'mista-headline-preta',    label: 'Com Headline · Preta',      src: '/assets/logos/sindiconet-mista-headline-preta.svg',    darkRecommended: false, group: 'mista' },
+  { key: 'simbolo-colorida',        label: 'Símbolo · Colorida',        src: '/assets/logos/sindiconet-simbolo-colorida.svg',        darkRecommended: false, group: 'simbolo' },
+  { key: 'simbolo-cinza',           label: 'Símbolo · Cinza',           src: '/assets/logos/sindiconet-simbolo-cinza.svg',           darkRecommended: false, group: 'simbolo' },
+  { key: 'simbolo-branca',          label: 'Símbolo · Branca',          src: '/assets/logos/sindiconet-simbolo-branca.svg',          darkRecommended: true,  group: 'simbolo' },
+  { key: 'simbolo-preta',           label: 'Símbolo · Preta',           src: '/assets/logos/sindiconet-simbolo-preta.svg',           darkRecommended: false, group: 'simbolo' },
+]
+
+// ─── PRO logos ────────────────────────────────────────────────────────────────
+const proLogos: LogoOption[] = [
+  { key: 'pro-mista-colorida',    label: 'Mista · Colorida',   src: '/assets/logos/pro/pro-mista-colorida.svg',    darkRecommended: false, group: 'mista' },
+  { key: 'pro-mista-cinza',       label: 'Mista · Cinza',      src: '/assets/logos/pro/pro-mista-cinza.svg',       darkRecommended: false, group: 'mista' },
+  { key: 'pro-mista-branca',      label: 'Mista · Branca',     src: '/assets/logos/pro/pro-mista-branca.svg',      darkRecommended: true,  group: 'mista' },
+  { key: 'pro-mista-dark',        label: 'Mista · Dark',       src: '/assets/logos/pro/pro-mista-dark.svg',        darkRecommended: true,  group: 'mista' },
+  { key: 'pro-mista-outline',     label: 'Mista · Outline',    src: '/assets/logos/pro/pro-mista-outline.svg',     darkRecommended: false, group: 'mista' },
+  { key: 'pro-simbolo-colorida',  label: 'Símbolo · Colorida', src: '/assets/logos/pro/pro-simbolo-colorida.svg',  darkRecommended: false, group: 'simbolo' },
+  { key: 'pro-simbolo-gradient',  label: 'Símbolo · Gradient', src: '/assets/logos/pro/pro-simbolo-gradient.svg',  darkRecommended: false, group: 'simbolo' },
+  { key: 'pro-simbolo-branca',    label: 'Símbolo · Branca',   src: '/assets/logos/pro/pro-simbolo-branca.svg',    darkRecommended: true,  group: 'simbolo' },
+  { key: 'pro-simbolo-branca-1',  label: 'Símbolo · Branca 2', src: '/assets/logos/pro/pro-simbolo-branca-1.svg',  darkRecommended: true,  group: 'simbolo' },
+  { key: 'pro-simbolo-cinza',     label: 'Símbolo · Cinza',    src: '/assets/logos/pro/pro-simbolo-cinza.svg',     darkRecommended: false, group: 'simbolo' },
+  { key: 'pro-simbolo-cinza-1',   label: 'Símbolo · Cinza 2',  src: '/assets/logos/pro/pro-simbolo-cinza-1.svg',   darkRecommended: false, group: 'simbolo' },
+  { key: 'pro-box-roxo-2',        label: 'Box · Roxo',         src: '/assets/logos/pro/pro-box-roxo-2.svg',        darkRecommended: false, group: 'box' },
+  { key: 'pro-box-branca',        label: 'Box · Branca',       src: '/assets/logos/pro/pro-box-branca.svg',        darkRecommended: true,  group: 'box' },
+  { key: 'pro-box-branca-1',      label: 'Box · Branca 2',     src: '/assets/logos/pro/pro-box-branca-1.svg',      darkRecommended: true,  group: 'box' },
+  { key: 'pro-box-cinza',         label: 'Box · Cinza',        src: '/assets/logos/pro/pro-box-cinza.svg',         darkRecommended: false, group: 'box' },
+  { key: 'pro-box-cinza-1',       label: 'Box · Cinza 2',      src: '/assets/logos/pro/pro-box-cinza-1.svg',       darkRecommended: false, group: 'box' },
+  { key: 'pro-box-3',             label: 'Box · Dark',         src: '/assets/logos/pro/pro-box-3.svg',             darkRecommended: false, group: 'box' },
+]
+
+// ─── Backgrounds ──────────────────────────────────────────────────────────────
 const bgStyles: Record<BgOption, { style: React.CSSProperties; label: string; dark: boolean }> = {
-  branco: { style: { backgroundColor: '#FFFFFF' }, label: 'Branco',      dark: false },
-  cinza:  { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro', dark: false },
-  preto:  { style: { backgroundColor: '#0d0d0d' }, label: 'Preto',       dark: true  },
-  azul:   { style: { backgroundColor: '#3e77db' }, label: 'Azul',        dark: true  },
-  escuro: { style: { backgroundColor: '#3d3d3d' }, label: 'Cinza escuro',dark: true  },
+  branco: { style: { backgroundColor: '#FFFFFF' }, label: 'Branco',       dark: false },
+  cinza:  { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro',  dark: false },
+  preto:  { style: { backgroundColor: '#0d0d0d' }, label: 'Preto',        dark: true  },
+  azul:   { style: { backgroundColor: '#3e77db' }, label: 'Azul',         dark: true  },
+  escuro: { style: { backgroundColor: '#3d3d3d' }, label: 'Cinza escuro', dark: true  },
 }
 
-// ─── PRO backgrounds ───────────────────────────────────────────────────────
 const proBgStyles: Record<ProBgOption, { style: React.CSSProperties; label: string; dark: boolean }> = {
   branco:  { style: { backgroundColor: '#FFFFFF' }, label: 'Branco',   dark: false },
   cinza:   { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza',    dark: false },
@@ -32,133 +71,125 @@ const proBgStyles: Record<ProBgOption, { style: React.CSSProperties; label: stri
   escuro:  { style: { backgroundColor: '#1D102B' }, label: 'Escuro',   dark: true  },
 }
 
-const variantLabels: Record<LogoVariant, string> = {
-  mista: 'Mista', simbolo: 'Símbolo', 'mista-headline': 'Com Headline',
-}
-const colorModeLabels: Record<LogoColorMode, string> = {
-  colorida: 'Colorida', preta: 'Cinza', branca: 'Branca',
+export interface SafeSpaceSimulatorProps {
+  initialVariant?:   string
+  initialColorMode?: string
 }
 
-// ─── Combinação correta? ───────────────────────────────────────────────────
-function isCorrect(brand: Brand, colorMode: LogoColorMode, dark: boolean): boolean {
-  if (brand === 'pro') {
-    // PRO: colorida e preta só em fundos claros; branca só em fundos escuros
-    if (colorMode === 'colorida' || colorMode === 'preta') return !dark
-    if (colorMode === 'branca') return dark
-  }
-  // Síndiconet
-  if (colorMode === 'colorida' || colorMode === 'preta') return !dark
-  if (colorMode === 'branca') return dark
-  return true
-}
-
-// ─── Logo src ──────────────────────────────────────────────────────────────
-function getLogoSrc(brand: Brand, variant: LogoVariant, colorMode: LogoColorMode): string {
-  if (brand === 'pro') {
-    if (variant === 'simbolo') {
-      return colorMode === 'branca'
-        ? '/assets/logos/pro/pro-simbolo-branca.svg'
-        : '/assets/logos/pro/pro-simbolo-colorida.svg'
-    }
-    // mista / mista-headline → PRO só tem mista
-    return colorMode === 'branca'
-      ? '/assets/logos/pro/pro-mista-branca.svg'
-      : colorMode === 'preta'
-      ? '/assets/logos/pro/pro-mista-cinza.svg'
-      : '/assets/logos/pro/pro-mista-colorida.svg'
-  }
-  return `/assets/logos/sindiconet-${variant}-${colorMode}.svg`
-}
-
-export function SafeSpaceSimulator({
-  initialVariant   = 'mista',
-  initialColorMode = 'colorida',
-}: SafeSpaceSimulatorProps) {
+export function SafeSpaceSimulator(_props: SafeSpaceSimulatorProps) {
   const [brand, setBrand]         = useState<Brand>('sindiconet')
-  const [variant, setVariant]     = useState<LogoVariant>(initialVariant)
-  const [colorMode, setColorMode] = useState<LogoColorMode>(initialColorMode)
+  const [group, setGroup]         = useState<LogoGroup>('all')
+  const [selectedKey, setSelectedKey] = useState<string>('mista-colorida')
   const [bg, setBg]               = useState<BgOption>('branco')
   const [proBg, setProBg]         = useState<ProBgOption>('branco')
   const [scale, setScale]         = useState(100)
   const [imgError, setImgError]   = useState(false)
 
+  const logos    = brand === 'sindiconet' ? sindiLogos : proLogos
+  const filtered = group === 'all' ? logos : logos.filter((l) => l.group === group)
+  const selected = logos.find((l) => l.key === selectedKey) ?? logos[0]
+
   const activeBgInfo = brand === 'pro' ? proBgStyles[proBg] : bgStyles[bg]
-  const isDark = activeBgInfo.dark
-  const correct = isCorrect(brand, colorMode, isDark)
-  const logoSrc = getLogoSrc(brand, variant, colorMode)
+  const isDark  = activeBgInfo.dark
+  const correct = selected.darkRecommended === isDark
+
+  // groups available for current brand
+  const groups: { key: LogoGroup; label: string }[] = brand === 'sindiconet'
+    ? [{ key: 'all', label: 'Todos' }, { key: 'mista', label: 'Mista' }, { key: 'simbolo', label: 'Símbolo' }]
+    : [{ key: 'all', label: 'Todos' }, { key: 'mista', label: 'Mista' }, { key: 'simbolo', label: 'Símbolo' }, { key: 'box', label: 'Box' }]
+
+  function selectBrand(b: Brand) {
+    setBrand(b)
+    setGroup('all')
+    setSelectedKey(b === 'sindiconet' ? 'mista-colorida' : 'pro-mista-colorida')
+    setImgError(false)
+  }
+
+  const accentColor = brand === 'pro' ? '#7441AC' : '#3e77db'
 
   return (
     <div className="rounded-2xl border border-black/8 bg-white overflow-hidden">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="p-6 border-b border-black/8">
-        {/* Brand switcher */}
         <div className="flex items-center gap-2 mb-4">
-          <button
-            onClick={() => setBrand('sindiconet')}
-            aria-pressed={brand === 'sindiconet'}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ${
-              brand === 'sindiconet'
-                ? 'bg-[#3e77db] text-white'
-                : 'bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]'
-            }`}
-          >
-            Síndiconet
-          </button>
-          <button
-            onClick={() => setBrand('pro')}
-            aria-pressed={brand === 'pro'}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ${
-              brand === 'pro'
-                ? 'bg-[#7441AC] text-white'
-                : 'bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]'
-            }`}
-          >
-            PRO
-          </button>
+          {(['sindiconet', 'pro'] as Brand[]).map((b) => (
+            <button key={b} onClick={() => selectBrand(b)} aria-pressed={brand === b}
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ${
+                brand === b
+                  ? b === 'pro' ? 'bg-[#7441AC] text-white' : 'bg-[#3e77db] text-white'
+                  : 'bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]'
+              }`}>
+              {b === 'pro' ? 'PRO' : 'Síndiconet'}
+            </button>
+          ))}
         </div>
-
         <p className="font-body text-sm text-[#3D3D3D]/60 max-w-lg">
-          Use a versão <strong className="text-[#101e37]">colorida ou preta</strong> em fundos claros
+          Use a versão <strong className="text-[#101e37]">colorida ou cinza</strong> em fundos claros
           e a versão <strong className="text-[#101e37]">branca</strong> em fundos escuros.
           Garanta sempre contraste suficiente entre o logo e o fundo.
         </p>
       </div>
 
       {/* ── Body ───────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr]">
+      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr]">
 
         {/* ── Controls ─────────────────────────────────────────────── */}
-        <div className="border-b lg:border-b-0 lg:border-r border-black/8 p-5 space-y-5">
+        <div className="border-b lg:border-b-0 lg:border-r border-black/8 p-5 space-y-5 overflow-y-auto max-h-[600px]">
 
-          {/* Variação */}
-          <ControlGroup label="Variação">
+          {/* Filtro por grupo */}
+          <ControlGroup label="Tipo">
             <div className="flex flex-wrap gap-1.5">
-              {(['mista', 'simbolo', 'mista-headline'] as LogoVariant[]).map((v) => (
-                <Chip
-                  key={v} active={variant === v}
-                  onClick={() => { setVariant(v); setImgError(false) }}
-                  brand={brand}
-                >
-                  {variantLabels[v]}
+              {groups.map((g) => (
+                <Chip key={g.key} active={group === g.key} onClick={() => setGroup(g.key)} accent={accentColor}>
+                  {g.label}
                 </Chip>
               ))}
             </div>
           </ControlGroup>
 
-          {/* Modo de cor */}
-          <ControlGroup label="Modo de cor">
-            <div className="flex flex-wrap gap-1.5">
-              {(['colorida', 'preta', 'branca'] as LogoColorMode[]).map((c) => (
-                <Chip
-                  key={c} active={colorMode === c}
-                  onClick={() => { setColorMode(c); setImgError(false) }}
-                  brand={brand}
+          {/* Grid de logos selecionáveis */}
+          <ControlGroup label="Variação">
+            <div className="grid grid-cols-2 gap-1.5">
+              {filtered.map((logo) => (
+                <button
+                  key={logo.key}
+                  onClick={() => { setSelectedKey(logo.key); setImgError(false) }}
+                  aria-pressed={selectedKey === logo.key}
+                  title={logo.label}
+                  className={`relative h-14 rounded-xl border-2 flex items-center justify-center p-2 transition-all overflow-hidden ${
+                    selectedKey === logo.key
+                      ? 'border-[color:var(--accent)] shadow-sm'
+                      : 'border-black/8 hover:border-black/20'
+                  }`}
+                  style={{ '--accent': accentColor } as React.CSSProperties}
                 >
-                  {colorModeLabels[c]}
-                </Chip>
+                  {/* thumbnail: logo over neutral bg */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ backgroundColor: logo.darkRecommended ? '#2a2a2a' : '#F4F6F8' }}
+                  />
+                  <img
+                    src={logo.src}
+                    alt={logo.label}
+                    className="relative w-full h-full object-contain"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
+                  {selectedKey === logo.key && (
+                    <span
+                      className="absolute top-1 right-1 w-3 h-3 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      <svg width="7" height="7" viewBox="0 0 7 7" fill="none">
+                        <path d="M1 3.5l1.5 1.5 3-3" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  )}
+                </button>
               ))}
             </div>
+            {/* Label da selecionada */}
+            <p className="mt-2 text-[10px] font-mono text-[#3D3D3D]/40 truncate">{selected.label}</p>
           </ControlGroup>
 
           {/* Fundo */}
@@ -166,37 +197,24 @@ export function SafeSpaceSimulator({
             <div className="flex gap-2 flex-wrap">
               {brand === 'sindiconet'
                 ? (Object.entries(bgStyles) as [BgOption, typeof bgStyles[BgOption]][]).map(([key, val]) => (
-                    <button
-                      key={key} onClick={() => setBg(key)}
-                      aria-pressed={bg === key} aria-label={val.label} title={val.label}
-                      className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                        bg === key ? 'border-[#3e77db] scale-110' : 'border-black/10 hover:border-black/20'
-                      }`}
-                      style={val.style}
-                    />
+                    <button key={key} onClick={() => setBg(key)} aria-label={val.label} title={val.label}
+                      className={`w-8 h-8 rounded-lg border-2 transition-all ${bg === key ? 'border-[#3e77db] scale-110' : 'border-black/10 hover:border-black/20'}`}
+                      style={val.style} />
                   ))
                 : (Object.entries(proBgStyles) as [ProBgOption, typeof proBgStyles[ProBgOption]][]).map(([key, val]) => (
-                    <button
-                      key={key} onClick={() => setProBg(key)}
-                      aria-pressed={proBg === key} aria-label={val.label} title={val.label}
-                      className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                        proBg === key ? 'border-[#7441AC] scale-110' : 'border-black/10 hover:border-black/20'
-                      }`}
-                      style={val.style}
-                    />
+                    <button key={key} onClick={() => setProBg(key)} aria-label={val.label} title={val.label}
+                      className={`w-8 h-8 rounded-lg border-2 transition-all ${proBg === key ? 'border-[#7441AC] scale-110' : 'border-black/10 hover:border-black/20'}`}
+                      style={val.style} />
                   ))
               }
             </div>
           </ControlGroup>
 
           {/* Escala */}
-          <ControlGroup label="Escala" aside={<span className="text-xs font-mono text-[#3e77db]">{scale}%</span>}>
-            <input
-              type="range" min={40} max={200} value={scale}
+          <ControlGroup label="Escala" aside={<span className="text-xs font-mono" style={{ color: accentColor }}>{scale}%</span>}>
+            <input type="range" min={40} max={200} value={scale}
               onChange={(e) => setScale(Number(e.target.value))}
-              aria-label="Escala do logo"
-              className="w-full accent-[#3e77db]"
-            />
+              className="w-full" style={{ accentColor }} />
           </ControlGroup>
         </div>
 
@@ -206,31 +224,28 @@ export function SafeSpaceSimulator({
           style={activeBgInfo.style}
         >
           {/* Logo */}
-          <div
-            className="relative"
-            style={
-              variant === 'simbolo'
-                ? { width: `${scale * 0.5}px`, height: `${scale * 0.5}px` }
-                : { width: `${scale * 2}px`,   height: `${scale * 0.5}px` }
-            }
-          >
+          <div className="relative" style={{ width: `${scale * 2}px`, height: `${scale * 0.5}px`, maxWidth: '100%' }}>
             {!imgError ? (
               <Image
-                src={logoSrc}
-                alt={`Logo ${brand === 'pro' ? 'PRO' : 'Síndiconet'} — ${variantLabels[variant]} ${colorModeLabels[colorMode]}`}
+                src={selected.src}
+                alt={selected.label}
                 fill
-                className="object-contain object-left"
+                className="object-contain object-center"
                 priority
                 onError={() => setImgError(true)}
               />
             ) : (
-              <LogoFallback variant={variant} colorMode={colorMode} brand={brand} isDark={isDark} />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-xs font-mono opacity-40" style={{ color: isDark ? '#fff' : '#000' }}>
+                  {selected.key}
+                </p>
+              </div>
             )}
           </div>
 
-          {/* ── Aviso de aplicação incorreta ── */}
-          {!correct && (
-            <div className="flex flex-col gap-3 px-5 py-4 rounded-xl max-w-sm w-full"
+          {/* ── Status ── */}
+          {!correct ? (
+            <div className="flex flex-col gap-3 px-5 py-4 rounded-xl w-full max-w-sm"
               style={{ backgroundColor: 'rgba(209,61,42,0.15)', border: '1px solid rgba(209,61,42,0.35)' }}>
               <div className="flex items-start gap-3">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
@@ -243,50 +258,32 @@ export function SafeSpaceSimulator({
                     Aplicação incorreta
                   </p>
                   <p className="text-[11px] font-body mt-0.5" style={{ color: isDark ? 'rgba(255,138,122,0.8)' : 'rgba(192,57,43,0.75)' }}>
-                    {colorMode === 'branca'
-                      ? 'A versão branca não tem contraste suficiente em fundos claros. Use a versão colorida ou cinza.'
-                      : 'Esta versão não tem contraste suficiente em fundos escuros.'}
+                    {selected.darkRecommended
+                      ? 'Esta versão é para fundos escuros. Escolha uma versão colorida, cinza ou preta para este fundo.'
+                      : 'Esta versão não tem contraste suficiente em fundos escuros. Escolha a versão branca ou dark.'}
                   </p>
                 </div>
               </div>
-              {/* Botão de correção rápida */}
-              {colorMode !== 'branca' && (
-                <button
-                  onClick={() => { setColorMode('branca'); setImgError(false) }}
-                  className="flex items-center gap-2 self-start px-3 py-2 rounded-lg text-[11px] font-semibold font-body transition-colors"
-                  style={{
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(192,57,43,0.1)',
-                    color: isDark ? '#ffffff' : '#c0392b',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(192,57,43,0.25)'}`,
-                  }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  Aplicar versão branca
-                </button>
-              )}
-              {colorMode === 'branca' && (
-                <button
-                  onClick={() => { setColorMode('colorida'); setImgError(false) }}
-                  className="flex items-center gap-2 self-start px-3 py-2 rounded-lg text-[11px] font-semibold font-body transition-colors"
-                  style={{
-                    backgroundColor: 'rgba(192,57,43,0.1)',
-                    color: '#c0392b',
-                    border: '1px solid rgba(192,57,43,0.25)',
-                  }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  Aplicar versão colorida
-                </button>
-              )}
+              {/* Sugestão rápida */}
+              <div className="flex flex-wrap gap-2">
+                {logos
+                  .filter((l) => l.darkRecommended === isDark && l.group === selected.group)
+                  .slice(0, 3)
+                  .map((l) => (
+                    <button key={l.key}
+                      onClick={() => { setSelectedKey(l.key); setImgError(false) }}
+                      className="px-3 py-1.5 rounded-lg text-[11px] font-semibold font-body transition-colors"
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(192,57,43,0.1)',
+                        color: isDark ? '#fff' : '#c0392b',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(192,57,43,0.25)'}`,
+                      }}>
+                      {l.label.split(' · ')[1]}
+                    </button>
+                  ))}
+              </div>
             </div>
-          )}
-
-          {/* ── Indicador de correto ── */}
-          {correct && (
+          ) : (
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl"
               style={{ backgroundColor: 'rgba(49,131,103,0.15)', border: '1px solid rgba(49,131,103,0.30)' }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -305,7 +302,6 @@ export function SafeSpaceSimulator({
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
 function ControlGroup({ label, aside, children }: { label: string; aside?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div>
@@ -318,47 +314,13 @@ function ControlGroup({ label, aside, children }: { label: string; aside?: React
   )
 }
 
-function Chip({ active, onClick, brand, children }: { active: boolean; onClick: () => void; brand: Brand; children: React.ReactNode }) {
-  const activeColor = brand === 'pro' ? 'bg-[#7441AC] text-white' : 'bg-[#3e77db] text-white'
+function Chip({ active, onClick, accent, children }: { active: boolean; onClick: () => void; accent: string; children: React.ReactNode }) {
   return (
-    <button
-      onClick={onClick} aria-pressed={active}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors ${
-        active ? activeColor : 'bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]'
-      }`}
-    >
+    <button onClick={onClick} aria-pressed={active}
+      className="px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors"
+      style={active ? { backgroundColor: accent, color: '#fff' } : undefined}
+      {...(!active ? { className: 'px-3 py-1.5 rounded-lg text-xs font-medium font-body transition-colors bg-[#F4F6F8] text-[#3D3D3D]/70 hover:bg-[#e8edf3]' } : {})}>
       {children}
     </button>
-  )
-}
-
-function LogoFallback({ variant, colorMode, brand, isDark }: {
-  variant: LogoVariant; colorMode: LogoColorMode; brand: Brand; isDark: boolean
-}) {
-  const accentColor = brand === 'pro' ? '#7441AC' : '#3e77db'
-  const mainColor = colorMode === 'branca' ? '#FFFFFF' : colorMode === 'preta' ? '#3D3D3D' : accentColor
-  const textColor = colorMode === 'branca' ? '#FFFFFF' : isDark ? '#FFFFFF' : '#101e37'
-  const innerColor = colorMode === 'branca' ? accentColor : 'white'
-
-  return (
-    <div className="absolute inset-0 flex items-center justify-center gap-3">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <rect width="40" height="40" rx="9" fill={mainColor} />
-        <path d="M12 20C12 15.582 15.582 12 20 12C24.418 12 28 15.582 28 20C28 24.418 24.418 28 20 28"
-          stroke={innerColor} strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M20 28C17.791 28 16 26.209 16 24C16 21.791 17.791 20 20 20"
-          stroke={innerColor} strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-      {(variant === 'mista' || variant === 'mista-headline') && (
-        <div>
-          <p className="font-bold text-xl leading-tight" style={{ color: textColor }}>
-            Síndiconet{brand === 'pro' && <span className="ml-1.5 text-sm font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: accentColor, color: '#fff' }}>PRO</span>}
-          </p>
-          {variant === 'mista-headline' && (
-            <p className="text-[9px] uppercase tracking-[0.2em] opacity-60" style={{ color: textColor }}>Brand Center</p>
-          )}
-        </div>
-      )}
-    </div>
   )
 }
