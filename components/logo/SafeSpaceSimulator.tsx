@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Brand    = 'sindiconet' | 'pro'
-type BgOption = 'branco' | 'cinza' | 'preto' | 'azul' | 'escuro'
+type BgOption = 'branco' | 'cinza' | 'azulclaro' | 'azul' | 'azulescuro' | 'escuro' | 'preto'
 type ProBgOption = 'branco' | 'cinza' | 'primario' | 'sombra' | 'escuro'
 type LogoGroup = 'all' | 'mista' | 'simbolo' | 'box'
 
@@ -14,20 +14,21 @@ interface LogoOption {
   label:           string
   src:             string
   darkRecommended: boolean  // true = branca/dark = para fundos escuros
+  alwaysCorrect?:  boolean  // true = funciona em qualquer fundo (ex: colorida com texto branco)
   group:           Exclude<LogoGroup, 'all'>
 }
 
 // ─── Síndiconet logos ─────────────────────────────────────────────────────────
 const sindiLogos: LogoOption[] = [
-  { key: 'mista-colorida',          label: 'Mista · Colorida',          src: '/assets/logos/sindiconet-mista-colorida.svg',          darkRecommended: false, group: 'mista' },
+  { key: 'mista-colorida',          label: 'Mista · Colorida',          src: '/assets/logos/sindiconet-mista-colorida.svg',          darkRecommended: false, alwaysCorrect: true,  group: 'mista' },
   { key: 'mista-cinza',             label: 'Mista · Cinza',             src: '/assets/logos/sindiconet-mista-cinza.svg',             darkRecommended: false, group: 'mista' },
   { key: 'mista-branca',            label: 'Mista · Branca',            src: '/assets/logos/sindiconet-mista-branca.svg',            darkRecommended: true,  group: 'mista' },
   { key: 'mista-preta',             label: 'Mista · Preta',             src: '/assets/logos/sindiconet-mista-preta.svg',             darkRecommended: false, group: 'mista' },
-  { key: 'mista-headline-colorida', label: 'Com Headline · Colorida',   src: '/assets/logos/sindiconet-mista-headline-colorida.svg', darkRecommended: false, group: 'mista' },
+  { key: 'mista-headline-colorida', label: 'Com Headline · Colorida',   src: '/assets/logos/sindiconet-mista-headline-colorida.svg', darkRecommended: false, alwaysCorrect: true,  group: 'mista' },
   { key: 'mista-headline-cinza',    label: 'Com Headline · Cinza',      src: '/assets/logos/sindiconet-mista-headline-cinza.svg',    darkRecommended: false, group: 'mista' },
   { key: 'mista-headline-branca',   label: 'Com Headline · Branca',     src: '/assets/logos/sindiconet-mista-headline-branca.svg',   darkRecommended: true,  group: 'mista' },
   { key: 'mista-headline-preta',    label: 'Com Headline · Preta',      src: '/assets/logos/sindiconet-mista-headline-preta.svg',    darkRecommended: false, group: 'mista' },
-  { key: 'simbolo-colorida',        label: 'Símbolo · Colorida',        src: '/assets/logos/sindiconet-simbolo-colorida.svg',        darkRecommended: false, group: 'simbolo' },
+  { key: 'simbolo-colorida',        label: 'Símbolo · Colorida',        src: '/assets/logos/sindiconet-simbolo-colorida.svg',        darkRecommended: false, alwaysCorrect: true,  group: 'simbolo' },
   { key: 'simbolo-cinza',           label: 'Símbolo · Cinza',           src: '/assets/logos/sindiconet-simbolo-cinza.svg',           darkRecommended: false, group: 'simbolo' },
   { key: 'simbolo-branca',          label: 'Símbolo · Branca',          src: '/assets/logos/sindiconet-simbolo-branca.svg',          darkRecommended: true,  group: 'simbolo' },
   { key: 'simbolo-preta',           label: 'Símbolo · Preta',           src: '/assets/logos/sindiconet-simbolo-preta.svg',           darkRecommended: false, group: 'simbolo' },
@@ -56,11 +57,13 @@ const proLogos: LogoOption[] = [
 
 // ─── Backgrounds ──────────────────────────────────────────────────────────────
 const bgStyles: Record<BgOption, { style: React.CSSProperties; label: string; dark: boolean }> = {
-  branco: { style: { backgroundColor: '#FFFFFF' }, label: 'Branco',       dark: false },
-  cinza:  { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro',  dark: false },
-  preto:  { style: { backgroundColor: '#0d0d0d' }, label: 'Preto',        dark: true  },
-  azul:   { style: { backgroundColor: '#3e77db' }, label: 'Azul',         dark: true  },
-  escuro: { style: { backgroundColor: '#3d3d3d' }, label: 'Cinza escuro', dark: true  },
+  branco:    { style: { backgroundColor: '#FFFFFF' }, label: 'Branco',        dark: false },
+  cinza:     { style: { backgroundColor: '#F4F6F8' }, label: 'Cinza claro',   dark: false },
+  azulclaro: { style: { backgroundColor: '#9fbbed' }, label: 'Azul claro',    dark: false },
+  azul:      { style: { backgroundColor: '#3e77db' }, label: 'Azul',          dark: true  },
+  azulescuro:{ style: { backgroundColor: '#1f3c6e' }, label: 'Azul escuro',   dark: true  },
+  escuro:    { style: { backgroundColor: '#3d3d3d' }, label: 'Cinza escuro',  dark: true  },
+  preto:     { style: { backgroundColor: '#0d0d0d' }, label: 'Preto',         dark: true  },
 }
 
 const proBgStyles: Record<ProBgOption, { style: React.CSSProperties; label: string; dark: boolean }> = {
@@ -91,7 +94,7 @@ export function SafeSpaceSimulator(_props: SafeSpaceSimulatorProps) {
 
   const activeBgInfo = brand === 'pro' ? proBgStyles[proBg] : bgStyles[bg]
   const isDark  = activeBgInfo.dark
-  const correct = selected.darkRecommended === isDark
+  const correct = selected.alwaysCorrect || selected.darkRecommended === isDark
 
   // groups available for current brand
   const groups: { key: LogoGroup; label: string }[] = brand === 'sindiconet'
