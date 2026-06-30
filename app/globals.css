@@ -60,11 +60,11 @@
   }
 
   [data-product="pro"] {
-    --color-product-primary:         #5D2E85;
-    --color-product-secondary:       #2A0C49;
+    --color-product-primary:         #7441AC;
+    --color-product-secondary:       #3A2156;
     --color-product-accent:          #855DEA;
-    --color-product-primary-light:   #BE9ED9;
-    --color-product-primary-dark:    #030124;
+    --color-product-primary-light:   #BAA0D6;
+    --color-product-primary-dark:    #1D102B;
     --color-product-on-primary:      #FFFFFF;
   }
 

@@ -47,9 +47,9 @@ export const brand = {
       sindiconetWhite: '#F4F6F8',
     },
     pro: {
-      primarias:   { 950: '#030124', 800: '#2A0C49', 600: '#5D2E85', 400: '#9664C1', 200: '#BE9ED9' },
+      primarias:   { 950: '#1D102B', 800: '#3A2156', 700: '#61368F', 600: '#7441AC', 400: '#9771C1', 200: '#BAA0D6', 50: '#F6F0FC' },
       secundarias: { 900: '#251956', 600: '#7C3DB2', 500: '#855DEA', 300: '#B36CFF', 50: '#F6F0FC' },
-      gradient:    { from: '#2A0C49', to: '#BE9ED9' },
+      gradient:    { from: '#3A2156', via: '#7441AC', to: '#BAA0D6' },
     },
   },
   typography: {

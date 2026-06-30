@@ -21,7 +21,7 @@ const PRO_VARIANTS: ProVariant[] = [
   {
     key:   'pro-mista-dark',
     label: 'Mista Dark',
-    bg:    '#2A0C49',
+    bg:    '#3A2156',
     dark:  true,
     note:  'Uso em fundos escuros do produto.',
   },
@@ -55,7 +55,7 @@ export function ProLogoGrid() {
       <div className="flex items-center gap-3 mb-6">
         <div
           className="w-0.5 h-5 rounded-full"
-          style={{ background: 'linear-gradient(to bottom, #855DEA, #2A0C49)' }}
+          style={{ background: 'linear-gradient(to bottom, #855DEA, #3A2156)' }}
         />
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] font-body text-[#3D3D3D]/50">
           Síndiconet PRO
@@ -105,11 +105,11 @@ function ProCard({ variant }: { variant: ProVariant }) {
 }
 
 function ProFallback({ dark }: { dark: boolean }) {
-  const color = dark ? '#FFFFFF' : '#5D2E85'
+  const color = dark ? '#FFFFFF' : '#7441AC'
   return (
     <div className="flex items-center gap-2">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-        <circle cx="14" cy="14" r="13.5" fill={dark ? '#5D2E85' : '#F0E8F8'} stroke={color} />
+        <circle cx="14" cy="14" r="13.5" fill={dark ? '#7441AC' : '#F6F0FC'} stroke={color} />
         <text x="14" y="19" textAnchor="middle" fontSize="12" fontWeight="700" fill={color}>P</text>
       </svg>
       <span className="font-bold text-sm" style={{ color }}>PRO</span>

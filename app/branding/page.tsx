@@ -325,7 +325,7 @@ export default function FundacaoPage() {
                   { name: 'Cursos',     bg: '#F57A0C', text: '#fff'     },
                   { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015'  },
                   { name: 'Conviver',   bg: '#41ae89', text: '#fff'     },
-                  { name: 'PRO',        bg: '#5D2E85', text: '#fff'     },
+                  { name: 'PRO',        bg: '#7441AC', text: '#fff'     },
                   { name: 'Conexão',    bg: '#3e77db', text: '#fff'     },
                   { name: 'Eventos',    bg: '#9fbbed', text: '#101e37'  },
                   { name: 'Downloads',  bg: '#3D3D3D', text: '#fff'     },
