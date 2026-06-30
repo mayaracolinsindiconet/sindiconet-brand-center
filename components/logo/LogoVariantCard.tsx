@@ -16,13 +16,13 @@ interface LogoVariantCardProps {
 
 const bgForMode: Record<LogoColorMode, string> = {
   colorida: '#F4F6F8',
-  preta:    '#F4F6F8',
+  preta:    '#3d3d3d',
   branca:   '#3e77db',
 }
 
 const usageForMode: Record<LogoColorMode, Parameters<typeof UsageTag>[0]['variant']> = {
   colorida:  'fundo-claro',
-  preta:     'fundo-claro',
+  preta:     'fundo-escuro',
   branca:    'fundo-escuro',
 }
 
