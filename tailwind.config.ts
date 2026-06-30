@@ -55,7 +55,6 @@ const config: Config = {
         },
         pro: {
           50:  '#F6F0FC',
-          50:  '#F6F0FC',
           200: '#BAA0D6',
           300: '#B36CFF',
           400: '#9771C1',
