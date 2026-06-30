@@ -21,7 +21,7 @@ const PRO_VARIANTS: ProVariant[] = [
   {
     key:   'pro-mista-dark',
     label: 'Mista Dark',
-    bg:    '#3A2156',
+    bg:    '#1D102B',
     dark:  true,
     note:  'Uso em fundos escuros do produto.',
   },
