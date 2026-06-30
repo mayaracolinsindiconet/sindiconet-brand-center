@@ -230,23 +230,58 @@ export function SafeSpaceSimulator({
 
           {/* ── Aviso de aplicação incorreta ── */}
           {!correct && (
-            <div className="flex items-start gap-3 px-5 py-4 rounded-xl max-w-sm"
+            <div className="flex flex-col gap-3 px-5 py-4 rounded-xl max-w-sm w-full"
               style={{ backgroundColor: 'rgba(209,61,42,0.15)', border: '1px solid rgba(209,61,42,0.35)' }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
-                <circle cx="9" cy="9" r="8.5" stroke="#D13D2A" />
-                <path d="M9 5v5" stroke="#D13D2A" strokeWidth="1.5" strokeLinecap="round" />
-                <circle cx="9" cy="13" r="1" fill="#D13D2A" />
-              </svg>
-              <div>
-                <p className="text-xs font-semibold font-body" style={{ color: isDark ? '#ff8a7a' : '#c0392b' }}>
-                  Aplicação incorreta
-                </p>
-                <p className="text-[11px] font-body mt-0.5" style={{ color: isDark ? 'rgba(255,138,122,0.8)' : 'rgba(192,57,43,0.75)' }}>
-                  {colorMode === 'branca'
-                    ? 'A versão branca não tem contraste suficiente em fundos claros.'
-                    : 'Esta versão não tem contraste suficiente em fundos escuros. Use a versão branca.'}
-                </p>
+              <div className="flex items-start gap-3">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 mt-0.5">
+                  <circle cx="9" cy="9" r="8.5" stroke="#D13D2A" />
+                  <path d="M9 5v5" stroke="#D13D2A" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="9" cy="13" r="1" fill="#D13D2A" />
+                </svg>
+                <div>
+                  <p className="text-xs font-semibold font-body" style={{ color: isDark ? '#ff8a7a' : '#c0392b' }}>
+                    Aplicação incorreta
+                  </p>
+                  <p className="text-[11px] font-body mt-0.5" style={{ color: isDark ? 'rgba(255,138,122,0.8)' : 'rgba(192,57,43,0.75)' }}>
+                    {colorMode === 'branca'
+                      ? 'A versão branca não tem contraste suficiente em fundos claros. Use a versão colorida ou cinza.'
+                      : 'Esta versão não tem contraste suficiente em fundos escuros.'}
+                  </p>
+                </div>
               </div>
+              {/* Botão de correção rápida */}
+              {colorMode !== 'branca' && (
+                <button
+                  onClick={() => { setColorMode('branca'); setImgError(false) }}
+                  className="flex items-center gap-2 self-start px-3 py-2 rounded-lg text-[11px] font-semibold font-body transition-colors"
+                  style={{
+                    backgroundColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(192,57,43,0.1)',
+                    color: isDark ? '#ffffff' : '#c0392b',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : 'rgba(192,57,43,0.25)'}`,
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Aplicar versão branca
+                </button>
+              )}
+              {colorMode === 'branca' && (
+                <button
+                  onClick={() => { setColorMode('colorida'); setImgError(false) }}
+                  className="flex items-center gap-2 self-start px-3 py-2 rounded-lg text-[11px] font-semibold font-body transition-colors"
+                  style={{
+                    backgroundColor: 'rgba(192,57,43,0.1)',
+                    color: '#c0392b',
+                    border: '1px solid rgba(192,57,43,0.25)',
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Aplicar versão colorida
+                </button>
+              )}
             </div>
           )}
 
