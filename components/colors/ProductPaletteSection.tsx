@@ -13,6 +13,7 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
   // ── PRO ────────────────────────────────────────────────────────────────────
   if (isPro) {
     const proColors = products.pro.colors
+    const subtons = [proColors.palette[0], proColors.palette[5]] as string[]
 
     return (
       <div className="space-y-8">
@@ -27,7 +28,7 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
               <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
             ))}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {proColors.primarias.map((hex, i) => (
               <ColorPaletteCard key={hex} hex={hex} name={`Primária ${i + 1}`} />
             ))}
@@ -44,9 +45,43 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
               <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
             ))}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {proColors.secundarias.map((hex, i) => (
               <ColorPaletteCard key={hex} hex={hex} name={`Secundária ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Subtons */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+            Subtons
+          </p>
+          <div className="flex rounded-xl overflow-hidden mb-4 h-12">
+            {subtons.map((hex) => (
+              <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {subtons.map((hex, i) => (
+              <ColorPaletteCard key={hex} hex={hex} name={`Subtom ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Destaques e CTAs */}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/40 font-body mb-4">
+            Destaques e CTAs
+          </p>
+          <div className="flex rounded-xl overflow-hidden mb-4 h-12">
+            {proColors.destaques.map((hex) => (
+              <div key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {proColors.destaques.map((hex, i) => (
+              <ColorPaletteCard key={hex} hex={hex} name={`Destaque ${i + 1}`} />
             ))}
           </div>
         </div>
@@ -59,11 +94,12 @@ export function ProductPaletteSection({ product }: ProductPaletteSectionProps) {
           <div
             className="h-14 rounded-xl mb-4"
             style={{
-              background: `linear-gradient(to right, ${proColors.gradiente.start}, ${proColors.gradiente.end})`,
+              background: `linear-gradient(to right, ${proColors.gradiente.start}, ${proColors.gradiente.mid}, ${proColors.gradiente.end})`,
             }}
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <ColorPaletteCard hex={proColors.gradiente.start} name="Início" role="Gradient Start" />
+            <ColorPaletteCard hex={proColors.gradiente.mid} name="Meio" role="Gradient Mid" />
             <ColorPaletteCard hex={proColors.gradiente.end} name="Fim" role="Gradient End" />
           </div>
         </div>
