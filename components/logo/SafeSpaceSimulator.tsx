@@ -47,7 +47,7 @@ const proLogos: LogoOption[] = [
   { key: 'pro-simbolo-branca-1',  label: 'Símbolo · Branca 2', src: '/assets/logos/pro/pro-simbolo-branca-1.svg',  darkRecommended: true,  group: 'simbolo' },
   { key: 'pro-simbolo-cinza',     label: 'Símbolo · Cinza',    src: '/assets/logos/pro/pro-simbolo-cinza.svg',     darkRecommended: false, group: 'simbolo' },
   { key: 'pro-simbolo-cinza-1',   label: 'Símbolo · Cinza 2',  src: '/assets/logos/pro/pro-simbolo-cinza-1.svg',   darkRecommended: false, group: 'simbolo' },
-  { key: 'pro-box-roxo-2',        label: 'Box · Roxo',         src: '/assets/logos/pro/pro-box-roxo-2.svg',        darkRecommended: false, group: 'box' },
+  { key: 'pro-box-roxo-2',        label: 'Box · Roxo',         src: '/assets/logos/pro/pro-box-roxo-2.svg',        darkRecommended: false, alwaysCorrect: true,  group: 'box' },
   { key: 'pro-box-branca',        label: 'Box · Branca',       src: '/assets/logos/pro/pro-box-branca.svg',        darkRecommended: true,  group: 'box' },
   { key: 'pro-box-branca-1',      label: 'Box · Branca 2',     src: '/assets/logos/pro/pro-box-branca-1.svg',      darkRecommended: true,  group: 'box' },
   { key: 'pro-box-cinza',         label: 'Box · Cinza',        src: '/assets/logos/pro/pro-box-cinza.svg',         darkRecommended: false, group: 'box' },
@@ -91,6 +91,15 @@ export function SafeSpaceSimulator(_props: SafeSpaceSimulatorProps) {
   const logos    = brand === 'sindiconet' ? sindiLogos : proLogos
   const filtered = group === 'all' ? logos : logos.filter((l) => l.group === group)
   const selected = logos.find((l) => l.key === selectedKey) ?? logos[0]
+
+  function selectGroup(g: LogoGroup) {
+    setGroup(g)
+    const next = g === 'all' ? logos : logos.filter((l) => l.group === g)
+    if (next.length > 0 && !next.find((l) => l.key === selectedKey)) {
+      setSelectedKey(next[0].key)
+      setImgError(false)
+    }
+  }
 
   const activeBgInfo = brand === 'pro' ? proBgStyles[proBg] : bgStyles[bg]
   const isDark  = activeBgInfo.dark
@@ -144,7 +153,7 @@ export function SafeSpaceSimulator(_props: SafeSpaceSimulatorProps) {
           <ControlGroup label="Tipo">
             <div className="flex flex-wrap gap-1.5">
               {groups.map((g) => (
-                <Chip key={g.key} active={group === g.key} onClick={() => setGroup(g.key)} accent={accentColor}>
+                <Chip key={g.key} active={group === g.key} onClick={() => selectGroup(g.key)} accent={accentColor}>
                   {g.label}
                 </Chip>
               ))}
