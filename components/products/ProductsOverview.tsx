@@ -75,7 +75,7 @@ export function ProductsOverview() {
                 {/* Product icon — top right, no background */}
                 {Icon && (
                   <div
-                    className="absolute top-3 right-3 w-14 h-14 opacity-50 group-hover:opacity-70 transition-opacity"
+                    className="absolute top-3 right-3 w-14 h-14"
                     style={{ color: product.colors.onPrimary }}
                   >
                     <Icon className="w-full h-full" />
