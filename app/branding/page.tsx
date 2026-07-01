@@ -8,8 +8,9 @@ import {
   IconCoteibem,
   IconConviver,
   IconPro,
-  IconCreators,
+  IconConexao,
   IconDownloads,
+  IconEventos,
 } from '@/components/products/ProductSvgIcons'
 
 // ─── Section registry ─────────────────────────────────────────────────────────
@@ -330,20 +331,20 @@ export default function FundacaoPage() {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { name: 'Conteúdo',   bg: '#6e99e4', text: '#fff',     icon: IconConteudo  },
-                  { name: 'Cursos',     bg: '#F57A0C', text: '#fff',     icon: IconCursos    },
-                  { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015',  icon: IconCoteibem  },
-                  { name: 'Conviver',   bg: '#41ae89', text: '#fff',     icon: IconConviver  },
-                  { name: 'PRO',        bg: '#7441AC', text: '#fff',     icon: IconPro       },
-                  { name: 'Conexão',    bg: '#3e77db', text: '#fff',     icon: IconCreators  },
-                  { name: 'Eventos',    bg: '#9fbbed', text: '#101e37',  icon: null          },
-                  { name: 'Downloads',  bg: '#3D3D3D', text: '#fff',     icon: IconDownloads },
+                  { name: 'Conteúdo',   bg: '#3e77db', text: '#fff',    icon: IconConteudo  },
+                  { name: 'Cursos',     bg: '#F57A0C', text: '#fff',    icon: IconCursos    },
+                  { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015', icon: IconCoteibem  },
+                  { name: 'Conviver',   bg: '#41ae89', text: '#fff',    icon: IconConviver  },
+                  { name: 'PRO',        bg: '#7441AC', text: '#fff',    icon: IconPro       },
+                  { name: 'Conexão',    bg: '#3A2156', text: '#fff',    icon: IconConexao   },
+                  { name: 'Eventos',    bg: '#3e77db', text: '#fff',    icon: IconEventos   },
+                  { name: 'Downloads',  bg: '#3e77db', text: '#fff',    icon: IconDownloads },
                 ].map((ch) => {
                   const Icon = ch.icon
                   return (
                     <div key={ch.name} className="relative rounded-xl p-4 h-20 flex items-end" style={{ backgroundColor: ch.bg }}>
                       {Icon && (
-                        <div className="absolute top-2 right-2 w-9 h-9" style={{ color: ch.text }}>
+                        <div className="absolute top-2 right-2 w-11 h-11" style={{ color: ch.text }}>
                           <Icon className="w-full h-full" />
                         </div>
                       )}
