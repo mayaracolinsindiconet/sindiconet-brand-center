@@ -97,7 +97,7 @@ export function PromptCreator() {
   const canGenerate = description.trim().length > 0 || selectedStyles.length > 0
 
   return (
-    <div className="bg-white rounded-2xl border border-black/[0.06] p-6 md:p-8 max-w-2xl mx-auto">
+    <div className="bg-white rounded-2xl border border-black/[0.06] p-6 md:p-8 w-full">
       {/* Description */}
       <div className="mb-5">
         <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">
