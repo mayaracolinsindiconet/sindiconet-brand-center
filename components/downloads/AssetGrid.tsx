@@ -10,7 +10,7 @@ import type { ProductSlug } from '@/tokens/products'
 const typeOptions = ['logo', 'icon', 'font'] as const
 const formatOptions = ['svg', 'png'] as const
 const productOptions: (ProductSlug | 'brand')[] = [
-  'brand', 'conteudo', 'conviver', 'coteibem', 'cursos', 'empregos', 'pro',
+  'brand', 'conteudo', 'conviver', 'coteibem', 'cursos', 'creators', 'empregos', 'pro',
 ]
 
 const typeLabels: Record<string, string> = { logo: 'Logo', icon: 'Ícone', font: 'Fonte' }
@@ -20,6 +20,7 @@ const productLabels: Record<string, string> = {
   conviver:  'Conviver/Creator',
   coteibem:  'Coteibem',
   cursos:    'Cursos',
+  creators:  'Conexão',
   empregos:  'Empregos',
   pro:       'PRO',
 }

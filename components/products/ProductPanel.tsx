@@ -35,6 +35,10 @@ const productDescriptions: Record<ProductSlug, { tagline: string; description: s
     tagline: 'As melhores vagas do universo condominial.',
     description: 'Conectamos síndicos e gestores às oportunidades de emprego e contratação do setor condominial.',
   },
+  creators: {
+    tagline: 'Conexão entre criadores e o universo condominial.',
+    description: 'Plataforma que conecta criadores de conteúdo especializados em gestão condominial.',
+  },
   pro: {
     tagline: 'Gestão profissional de alto nível.',
     description: 'A solução completa para síndicos profissionais que precisam de ferramentas robustas e suporte dedicado.',
@@ -56,6 +60,7 @@ const shortNames: Record<ProductSlug, string> = {
   coteibem: 'Coteibem',
   cursos:   'Cursos',
   empregos: 'Empregos',
+  creators: 'Conexão',
   pro:      'PRO',
 }
 

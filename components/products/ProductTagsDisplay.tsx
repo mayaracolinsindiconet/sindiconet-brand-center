@@ -11,6 +11,7 @@ const defaultTags: Record<ProductSlug, string[]> = {
   coteibem: ['Cotações', 'Fornecedores', 'Serviços', 'Comparativo', 'Orçamentos'],
   cursos:   ['Cursos', 'Certificados', 'Síndico', 'Gestão', 'Educação'],
   empregos: ['Vagas', 'Contratação', 'Síndico', 'Porteiro', 'Zelador'],
+  creators: ['Criadores', 'Conteúdo', 'Conexão', 'Comunidade', 'Parceiros'],
   pro:      ['Premium', 'Gestão Profissional', 'Relatórios', 'Consultoria', 'Suporte'],
 }
 

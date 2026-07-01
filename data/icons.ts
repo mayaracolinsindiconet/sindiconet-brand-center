@@ -28,6 +28,7 @@ export const productIcons: Record<ProductSlug, ProductIcon[]> = {
   empregos: [
     { slug: 'empregos', label: 'Empregos', path: '/assets/icons/empregos/empregos.svg' },
   ],
+  creators: [],
   pro: [
     { slug: 'pro', label: 'PRO', path: '/assets/icons/pro/pro.svg' },
   ],
