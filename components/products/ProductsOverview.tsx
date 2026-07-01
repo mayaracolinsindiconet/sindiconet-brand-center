@@ -1,9 +1,18 @@
 'use client'
 
+import type { ComponentType } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { products, productList } from '@/tokens/products'
 import type { ProductSlug } from '@/tokens/products'
+import {
+  IconConteudo,
+  IconCursos,
+  IconCoteibem,
+  IconConviver,
+  IconPro,
+  IconCreators,
+} from '@/components/products/ProductSvgIcons'
 
 const productDescriptions: Record<ProductSlug, string> = {
   conteudo: 'Conteúdo especializado para síndicos e gestores de condomínio.',
@@ -12,6 +21,16 @@ const productDescriptions: Record<ProductSlug, string> = {
   cursos:   'Capacitação e educação para síndicos.',
   empregos: 'Vagas e oportunidades do universo condominial.',
   pro:      'Solução premium de gestão profissional.',
+  creators: 'Conexão entre criadores de conteúdo e o universo condominial.',
+}
+
+const productIconMap: Partial<Record<ProductSlug, ComponentType<{ className?: string }>>> = {
+  conteudo: IconConteudo,
+  cursos:   IconCursos,
+  coteibem: IconCoteibem,
+  conviver: IconConviver,
+  pro:      IconPro,
+  creators: IconCreators,
 }
 
 const containerVariants = {
@@ -35,6 +54,7 @@ export function ProductsOverview() {
     >
       {productList.map((slug) => {
         const product = products[slug]
+        const Icon = productIconMap[slug]
         return (
           <motion.div key={slug} variants={cardVariants}>
             <Link
@@ -52,6 +72,15 @@ export function ProductsOverview() {
                     background: `radial-gradient(ellipse at 80% 20%, ${product.colors.sombra}, transparent 65%)`,
                   }}
                 />
+                {/* Product icon — top right, no background */}
+                {Icon && (
+                  <div
+                    className="absolute top-4 right-4 w-10 h-10 opacity-25 group-hover:opacity-40 transition-opacity"
+                    style={{ color: product.colors.onPrimary }}
+                  >
+                    <Icon className="w-full h-full" />
+                  </div>
+                )}
                 <div className="relative">
                   <p
                     className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] mb-1"

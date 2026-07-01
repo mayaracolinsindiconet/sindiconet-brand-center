@@ -18,6 +18,7 @@ export type ProductSlug =
   | 'coteibem'
   | 'cursos'
   | 'empregos'
+  | 'creators'
   | 'pro'
 
 export const products = {
@@ -87,6 +88,20 @@ export const products = {
     },
   },
 
+
+  // ── CONEXÃO / CREATORS ───────────────────────────────────────────────────
+  creators: {
+    name: 'Síndiconet Conexão',
+    slug: 'creators' as const,
+    colors: {
+      primary:   '#71C2A7',
+      sombra:    '#215745',
+      luz:       '#d0ebe2',
+      onPrimary: '#FFFFFF',
+      palette:   ['#102c22', '#215745', '#318367', '#41ae89', '#71c2a7', '#a0d7c4', '#d0ebe2'] as const,
+    },
+  },
+
   // ── PRO ──────────────────────────────────────────────────────────────────
   pro: {
     name: 'Síndiconet PRO',
@@ -114,6 +129,7 @@ export const productList: ProductSlug[] = [
   'conviver',
   'coteibem',
   'cursos',
-  'empregos',
+  'creators',
   'pro',
+  'empregos',
 ]
