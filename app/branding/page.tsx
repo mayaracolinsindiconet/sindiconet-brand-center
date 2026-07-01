@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  IconConteudo,
+  IconCursos,
+  IconCoteibem,
+  IconConviver,
+  IconPro,
+  IconCreators,
+  IconDownloads,
+} from '@/components/products/ProductSvgIcons'
 
 // ─── Section registry ─────────────────────────────────────────────────────────
 const sections = [
@@ -321,19 +330,27 @@ export default function FundacaoPage() {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { name: 'Conteúdo',   bg: '#6e99e4', text: '#fff'     },
-                  { name: 'Cursos',     bg: '#F57A0C', text: '#fff'     },
-                  { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015'  },
-                  { name: 'Conviver',   bg: '#41ae89', text: '#fff'     },
-                  { name: 'PRO',        bg: '#7441AC', text: '#fff'     },
-                  { name: 'Conexão',    bg: '#3e77db', text: '#fff'     },
-                  { name: 'Eventos',    bg: '#9fbbed', text: '#101e37'  },
-                  { name: 'Downloads',  bg: '#3D3D3D', text: '#fff'     },
-                ].map((ch) => (
-                  <div key={ch.name} className="rounded-xl p-4 h-20 flex items-end" style={{ backgroundColor: ch.bg }}>
-                    <p className="font-headline font-bold text-sm leading-tight" style={{ color: ch.text }}>{ch.name}</p>
-                  </div>
-                ))}
+                  { name: 'Conteúdo',   bg: '#6e99e4', text: '#fff',     icon: IconConteudo  },
+                  { name: 'Cursos',     bg: '#F57A0C', text: '#fff',     icon: IconCursos    },
+                  { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015',  icon: IconCoteibem  },
+                  { name: 'Conviver',   bg: '#41ae89', text: '#fff',     icon: IconConviver  },
+                  { name: 'PRO',        bg: '#7441AC', text: '#fff',     icon: IconPro       },
+                  { name: 'Conexão',    bg: '#3e77db', text: '#fff',     icon: IconCreators  },
+                  { name: 'Eventos',    bg: '#9fbbed', text: '#101e37',  icon: null          },
+                  { name: 'Downloads',  bg: '#3D3D3D', text: '#fff',     icon: IconDownloads },
+                ].map((ch) => {
+                  const Icon = ch.icon
+                  return (
+                    <div key={ch.name} className="relative rounded-xl p-4 h-20 flex items-end" style={{ backgroundColor: ch.bg }}>
+                      {Icon && (
+                        <div className="absolute top-2 right-2 w-9 h-9" style={{ color: ch.text }}>
+                          <Icon className="w-full h-full" />
+                        </div>
+                      )}
+                      <p className="font-headline font-bold text-sm leading-tight" style={{ color: ch.text }}>{ch.name}</p>
+                    </div>
+                  )
+                })}
               </div>
             </SectionBlock>
 
