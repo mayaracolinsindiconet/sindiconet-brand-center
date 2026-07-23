@@ -40,15 +40,9 @@ type BankEntry = {
   reviewNote?: string
 }
 
-type Tab = 'gerar' | 'revisao' | 'aprovadas'
 type Stage = 'form' | 'preview'
 
 export function PhotoBankPanel() {
-  const [pin, setPin] = useState('')
-  const [pinInput, setPinInput] = useState('')
-  const [pinError, setPinError] = useState(false)
-  const [tab, setTab] = useState<Tab>('gerar')
-
   const [stage, setStage] = useState<Stage>('form')
   const [description, setDescription] = useState('')
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
@@ -60,53 +54,46 @@ export function PhotoBankPanel() {
   const [generatingPrompt, setGeneratingPrompt] = useState(false)
   const [generatingImage, setGeneratingImage] = useState(false)
   const [formError, setFormError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
-  const [entries, setEntries] = useState<BankEntry[]>([])
-  const [loadingEntries, setLoadingEntries] = useState(false)
+  const [approvedEntries, setApprovedEntries] = useState<BankEntry[]>([])
+  const [loadingApproved, setLoadingApproved] = useState(true)
+
+  const [reviewOpen, setReviewOpen] = useState(false)
+  const [reviewPin, setReviewPin] = useState('')
+  const [reviewPinInput, setReviewPinInput] = useState('')
+  const [reviewPinError, setReviewPinError] = useState(false)
+  const [pendingEntries, setPendingEntries] = useState<BankEntry[]>([])
+  const [loadingPending, setLoadingPending] = useState(false)
   const [actionId, setActionId] = useState<string | null>(null)
+
+  const fetchApproved = useCallback(async () => {
+    setLoadingApproved(true)
+    try {
+      const res = await fetch('/api/photo-bank?status=aprovado')
+      if (res.ok) {
+        const data = await res.json()
+        const sorted = [...(data.entries || [])].sort(
+          (a: BankEntry, b: BankEntry) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        setApprovedEntries(sorted)
+      }
+    } finally {
+      setLoadingApproved(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchApproved()
+  }, [fetchApproved])
 
   useEffect(() => {
     const saved = sessionStorage.getItem(BANK_PIN_KEY)
-    if (saved) setPin(saved)
+    if (saved) setReviewPin(saved)
   }, [])
-
-  const fetchEntries = useCallback(async (status?: string) => {
-    if (!pin) return
-    setLoadingEntries(true)
-    try {
-      const url = status ? '/api/photo-bank?status=' + status : '/api/photo-bank'
-      const res = await fetch(url, { headers: { 'x-bank-pin': pin } })
-      if (!res.ok) throw new Error('Falha ao carregar')
-      const data = await res.json()
-      setEntries(data.entries || [])
-    } catch {
-      setEntries([])
-    } finally {
-      setLoadingEntries(false)
-    }
-  }, [pin])
-
-  useEffect(() => {
-    if (!pin) return
-    if (tab === 'revisao') fetchEntries('pendente')
-    if (tab === 'aprovadas') fetchEntries('aprovado')
-  }, [pin, tab, fetchEntries])
-
-  function submitPin(e: React.FormEvent) {
-    e.preventDefault()
-    sessionStorage.setItem(BANK_PIN_KEY, pinInput)
-    setPin(pinInput)
-    setPinError(false)
-  }
 
   function toggleStyle(id: string) {
     setSelectedStyles((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
-  }
-
-  function handleUnauthorized() {
-    setPinError(true)
-    setPin('')
-    sessionStorage.removeItem(BANK_PIN_KEY)
   }
 
   async function generatePrompt() {
@@ -115,10 +102,9 @@ export function PhotoBankPanel() {
     try {
       const res = await fetch('/api/generate-photo-prompt', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-bank-pin': pin },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description, styles: selectedStyles, pillar, format }),
       })
-      if (res.status === 401) { handleUnauthorized(); return }
       if (!res.ok) throw new Error('Erro ao gerar prompt')
       const data = await res.json()
       setPromptEn(data.promptEn || data.prompt || '')
@@ -141,18 +127,18 @@ export function PhotoBankPanel() {
     try {
       const res = await fetch('/api/generate-photo', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-bank-pin': pin },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, pillar }),
       })
-      if (res.status === 401) { handleUnauthorized(); return }
       if (!res.ok) throw new Error('Erro ao gerar imagem')
       setDescription('')
       setSelectedStyles([])
       setPromptEn('')
       setPromptPt('')
       setStage('form')
-      setTab('revisao')
-      fetchEntries('pendente')
+      setSuccessMessage('Imagem gerada! Ela foi enviada para a revisao semanal antes de entrar no banco oficial.')
+      if (reviewPin) fetchPending(reviewPin)
+      setTimeout(() => setSuccessMessage(''), 7000)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Erro ao gerar imagem')
     } finally {
@@ -160,16 +146,50 @@ export function PhotoBankPanel() {
     }
   }
 
+  async function fetchPending(pin: string) {
+    setLoadingPending(true)
+    try {
+      const res = await fetch('/api/photo-bank?status=pendente', { headers: { 'x-bank-pin': pin } })
+      if (res.status === 401) {
+        setReviewPinError(true)
+        setReviewPin('')
+        sessionStorage.removeItem(BANK_PIN_KEY)
+        return
+      }
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      setPendingEntries(data.entries || [])
+      setReviewPin(pin)
+      sessionStorage.setItem(BANK_PIN_KEY, pin)
+      setReviewPinError(false)
+    } catch {
+      setReviewPinError(true)
+    } finally {
+      setLoadingPending(false)
+    }
+  }
+
+  function openReview() {
+    setReviewOpen(true)
+    if (reviewPin) fetchPending(reviewPin)
+  }
+
+  function submitReviewPin(e: React.FormEvent) {
+    e.preventDefault()
+    fetchPending(reviewPinInput)
+  }
+
   async function reviewEntry(id: string, status: 'aprovado' | 'reprovado') {
     setActionId(id)
     try {
       const res = await fetch('/api/photo-bank/' + id, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'x-bank-pin': pin },
+        headers: { 'Content-Type': 'application/json', 'x-bank-pin': reviewPin },
         body: JSON.stringify({ status }),
       })
       if (!res.ok) throw new Error('Erro ao revisar')
-      setEntries((prev) => prev.filter((e) => e.id !== id))
+      setPendingEntries((prev) => prev.filter((e) => e.id !== id))
+      if (status === 'aprovado') fetchApproved()
     } catch {
       // usuario pode tentar novamente
     } finally {
@@ -177,50 +197,10 @@ export function PhotoBankPanel() {
     }
   }
 
-  if (!pin) {
-    return (
-      <div className="max-w-sm mx-auto bg-white rounded-2xl border border-black/[0.06] p-8 text-center">
-        <p className="font-headline font-semibold text-lg text-[#101e37] mb-1">Banco de Imagens</p>
-        <p className="text-sm font-body text-[#3D3D3D]/50 mb-5">Acesso restrito. Digite o PIN da equipe.</p>
-        <form onSubmit={submitPin} className="space-y-3">
-          <input
-            type="password"
-            value={pinInput}
-            onChange={(e) => setPinInput(e.target.value)}
-            placeholder="PIN"
-            className="w-full px-4 py-2.5 rounded-xl border border-black/10 text-sm font-body text-center bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
-          />
-          {pinError && <p className="text-xs text-red-500 font-body">PIN incorreto, tente novamente.</p>}
-          <button type="submit" className="w-full py-2.5 rounded-xl bg-[#3e77db] hover:bg-[#2d63c8] text-white text-sm font-semibold font-body transition-colors">
-            Entrar
-          </button>
-        </form>
-      </div>
-    )
-  }
-
   return (
     <div className="w-full">
-      <div className="flex gap-2 mb-6 border-b border-black/[0.06]">
-        {[
-          { id: 'gerar' as Tab, label: 'Gerar' },
-          { id: 'revisao' as Tab, label: 'Revisao semanal' },
-          { id: 'aprovadas' as Tab, label: 'Banco aprovado' },
-        ].map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={
-              'px-4 py-2.5 text-sm font-semibold font-body border-b-2 -mb-px transition-colors ' +
-              (tab === t.id ? 'border-[#3e77db] text-[#101e37]' : 'border-transparent text-[#3D3D3D]/40 hover:text-[#3D3D3D]/70')
-            }
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {tab === 'gerar' && (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Coluna esquerda: gerador de prompt */}
         <div className="bg-white rounded-2xl border border-black/[0.06] p-6 md:p-8">
           {stage === 'form' && (
             <>
@@ -298,6 +278,7 @@ export function PhotoBankPanel() {
               </button>
 
               {formError && <p className="text-xs text-red-500 font-body mt-3 text-center">{formError}</p>}
+              {successMessage && <p className="text-xs text-[#318367] font-body mt-3 text-center">{successMessage}</p>}
 
               <p className="text-[10px] text-[#3D3D3D]/40 font-body mt-4 text-center">
                 Voce vai revisar o prompt antes da imagem ser gerada.
@@ -348,51 +329,99 @@ export function PhotoBankPanel() {
             </>
           )}
         </div>
-      )}
 
-      {tab === 'revisao' && (
-        <EntryGrid
-          entries={entries}
-          loading={loadingEntries}
-          emptyMessage="Nenhuma imagem pendente de revisao no momento."
-          renderActions={(entry) => (
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => reviewEntry(entry.id, 'aprovado')}
-                disabled={actionId === entry.id}
-                className="flex-1 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
-              >
-                Aprovar
-              </button>
-              <button
-                onClick={() => reviewEntry(entry.id, 'reprovado')}
-                disabled={actionId === entry.id}
-                className="flex-1 py-2 rounded-lg bg-[#F4F6F8] hover:bg-red-50 text-[#3D3D3D]/70 hover:text-red-500 text-xs font-semibold font-body transition-colors disabled:opacity-40"
-              >
-                Reprovar
-              </button>
+        {/* Coluna direita: banco aprovado */}
+        <div>
+          <p className="text-sm font-semibold font-body text-[#101e37] mb-4">Banco aprovado</p>
+          {loadingApproved ? (
+            <p className="text-sm font-body text-[#3D3D3D]/40 text-center py-16">Carregando...</p>
+          ) : approvedEntries.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-black/10 bg-[#F4F6F8] px-8 py-16 text-center">
+              <p className="text-sm font-body text-[#3D3D3D]/50">Nenhuma imagem aprovada ainda.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="relative rounded-2xl overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-[4/3]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={approvedEntries[0].imageUrl}
+                  alt={approvedEntries[0].description || 'Imagem aprovada mais recente'}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {approvedEntries.length > 1 && (
+                <div className="grid grid-cols-4 gap-2">
+                  {approvedEntries.slice(1).map((entry) => (
+                    <div key={entry.id} className="relative rounded-lg overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-square">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={entry.imageUrl} alt={entry.description} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
-        />
-      )}
+        </div>
+      </div>
 
-      {tab === 'aprovadas' && (
-        <EntryGrid
-          entries={entries}
-          loading={loadingEntries}
-          emptyMessage="Nenhuma imagem aprovada ainda."
-          renderActions={(entry) => (
-            <a
-              href={entry.imageUrl}
-              download
-              target="_blank"
-              rel="noreferrer"
-              className="block mt-3 text-center py-2 rounded-lg bg-[#F4F6F8] hover:bg-[#3e77db]/10 text-[#3D3D3D]/70 hover:text-[#3e77db] text-xs font-semibold font-body transition-colors"
-            >
-              Baixar imagem
-            </a>
+      {/* Acesso discreto a revisao semanal */}
+      <div className="mt-10 text-center">
+        {!reviewOpen && (
+          <button
+            onClick={openReview}
+            className="text-[11px] text-[#3D3D3D]/30 hover:text-[#3D3D3D]/60 font-body underline underline-offset-2 transition-colors"
+          >
+            Acesso da equipe · Revisao semanal
+          </button>
+        )}
+      </div>
+
+      {reviewOpen && (
+        <div className="mt-4 border-t border-black/[0.06] pt-8">
+          {!reviewPin ? (
+            <form onSubmit={submitReviewPin} className="max-w-xs mx-auto text-center space-y-3">
+              <p className="text-sm font-body text-[#3D3D3D]/50">Digite o PIN da equipe para revisar</p>
+              <input
+                type="password"
+                value={reviewPinInput}
+                onChange={(e) => setReviewPinInput(e.target.value)}
+                placeholder="PIN"
+                className="w-full px-4 py-2.5 rounded-xl border border-black/10 text-sm font-body text-center bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
+              />
+              {reviewPinError && <p className="text-xs text-red-500 font-body">PIN incorreto, tente novamente.</p>}
+              <button type="submit" className="w-full py-2.5 rounded-xl bg-[#3e77db] hover:bg-[#2d63c8] text-white text-sm font-semibold font-body transition-colors">
+                Entrar
+              </button>
+            </form>
+          ) : (
+            <>
+              <p className="text-sm font-semibold font-body text-[#101e37] mb-4 text-center">Revisao semanal</p>
+              <EntryGrid
+                entries={pendingEntries}
+                loading={loadingPending}
+                emptyMessage="Nenhuma imagem pendente de revisao no momento."
+                renderActions={(entry) => (
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => reviewEntry(entry.id, 'aprovado')}
+                      disabled={actionId === entry.id}
+                      className="flex-1 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                    >
+                      Aprovar
+                    </button>
+                    <button
+                      onClick={() => reviewEntry(entry.id, 'reprovado')}
+                      disabled={actionId === entry.id}
+                      className="flex-1 py-2 rounded-lg bg-[#F4F6F8] hover:bg-red-50 text-[#3D3D3D]/70 hover:text-red-500 text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                    >
+                      Reprovar
+                    </button>
+                  </div>
+                )}
+              />
+            </>
           )}
-        />
+        </div>
       )}
     </div>
   )
