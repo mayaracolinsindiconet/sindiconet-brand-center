@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { put } from '@vercel/blob'
-import { checkBankPin } from '@/lib/photo-bank-auth'
 import { addEntry, type BankEntry } from '@/lib/blob-bank'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -12,10 +11,10 @@ const sizeByFormat: Record<string, '1024x1024' | '1024x1536' | '1536x1024'> = {
   paisagem: '1536x1024',
 }
 
+// Geracao de imagem e publica (qualquer pessoa pode gerar). A imagem entra
+// sempre como pendente e so vira parte do banco oficial apos revisao,
+// que essa sim exige PIN (ver /api/photo-bank/[id]).
 export async function POST(req: NextRequest) {
-  const unauthorized = checkBankPin(req)
-  if (unauthorized) return unauthorized
-
   try {
     const { prompt, format, description, styles, pillar } = await req.json()
 
