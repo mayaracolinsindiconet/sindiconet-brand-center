@@ -7,14 +7,14 @@ export default function BancoImagensPage() {
     <main>
       <SectionHero
         title="Banco de Imagens"
-        description="Geracao de imagens com IA a partir dos pilares fotograficos da marca, com revisao semanal obrigatoria antes de qualquer imagem entrar no banco oficial."
+        description="Gere imagens com IA seguindo os pilares fotograficos da marca e explore as imagens aprovadas do banco."
         breadcrumb={[{ label: 'Banco de Imagens', href: '/banco-imagens' }]}
       />
 
       <SectionWrapper
         id="banco-imagens"
-        title="Geracao e revisao"
-        description="Gere novas imagens, revise o que foi gerado na semana e acompanhe o banco de imagens aprovadas."
+        title="Gerar imagens"
+        description="Descreva a cena, escolha o formato e confirme o prompt para gerar a imagem. Ao lado, as imagens ja aprovadas para uso."
         background="default"
       >
         <PhotoBankPanel />
