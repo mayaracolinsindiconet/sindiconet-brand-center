@@ -11,9 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 const allLinks = [
   { href: '/branding',      label: 'Branding'    },
   { href: '/identidade',    label: 'Identidade'  },
-  { href: '/fotografia',    label: 'Fotografia'  },
-  { href: '/downloads',     label: 'Downloads'   },
   { href: '/banco-imagens', label: 'Banco de Imagens' },
+  { href: '/downloads',     label: 'Downloads'   },
   { href: '/tom-de-voz',    label: 'Tom de Voz IA', highlight: true },
 ]
 
