@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { PhotoPillarsSection } from '@/components/photography/PhotoPillarsSection'
 import {
   IconConteudo,
   IconCursos,
@@ -20,6 +21,7 @@ const sections = [
   { id: 'golden-circle',  label: 'Golden Circle' },
   { id: 'posicionamento', label: 'Posicionamento' },
   { id: 'arquitetura',    label: 'Arquitetura de Marca' },
+  { id: 'fotografia',       label: 'Fotografia' },
   { id: 'personalidade',  label: 'Personalidade & Voz' },
   { id: 'personas',       label: 'Personas' },
   { id: 'lideranca',      label: 'Liderança' },
@@ -353,6 +355,14 @@ export default function FundacaoPage() {
                   )
                 })}
               </div>
+            </SectionBlock>
+
+            {/* 05b · Fotografia */}
+            <SectionBlock id="fotografia" eyebrow="05b · Fotografia" title="Pilares Fotográficos">
+              <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
+                A linguagem visual da marca segue tres pilares fotograficos que orientam toda producao de imagem, humana ou gerada por IA.
+              </p>
+              <PhotoPillarsSection />
             </SectionBlock>
 
             {/* 06 · Personalidade & Voz */}
