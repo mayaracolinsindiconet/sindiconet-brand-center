@@ -55,6 +55,8 @@ export function PhotoBankPanel() {
   const [generatingImage, setGeneratingImage] = useState(false)
   const [formError, setFormError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [justGenerated, setJustGenerated] = useState<BankEntry | null>(null)
+  const [downloadingGenerated, setDownloadingGenerated] = useState(false)
 
   const [approvedEntries, setApprovedEntries] = useState<BankEntry[]>([])
   const [loadingApproved, setLoadingApproved] = useState(true)
@@ -68,6 +70,11 @@ export function PhotoBankPanel() {
   const [actionId, setActionId] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [uploadProgress, setUploadProgress] = useState('')
+
+  const [lightboxEntry, setLightboxEntry] = useState<BankEntry | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
   const fetchApproved = useCallback(async () => {
     setLoadingApproved(true)
@@ -101,6 +108,8 @@ export function PhotoBankPanel() {
   async function generatePrompt() {
     setGeneratingPrompt(true)
     setFormError('')
+    setJustGenerated(null)
+    setSuccessMessage('')
     try {
       const res = await fetch('/api/generate-photo-prompt', {
         method: 'POST',
@@ -133,14 +142,15 @@ export function PhotoBankPanel() {
         body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, pillar }),
       })
       if (!res.ok) throw new Error('Erro ao gerar imagem')
+      const data = await res.json()
       setDescription('')
       setSelectedStyles([])
       setPromptEn('')
       setPromptPt('')
       setStage('form')
-      setSuccessMessage('Imagem gerada! Ela foi enviada para a revisao semanal antes de entrar no banco oficial.')
+      setJustGenerated(data.entry || null)
+      setSuccessMessage('Imagem gerada! Voce ja pode baixar abaixo. Ela so aparece no banco publico apos ser aprovada na revisao semanal.')
       if (reviewPin) fetchPending(reviewPin)
-      setTimeout(() => setSuccessMessage(''), 7000)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Erro ao gerar imagem')
     } finally {
@@ -199,26 +209,88 @@ export function PhotoBankPanel() {
     }
   }
 
-async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || files.length === 0) return
     setUploading(true)
     setUploadError('')
+    const fileList = Array.from(files)
+    let successCount = 0
+    const failed: string[] = []
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i]
+      setUploadProgress('Enviando ' + (i + 1) + '/' + fileList.length + '...')
+      try {
+        const formData = new FormData()
+        formData.append('files', file)
+        const res = await fetch('/api/photo-bank/upload', {
+          method: 'POST',
+          headers: { 'x-bank-pin': reviewPin },
+          body: formData,
+        })
+        if (!res.ok) throw new Error()
+        successCount++
+      } catch {
+        failed.push(file.name)
+      }
+    }
+    setUploadProgress('')
+    if (failed.length > 0) {
+      setUploadError(
+        successCount + ' imagem(ns) enviada(s) com sucesso. Falha ao enviar: ' + failed.join(', ')
+      )
+    }
+    await fetchApproved()
+    setUploading(false)
+    e.target.value = ''
+  }
+
+  async function deleteApprovedEntry(id: string) {
+    if (!reviewPin) return
+    setDeletingId(id)
     try {
-      const formData = new FormData()
-      Array.from(files).forEach((f) => formData.append('files', f))
-      const res = await fetch('/api/photo-bank/upload', {
-        method: 'POST',
+      const res = await fetch('/api/photo-bank/' + id, {
+        method: 'DELETE',
         headers: { 'x-bank-pin': reviewPin },
-        body: formData,
       })
-      if (!res.ok) throw new Error('Erro ao enviar imagens')
-      await fetchApproved()
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Erro ao enviar imagens')
+      if (!res.ok) throw new Error()
+      setApprovedEntries((prev) => prev.filter((e) => e.id !== id))
+      setLightboxEntry(null)
+    } catch {
+      // usuario pode tentar novamente
     } finally {
-      setUploading(false)
-      e.target.value = ''
+      setDeletingId(null)
+    }
+  }
+
+  async function downloadImage(entry: BankEntry) {
+    setDownloadingId(entry.id)
+    try {
+      const res = await fetch(entry.imageUrl)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const ext = (entry.imageUrl.split('.').pop() || 'png').split('?')[0]
+      a.download = (entry.description || entry.id).replace(/[^a-zA-Z0-9-_ ]/g, '') + '.' + ext
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch {
+      window.open(entry.imageUrl, '_blank')
+    } finally {
+      setDownloadingId(null)
+    }
+  }
+
+  async function downloadJustGenerated() {
+    if (!justGenerated) return
+    setDownloadingGenerated(true)
+    try {
+      await downloadImage(justGenerated)
+    } finally {
+      setDownloadingGenerated(false)
     }
   }
 
@@ -305,6 +377,25 @@ async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
               {formError && <p className="text-xs text-red-500 font-body mt-3 text-center">{formError}</p>}
               {successMessage && <p className="text-xs text-[#318367] font-body mt-3 text-center">{successMessage}</p>}
 
+              {justGenerated && (
+                <div className="mt-5 p-4 rounded-xl bg-[#F4F6F8] border border-black/[0.06]">
+                  <div className="relative rounded-lg overflow-hidden bg-white aspect-[4/3] mb-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={justGenerated.imageUrl} alt={justGenerated.description || 'Imagem gerada'} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[10px] font-body text-[#3D3D3D]/50">Pendente de revisao · disponivel so para voce por enquanto</p>
+                    <button
+                      onClick={downloadJustGenerated}
+                      disabled={downloadingGenerated}
+                      className="shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                    >
+                      {downloadingGenerated ? 'Baixando...' : 'Baixar'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <p className="text-[10px] text-[#3D3D3D]/40 font-body mt-4 text-center">
                 Voce vai revisar o prompt antes da imagem ser gerada.
               </p>
@@ -366,21 +457,28 @@ async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="relative rounded-2xl overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-[4/3]">
+              <button
+                onClick={() => setLightboxEntry(approvedEntries[0])}
+                className="relative block w-full rounded-2xl overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-[4/3] cursor-zoom-in"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={approvedEntries[0].imageUrl}
                   alt={approvedEntries[0].description || 'Imagem aprovada mais recente'}
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </button>
               {approvedEntries.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {approvedEntries.slice(1).map((entry) => (
-                    <div key={entry.id} className="relative rounded-lg overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-square">
+                    <button
+                      key={entry.id}
+                      onClick={() => setLightboxEntry(entry)}
+                      className="relative block rounded-lg overflow-hidden border border-black/[0.06] bg-[#F4F6F8] aspect-square cursor-zoom-in"
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={entry.imageUrl} alt={entry.description} className="w-full h-full object-cover" />
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -424,14 +522,16 @@ async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
               <div className="max-w-md mx-auto mb-6 p-4 rounded-xl bg-[#F4F6F8] flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold font-body text-[#101e37]">Adicionar imagens existentes</p>
-                  <p className="text-[10px] font-body text-[#3D3D3D]/50">Fotos ja prontas entram direto como aprovadas.</p>
+                  <p className="text-[10px] font-body text-[#3D3D3D]/50">
+                    {uploading ? uploadProgress || 'Enviando...' : 'Fotos ja prontas entram direto como aprovadas.'}
+                  </p>
                 </div>
                 <label className="shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body cursor-pointer transition-colors">
                   {uploading ? 'Enviando...' : 'Escolher arquivos'}
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
                 </label>
               </div>
-              {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center">{uploadError}</p>}
+              {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center max-w-md mx-auto">{uploadError}</p>}
 
               <EntryGrid
                 entries={pendingEntries}
@@ -458,6 +558,53 @@ async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
               />
             </>
           )}
+        </div>
+      )}
+
+      {lightboxEntry && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 md:p-8"
+          onClick={() => setLightboxEntry(null)}
+        >
+          <div
+            className="relative max-w-3xl w-full bg-white rounded-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setLightboxEntry(null)}
+              className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center text-sm"
+              aria-label="Fechar"
+            >
+              ✕
+            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={lightboxEntry.imageUrl}
+              alt={lightboxEntry.description}
+              className="w-full max-h-[70vh] object-contain bg-[#F4F6F8]"
+            />
+            <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-xs font-body text-[#3D3D3D]/60 line-clamp-1">{lightboxEntry.description}</p>
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={() => downloadImage(lightboxEntry)}
+                  disabled={downloadingId === lightboxEntry.id}
+                  className="px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                >
+                  {downloadingId === lightboxEntry.id ? 'Baixando...' : 'Baixar'}
+                </button>
+                {reviewPin && (
+                  <button
+                    onClick={() => deleteApprovedEntry(lightboxEntry.id)}
+                    disabled={deletingId === lightboxEntry.id}
+                    className="px-4 py-2 rounded-lg bg-[#F4F6F8] hover:bg-red-50 text-[#3D3D3D]/70 hover:text-red-500 text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                  >
+                    {deletingId === lightboxEntry.id ? 'Excluindo...' : 'Excluir'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -502,3 +649,4 @@ function EntryGrid({
     </div>
   )
 }
+
