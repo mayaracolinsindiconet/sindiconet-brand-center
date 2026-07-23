@@ -66,6 +66,8 @@ export function PhotoBankPanel() {
   const [pendingEntries, setPendingEntries] = useState<BankEntry[]>([])
   const [loadingPending, setLoadingPending] = useState(false)
   const [actionId, setActionId] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
   const fetchApproved = useCallback(async () => {
     setLoadingApproved(true)
@@ -194,6 +196,29 @@ export function PhotoBankPanel() {
       // usuario pode tentar novamente
     } finally {
       setActionId(null)
+    }
+  }
+
+async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+    setUploading(true)
+    setUploadError('')
+    try {
+      const formData = new FormData()
+      Array.from(files).forEach((f) => formData.append('files', f))
+      const res = await fetch('/api/photo-bank/upload', {
+        method: 'POST',
+        headers: { 'x-bank-pin': reviewPin },
+        body: formData,
+      })
+      if (!res.ok) throw new Error('Erro ao enviar imagens')
+      await fetchApproved()
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Erro ao enviar imagens')
+    } finally {
+      setUploading(false)
+      e.target.value = ''
     }
   }
 
@@ -396,6 +421,18 @@ export function PhotoBankPanel() {
           ) : (
             <>
               <p className="text-sm font-semibold font-body text-[#101e37] mb-4 text-center">Revisao semanal</p>
+              <div className="max-w-md mx-auto mb-6 p-4 rounded-xl bg-[#F4F6F8] flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold font-body text-[#101e37]">Adicionar imagens existentes</p>
+                  <p className="text-[10px] font-body text-[#3D3D3D]/50">Fotos ja prontas entram direto como aprovadas.</p>
+                </div>
+                <label className="shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body cursor-pointer transition-colors">
+                  {uploading ? 'Enviando...' : 'Escolher arquivos'}
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
+                </label>
+              </div>
+              {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center">{uploadError}</p>}
+
               <EntryGrid
                 entries={pendingEntries}
                 loading={loadingPending}
