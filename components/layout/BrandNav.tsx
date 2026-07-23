@@ -6,17 +6,18 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ─── Nav structure ────────────────────────────────────────────────────────────
+// --- Nav structure ----------------------------------------------------------
 
 const allLinks = [
-  { href: '/branding',    label: 'Branding'    },
-  { href: '/identidade',  label: 'Identidade'  },
-  { href: '/fotografia',  label: 'Fotografia'  },
-  { href: '/downloads',   label: 'Downloads'   },
-  { href: '/tom-de-voz',  label: 'Tom de Voz IA', highlight: true },
+  { href: '/branding',      label: 'Branding'    },
+  { href: '/identidade',    label: 'Identidade'  },
+  { href: '/fotografia',    label: 'Fotografia'  },
+  { href: '/downloads',     label: 'Downloads'   },
+  { href: '/banco-imagens', label: 'Banco de Imagens' },
+  { href: '/tom-de-voz',    label: 'Tom de Voz IA', highlight: true },
 ]
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// --- Component ---------------------------------------------------------------
 
 export function BrandNav() {
   const [scrolled,   setScrolled]   = useState(false)
@@ -139,7 +140,7 @@ export function BrandNav() {
   )
 }
 
-// ─── Logo ─────────────────────────────────────────────────────────────────────
+// --- Logo ----------------------------------------------------------------------
 
 function SindiconetLogo({ scrolled }: { scrolled: boolean }) {
   const src = scrolled
@@ -167,4 +168,3 @@ function SindiconetLogo({ scrolled }: { scrolled: boolean }) {
     </div>
   )
 }
-
