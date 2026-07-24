@@ -27,7 +27,7 @@ const FORMATS = [
   { id: 'paisagem', label: 'Paisagem', hint: '3:2' },
 ]
 
-const PILLAR_FILTER_OPTIONS = [{ id: '', label: 'Todos os pilares' }, ...PILLARS]
+const STYLE_FILTER_OPTIONS = [{ id: '', label: 'Todas as caracteristicas' }, ...STYLE_CHIPS]
 
 const APPROVED_PAGE_SIZE = 12
 
@@ -85,15 +85,15 @@ export function PhotoBankPanel() {
 
   const [searchInput, setSearchInput] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterPillar, setFilterPillar] = useState('')
+  const [filterStyle, setFilterStyle] = useState('')
   const [approvedPage, setApprovedPage] = useState(1)
   const [approvedTotal, setApprovedTotal] = useState(0)
   const [approvedTotalPages, setApprovedTotalPages] = useState(1)
 
-  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; pillar?: string }) => {
+  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string }) => {
     const page = opts?.page ?? approvedPage
     const search = opts?.search ?? searchQuery
-    const pillarFilter = opts?.pillar ?? filterPillar
+    const styleFilter = opts?.style ?? filterStyle
     setLoadingApproved(true)
     try {
       const params = new URLSearchParams()
@@ -101,7 +101,7 @@ export function PhotoBankPanel() {
       params.set('page', String(page))
       params.set('limit', String(APPROVED_PAGE_SIZE))
       if (search) params.set('search', search)
-      if (pillarFilter) params.set('pillar', pillarFilter)
+      if (styleFilter) params.set('style', styleFilter)
       const res = await fetch('/api/photo-bank?' + params.toString())
       if (res.ok) {
         const data = await res.json()
@@ -115,12 +115,12 @@ export function PhotoBankPanel() {
     } finally {
       setLoadingApproved(false)
     }
-  }, [approvedPage, searchQuery, filterPillar])
+  }, [approvedPage, searchQuery, filterStyle])
 
   useEffect(() => {
     fetchApproved()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvedPage, searchQuery, filterPillar])
+  }, [approvedPage, searchQuery, filterStyle])
 
   // Debounce da busca por texto: atualiza searchQuery 400ms apos o usuario parar de digitar,
   // e volta para a pagina 1 sempre que o filtro mudar.
@@ -132,15 +132,15 @@ export function PhotoBankPanel() {
     return () => clearTimeout(timer)
   }, [searchInput])
 
-  function handleFilterPillarChange(value: string) {
-    setFilterPillar(value)
+  function handleFilterStyleChange(value: string) {
+    setFilterStyle(value)
     setApprovedPage(1)
   }
 
   function clearFilters() {
     setSearchInput('')
     setSearchQuery('')
-    setFilterPillar('')
+    setFilterStyle('')
     setApprovedPage(1)
   }
 
@@ -208,7 +208,7 @@ export function PhotoBankPanel() {
       const res = await fetch('/api/generate-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, pillar }),
+        body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, pillar, referenceImage }),
       })
       if (!res.ok) throw new Error('Erro ao gerar imagem')
       const data = await res.json()
@@ -497,7 +497,7 @@ export function PhotoBankPanel() {
                     >
                       {downloadingGenerated ? 'Baixando...' : 'Baixar'}
                     </button>
-                </div>
+                  </div>
                 </div>
               )}
 
@@ -568,15 +568,15 @@ export function PhotoBankPanel() {
               className="flex-1 px-4 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] placeholder-[#3D3D3D]/40 bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             />
             <select
-              value={filterPillar}
-              onChange={(e) => handleFilterPillarChange(e.target.value)}
+              value={filterStyle}
+              onChange={(e) => handleFilterStyleChange(e.target.value)}
               className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             >
-              {PILLAR_FILTER_OPTIONS.map((opt) => (
+              {STYLE_FILTER_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
-            {(searchQuery || filterPillar) && (
+            {(searchQuery || filterStyle) && (
               <button
                 onClick={clearFilters}
                 className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
