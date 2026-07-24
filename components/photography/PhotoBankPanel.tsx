@@ -29,6 +29,24 @@ const FORMATS = [
 
 const STYLE_FILTER_OPTIONS = [{ id: '', label: 'Todas as caracteristicas' }, ...STYLE_CHIPS]
 
+const SUBJECT_CHIPS = [
+  { id: 'mulher', label: 'Mulher' },
+  { id: 'homem', label: 'Homem' },
+  { id: 'sindico', label: 'Sindico(a)' },
+  { id: 'trabalhador', label: 'Trabalhador' },
+  { id: 'empresario', label: 'Empresario(a)' },
+  { id: 'idoso', label: 'Idoso(a)' },
+  { id: 'crianca', label: 'Crianca' },
+  { id: 'casal', label: 'Casal' },
+  { id: 'familia', label: 'Familia' },
+  { id: 'grupo', label: 'Grupo / Reuniao' },
+  { id: 'seguranca', label: 'Seguranca' },
+  { id: 'zelador', label: 'Zelador(a)' },
+  { id: 'sem-pessoas', label: 'Sem pessoas' },
+]
+
+const SUBJECT_FILTER_OPTIONS = [{ id: '', label: 'Quem aparece: todos' }, ...SUBJECT_CHIPS]
+
 const APPROVED_PAGE_SIZE = 12
 
 type BankEntry = {
@@ -37,6 +55,7 @@ type BankEntry = {
   prompt: string
   description: string
   styles: string[]
+  subjects?: string[]
   pillar: string
   status: 'pendente' | 'aprovado' | 'reprovado'
   createdAt: string
@@ -50,6 +69,7 @@ export function PhotoBankPanel() {
   const [stage, setStage] = useState<Stage>('form')
   const [description, setDescription] = useState('')
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
   const [pillar, setPillar] = useState(PILLARS[0].id)
   const [format, setFormat] = useState(FORMATS[2].id)
 
@@ -79,6 +99,8 @@ export function PhotoBankPanel() {
   const [lightboxEntry, setLightboxEntry] = useState<BankEntry | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [taggingSubjects, setTaggingSubjects] = useState<string[]>([])
+  const [savingTags, setSavingTags] = useState(false)
 
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
   const [referenceImageName, setReferenceImageName] = useState('')
@@ -86,14 +108,16 @@ export function PhotoBankPanel() {
   const [searchInput, setSearchInput] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStyle, setFilterStyle] = useState('')
+  const [filterSubject, setFilterSubject] = useState('')
   const [approvedPage, setApprovedPage] = useState(1)
   const [approvedTotal, setApprovedTotal] = useState(0)
   const [approvedTotalPages, setApprovedTotalPages] = useState(1)
 
-  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string }) => {
+  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string; subject?: string }) => {
     const page = opts?.page ?? approvedPage
     const search = opts?.search ?? searchQuery
     const styleFilter = opts?.style ?? filterStyle
+    const subjectFilter = opts?.subject ?? filterSubject
     setLoadingApproved(true)
     try {
       const params = new URLSearchParams()
@@ -102,6 +126,7 @@ export function PhotoBankPanel() {
       params.set('limit', String(APPROVED_PAGE_SIZE))
       if (search) params.set('search', search)
       if (styleFilter) params.set('style', styleFilter)
+      if (subjectFilter) params.set('subject', subjectFilter)
       const res = await fetch('/api/photo-bank?' + params.toString())
       if (res.ok) {
         const data = await res.json()
@@ -115,12 +140,12 @@ export function PhotoBankPanel() {
     } finally {
       setLoadingApproved(false)
     }
-  }, [approvedPage, searchQuery, filterStyle])
+  }, [approvedPage, searchQuery, filterStyle, filterSubject])
 
   useEffect(() => {
     fetchApproved()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvedPage, searchQuery, filterStyle])
+  }, [approvedPage, searchQuery, filterStyle, filterSubject])
 
   // Debounce da busca por texto: atualiza searchQuery 400ms apos o usuario parar de digitar,
   // e volta para a pagina 1 sempre que o filtro mudar.
@@ -132,8 +157,17 @@ export function PhotoBankPanel() {
     return () => clearTimeout(timer)
   }, [searchInput])
 
+  useEffect(() => {
+    setTaggingSubjects(lightboxEntry?.subjects || [])
+  }, [lightboxEntry])
+
   function handleFilterStyleChange(value: string) {
     setFilterStyle(value)
+    setApprovedPage(1)
+  }
+
+  function handleFilterSubjectChange(value: string) {
+    setFilterSubject(value)
     setApprovedPage(1)
   }
 
@@ -141,6 +175,7 @@ export function PhotoBankPanel() {
     setSearchInput('')
     setSearchQuery('')
     setFilterStyle('')
+    setFilterSubject('')
     setApprovedPage(1)
   }
 
@@ -151,6 +186,14 @@ export function PhotoBankPanel() {
 
   function toggleStyle(id: string) {
     setSelectedStyles((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
+  }
+
+  function toggleSubject(id: string) {
+    setSelectedSubjects((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
+  }
+
+  function toggleTaggingSubject(id: string) {
+    setTaggingSubjects((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
   }
 
   function handleReferenceImage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -178,8 +221,8 @@ export function PhotoBankPanel() {
     try {
       const endpoint = referenceImage ? '/api/generate-photo-prompt-from-image' : '/api/generate-photo-prompt'
       const body = referenceImage
-        ? { imageBase64: referenceImage, description, styles: selectedStyles, pillar, format }
-        : { description, styles: selectedStyles, pillar, format }
+        ? { imageBase64: referenceImage, description, styles: selectedStyles, subjects: selectedSubjects, pillar, format }
+        : { description, styles: selectedStyles, subjects: selectedSubjects, pillar, format }
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -208,12 +251,13 @@ export function PhotoBankPanel() {
       const res = await fetch('/api/generate-photo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, pillar, referenceImage }),
+        body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, subjects: selectedSubjects, pillar, referenceImage }),
       })
       if (!res.ok) throw new Error('Erro ao gerar imagem')
       const data = await res.json()
       setDescription('')
       setSelectedStyles([])
+      setSelectedSubjects([])
       setPromptEn('')
       setPromptPt('')
       setReferenceImage(null)
@@ -338,6 +382,28 @@ export function PhotoBankPanel() {
     }
   }
 
+  async function saveTags() {
+    if (!lightboxEntry || !reviewPin) return
+    setSavingTags(true)
+    try {
+      const res = await fetch('/api/photo-bank/' + lightboxEntry.id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-bank-pin': reviewPin },
+        body: JSON.stringify({ subjects: taggingSubjects }),
+      })
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      const updated = data.entry as BankEntry
+      setLightboxEntry(updated)
+      setApprovedEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+      setPendingEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+    } catch {
+      // usuario pode tentar novamente
+    } finally {
+      setSavingTags(false)
+    }
+  }
+
   async function downloadImage(entry: BankEntry) {
     setDownloadingId(entry.id)
     try {
@@ -433,6 +499,24 @@ export function PhotoBankPanel() {
                       className={
                         'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
                         (selectedStyles.includes(chip.id) ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Quem aparece na cena</label>
+                <div className="flex flex-wrap gap-2">
+                  {SUBJECT_CHIPS.map((chip) => (
+                    <button
+                      key={chip.id}
+                      onClick={() => toggleSubject(chip.id)}
+                      className={
+                        'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
+                        (selectedSubjects.includes(chip.id) ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
                       }
                     >
                       {chip.label}
@@ -564,7 +648,7 @@ export function PhotoBankPanel() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Buscar por descricao, estilo..."
+              placeholder="Buscar por descricao, estilo, mulher, sindico..."
               className="flex-1 px-4 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] placeholder-[#3D3D3D]/40 bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             />
             <select
@@ -576,7 +660,16 @@ export function PhotoBankPanel() {
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
-            {(searchQuery || filterStyle) && (
+            <select
+              value={filterSubject}
+              onChange={(e) => handleFilterSubjectChange(e.target.value)}
+              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
+            >
+              {SUBJECT_FILTER_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>{opt.label}</option>
+              ))}
+            </select>
+            {(searchQuery || filterStyle || filterSubject) && (
               <button
                 onClick={clearFilters}
                 className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
@@ -742,9 +835,10 @@ export function PhotoBankPanel() {
               alt={lightboxEntry.description}
               className="w-full max-h-[70vh] object-contain bg-[#F4F6F8]"
             />
-            <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-xs font-body text-[#3D3D3D]/60 line-clamp-1">{lightboxEntry.description}</p>
-              <div className="flex gap-2 shrink-0">
+            <div className="p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p className="text-xs font-body text-[#3D3D3D]/60 line-clamp-1">{lightboxEntry.description}</p>
+                <div className="flex gap-2 shrink-0">
                 <button
                   onClick={() => downloadImage(lightboxEntry)}
                   disabled={downloadingId === lightboxEntry.id}
@@ -761,7 +855,35 @@ export function PhotoBankPanel() {
                     {deletingId === lightboxEntry.id ? 'Excluindo...' : 'Excluir'}
                   </button>
                 )}
+                </div>
               </div>
+
+              {reviewPin && (
+                <div className="mt-4 pt-4 border-t border-black/[0.06]">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-2">Quem aparece nesta imagem</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {SUBJECT_CHIPS.map((chip) => (
+                      <button
+                        key={chip.id}
+                        onClick={() => toggleTaggingSubject(chip.id)}
+                        className={
+                          'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
+                          (taggingSubjects.includes(chip.id) ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
+                        }
+                      >
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={saveTags}
+                    disabled={savingTags}
+                    className="px-4 py-2 rounded-lg bg-[#101e37] hover:bg-[#0d1929] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                  >
+                    {savingTags ? 'Salvando...' : 'Salvar tags'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
