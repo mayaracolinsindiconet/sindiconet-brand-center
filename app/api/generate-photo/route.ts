@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
 import OpenAI, { toFile } from 'openai'
 import { put } from '@vercel/blob'
-import { checkBankPin } from '@/lib/photo-bank-auth'
 import { addEntry, type BankEntry } from '@/lib/blob-bank'
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
@@ -76,9 +75,6 @@ async function buildPrompt(description: string, styles: string[], subjects: stri
 }
 
 export async function POST(req: NextRequest) {
-  const unauthorized = checkBankPin(req)
-  if (unauthorized) return unauthorized
-
   try {
     const { prompt, description, styles, subjects, pillar, referenceImage } = await req.json()
 
