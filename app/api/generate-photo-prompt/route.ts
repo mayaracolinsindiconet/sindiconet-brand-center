@@ -41,6 +41,22 @@ const styleGuide: Record<string, string> = {
   obras: 'construction or renovation work in residential condominium, safety equipment (hard hat, vest), scaffolding, urban building site Brazil',
 }
 
+const subjectGuide: Record<string, string> = {
+  mulher: 'main subject is a Brazilian/Latin woman',
+  homem: 'main subject is a Brazilian/Latin man',
+  sindico: 'main subject is a condominium manager (sindico)',
+  trabalhador: 'main subject is a maintenance or service worker',
+  empresario: 'main subject is a business executive in corporate attire',
+  idoso: 'main subject is an elderly person',
+  crianca: 'includes a child in the scene',
+  casal: 'main subjects are a couple',
+  familia: 'main subjects are a family',
+  grupo: 'main subjects are a small group of residents in a meeting or common area',
+  seguranca: 'main subject is a security guard',
+  zelador: 'main subject is a building caretaker (zelador)',
+  'sem-pessoas': 'no people visible, empty environment or architecture only',
+}
+
 const formatLabel: Record<string, string> = {
   quadrado: 'formato quadrado (proporcao 1:1)',
   retrato: 'formato retrato vertical (proporcao 2:3)',
@@ -57,20 +73,25 @@ function parseDualPrompt(raw: string): { promptEn: string; promptPt: string } {
 
 export async function POST(req: NextRequest) {
   try {
-    const { description, styles, pillar, format } = await req.json()
+    const { description, styles, subjects, pillar, format } = await req.json()
 
-    if (!description && (!styles || styles.length === 0)) {
-      return NextResponse.json({ error: 'Forneca uma descricao ou estilos' }, { status: 400 })
+    if (!description && (!styles || styles.length === 0) && (!subjects || subjects.length === 0)) {
+      return NextResponse.json({ error: 'Forneca uma descricao, estilos ou quem aparece na cena' }, { status: 400 })
     }
 
     const styleDescriptions = ((styles || []) as string[])
       .map((s) => styleGuide[s] || s)
       .join('; ')
 
+    const subjectDescriptions = ((subjects || []) as string[])
+      .map((s) => subjectGuide[s] || s)
+      .join('; ')
+
     const userPrompt = `Crie um prompt profissional para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
 
 ${description ? `CENA/ASSUNTO DESEJADO: ${description}` : ''}
 ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
+${subjectDescriptions ? `QUEM APARECE NA CENA: ${subjectDescriptions}` : ''}
 ${pillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillar}` : ''}
 ${format ? `FORMATO DE ENQUADRAMENTO: ${formatLabel[format] || format}` : ''}
 
