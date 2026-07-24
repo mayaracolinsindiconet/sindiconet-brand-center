@@ -40,9 +40,25 @@ const styleGuide: Record<string, string> = {
     'distinctly Brazilian urban context, São Paulo cityscape reference, tropical vegetation integrated with architecture, local Latin aesthetic',
 }
 
+const subjectGuide: Record<string, string> = {
+  mulher: 'main subject is a Brazilian/Latin woman',
+  homem: 'main subject is a Brazilian/Latin man',
+  sindico: 'main subject is a condominium manager (sindico)',
+  trabalhador: 'main subject is a maintenance or service worker',
+  empresario: 'main subject is a business executive in corporate attire',
+  idoso: 'main subject is an elderly person',
+  crianca: 'includes a child in the scene',
+  casal: 'main subjects are a couple',
+  familia: 'main subjects are a family',
+  grupo: 'main subjects are a small group of residents in a meeting or common area',
+  seguranca: 'main subject is a security guard',
+  zelador: 'main subject is a building caretaker (zelador)',
+  'sem-pessoas': 'no people visible, empty environment or architecture only',
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, description, styles, pillar } = await req.json()
+    const { imageBase64, description, styles, subjects, pillar } = await req.json()
 
     if (!imageBase64 || typeof imageBase64 !== 'string') {
       return NextResponse.json({ error: 'Envie uma imagem de referencia' }, { status: 400 })
@@ -58,6 +74,10 @@ export async function POST(req: NextRequest) {
       .map((s) => styleGuide[s] || s)
       .join('; ')
 
+    const subjectDescriptions = ((subjects || []) as string[])
+      .map((s) => subjectGuide[s] || s)
+      .join('; ')
+
     const pillarLabel: Record<string, string> = {
       'premium-silencioso': 'Premium Silencioso',
       'editorial-humano': 'Editorial Corporativo Humano',
@@ -68,6 +88,7 @@ export async function POST(req: NextRequest) {
       'Analise a imagem de referencia anexada e crie um prompt de geracao de imagem seguindo RIGOROSAMENTE o guia fotografico da Sindiconet.',
       description ? `CONTEXTO ADICIONAL DESEJADO PELO USUARIO: ${description}` : '',
       styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : '',
+      subjectDescriptions ? `QUEM DEVE APARECER NA CENA: ${subjectDescriptions}` : '',
       pillar && pillarLabel[pillar] ? `PILAR FOTOGRAFICO: ${pillarLabel[pillar]}` : '',
       'Preserve a cena/composicao/assunto principal da imagem de referencia, mas aplique a paleta, iluminacao e linguagem visual da marca.',
     ]
