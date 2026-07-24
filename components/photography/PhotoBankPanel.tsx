@@ -27,6 +27,10 @@ const FORMATS = [
   { id: 'paisagem', label: 'Paisagem', hint: '3:2' },
 ]
 
+const PILLAR_FILTER_OPTIONS = [{ id: '', label: 'Todos os pilares' }, ...PILLARS]
+
+const APPROVED_PAGE_SIZE = 12
+
 type BankEntry = {
   id: string
   imageUrl: string
@@ -76,25 +80,69 @@ export function PhotoBankPanel() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
 
-  const fetchApproved = useCallback(async () => {
+  const [referenceImage, setReferenceImage] = useState<string | null>(null)
+  const [referenceImageName, setReferenceImageName] = useState('')
+
+  const [searchInput, setSearchInput] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterPillar, setFilterPillar] = useState('')
+  const [approvedPage, setApprovedPage] = useState(1)
+  const [approvedTotal, setApprovedTotal] = useState(0)
+  const [approvedTotalPages, setApprovedTotalPages] = useState(1)
+
+  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; pillar?: string }) => {
+    const page = opts?.page ?? approvedPage
+    const search = opts?.search ?? searchQuery
+    const pillarFilter = opts?.pillar ?? filterPillar
     setLoadingApproved(true)
     try {
-      const res = await fetch('/api/photo-bank?status=aprovado')
+      const params = new URLSearchParams()
+      params.set('status', 'aprovado')
+      params.set('page', String(page))
+      params.set('limit', String(APPROVED_PAGE_SIZE))
+      if (search) params.set('search', search)
+      if (pillarFilter) params.set('pillar', pillarFilter)
+      const res = await fetch('/api/photo-bank?' + params.toString())
       if (res.ok) {
         const data = await res.json()
         const sorted = [...(data.entries || [])].sort(
           (a: BankEntry, b: BankEntry) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
         setApprovedEntries(sorted)
+        setApprovedTotal(data.total || 0)
+        setApprovedTotalPages(data.totalPages || 1)
       }
     } finally {
       setLoadingApproved(false)
     }
-  }, [])
+  }, [approvedPage, searchQuery, filterPillar])
 
   useEffect(() => {
     fetchApproved()
-  }, [fetchApproved])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approvedPage, searchQuery, filterPillar])
+
+  // Debounce da busca por texto: atualiza searchQuery 400ms apos o usuario parar de digitar,
+  // e volta para a pagina 1 sempre que o filtro mudar.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput.trim())
+      setApprovedPage(1)
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  function handleFilterPillarChange(value: string) {
+    setFilterPillar(value)
+    setApprovedPage(1)
+  }
+
+  function clearFilters() {
+    setSearchInput('')
+    setSearchQuery('')
+    setFilterPillar('')
+    setApprovedPage(1)
+  }
 
   useEffect(() => {
     const saved = sessionStorage.getItem(BANK_PIN_KEY)
@@ -105,16 +153,37 @@ export function PhotoBankPanel() {
     setSelectedStyles((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
   }
 
+  function handleReferenceImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      setReferenceImage(typeof reader.result === 'string' ? reader.result : null)
+      setReferenceImageName(file.name)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  function clearReferenceImage() {
+    setReferenceImage(null)
+    setReferenceImageName('')
+  }
+
   async function generatePrompt() {
     setGeneratingPrompt(true)
     setFormError('')
     setJustGenerated(null)
     setSuccessMessage('')
     try {
-      const res = await fetch('/api/generate-photo-prompt', {
+      const endpoint = referenceImage ? '/api/generate-photo-prompt-from-image' : '/api/generate-photo-prompt'
+      const body = referenceImage
+        ? { imageBase64: referenceImage, description, styles: selectedStyles, pillar, format }
+        : { description, styles: selectedStyles, pillar, format }
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description, styles: selectedStyles, pillar, format }),
+        body: JSON.stringify(body),
       })
       if (!res.ok) throw new Error('Erro ao gerar prompt')
       const data = await res.json()
@@ -147,6 +216,8 @@ export function PhotoBankPanel() {
       setSelectedStyles([])
       setPromptEn('')
       setPromptPt('')
+      setReferenceImage(null)
+      setReferenceImageName('')
       setStage('form')
       setJustGenerated(data.entry || null)
       setSuccessMessage('Imagem gerada! Voce ja pode baixar abaixo. Ela so aparece no banco publico apos ser aprovada na revisao semanal.')
@@ -201,7 +272,10 @@ export function PhotoBankPanel() {
       })
       if (!res.ok) throw new Error('Erro ao revisar')
       setPendingEntries((prev) => prev.filter((e) => e.id !== id))
-      if (status === 'aprovado') fetchApproved()
+      if (status === 'aprovado') {
+        setApprovedPage(1)
+        fetchApproved({ page: 1 })
+      }
     } catch {
       // usuario pode tentar novamente
     } finally {
@@ -240,7 +314,8 @@ export function PhotoBankPanel() {
         successCount + ' imagem(ns) enviada(s) com sucesso. Falha ao enviar: ' + failed.join(', ')
       )
     }
-    await fetchApproved()
+    setApprovedPage(1)
+    await fetchApproved({ page: 1 })
     setUploading(false)
     e.target.value = ''
   }
@@ -254,8 +329,8 @@ export function PhotoBankPanel() {
         headers: { 'x-bank-pin': reviewPin },
       })
       if (!res.ok) throw new Error()
-      setApprovedEntries((prev) => prev.filter((e) => e.id !== id))
       setLightboxEntry(null)
+      await fetchApproved()
     } catch {
       // usuario pode tentar novamente
     } finally {
@@ -366,9 +441,39 @@ export function PhotoBankPanel() {
                 </div>
               </div>
 
+              <div className="mb-6">
+                <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Imagem de referencia (opcional)</label>
+                {referenceImage ? (
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F4F6F8] border border-black/[0.06]">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-white">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={referenceImage} alt="Referencia" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-body text-[#3D3D3D]/70 truncate">{referenceImageName}</p>
+                      <p className="text-[10px] font-body text-[#3D3D3D]/40">O prompt sera gerado a partir desta imagem</p>
+                    </div>
+                    <button
+                      onClick={clearReferenceImage}
+                      className="shrink-0 text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-black/10 bg-[#F4F6F8] text-xs font-semibold font-body text-[#3D3D3D]/60 cursor-pointer hover:bg-black/5 transition-colors">
+                    Anexar imagem de referencia
+                    <input type="file" accept="image/*" className="hidden" onChange={handleReferenceImage} />
+                  </label>
+                )}
+                <p className="text-[10px] text-[#3D3D3D]/40 font-body mt-1.5">
+                  A IA usa a cena da imagem como base, mas aplica a direcao visual da marca.
+                </p>
+              </div>
+
               <button
                 onClick={generatePrompt}
-                disabled={generatingPrompt || !description.trim()}
+                disabled={generatingPrompt || (!description.trim() && !referenceImage)}
                 className="w-full py-3 rounded-xl bg-[#3e77db] hover:bg-[#2d63c8] text-white text-sm font-semibold font-body transition-colors disabled:opacity-40"
               >
                 {generatingPrompt ? 'Gerando prompt...' : 'Gerar prompt'}
@@ -392,7 +497,7 @@ export function PhotoBankPanel() {
                     >
                       {downloadingGenerated ? 'Baixando...' : 'Baixar'}
                     </button>
-                  </div>
+                </div>
                 </div>
               )}
 
@@ -448,7 +553,39 @@ export function PhotoBankPanel() {
 
         {/* Coluna direita: banco aprovado */}
         <div>
-          <p className="text-sm font-semibold font-body text-[#101e37] mb-4">Banco aprovado</p>
+          <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+            <p className="text-sm font-semibold font-body text-[#101e37]">
+              Banco aprovado {approvedTotal > 0 && <span className="text-[#3D3D3D]/40 font-normal">({approvedTotal})</span>}
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Buscar por descricao, estilo..."
+              className="flex-1 px-4 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] placeholder-[#3D3D3D]/40 bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
+            />
+            <select
+              value={filterPillar}
+              onChange={(e) => handleFilterPillarChange(e.target.value)}
+              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
+            >
+              {PILLAR_FILTER_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>{opt.label}</option>
+              ))}
+            </select>
+            {(searchQuery || filterPillar) && (
+              <button
+                onClick={clearFilters}
+                className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
+              >
+                Limpar
+              </button>
+            )}
+          </div>
+
           {loadingApproved ? (
             <p className="text-sm font-body text-[#3D3D3D]/40 text-center py-16">Carregando...</p>
           ) : approvedEntries.length === 0 ? (
@@ -480,6 +617,28 @@ export function PhotoBankPanel() {
                       <img src={entry.imageUrl} alt={entry.description} className="w-full h-full object-cover" />
                     </button>
                   ))}
+                </div>
+              )}
+
+              {approvedTotalPages > 1 && (
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    onClick={() => setApprovedPage((p) => Math.max(1, p - 1))}
+                    disabled={approvedPage <= 1}
+                    className="px-3 py-1.5 rounded-lg bg-[#F4F6F8] hover:bg-black/5 text-[#3D3D3D]/70 text-xs font-semibold font-body transition-colors disabled:opacity-30"
+                  >
+                    Anterior
+                  </button>
+                  <p className="text-[11px] font-body text-[#3D3D3D]/40">
+                    Pagina {approvedPage} de {approvedTotalPages}
+                  </p>
+                  <button
+                    onClick={() => setApprovedPage((p) => Math.min(approvedTotalPages, p + 1))}
+                    disabled={approvedPage >= approvedTotalPages}
+                    className="px-3 py-1.5 rounded-lg bg-[#F4F6F8] hover:bg-black/5 text-[#3D3D3D]/70 text-xs font-semibold font-body transition-colors disabled:opacity-30"
+                  >
+                    Proxima
+                  </button>
                 </div>
               )}
             </div>
@@ -649,4 +808,3 @@ function EntryGrid({
     </div>
   )
 }
-
