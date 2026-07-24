@@ -24,7 +24,10 @@ export async function readManifest(): Promise<BankEntry[]> {
           const { blobs } = await list({ prefix: MANIFEST_PATH })
           const found = blobs.find((b) => b.pathname === MANIFEST_PATH)
           if (!found) return []
-                const res = await fetch(found.url, { cache: 'no-store' })
+                // Cache-bust: o Vercel Blob serve o mesmo pathname atras de um CDN,
+                // entao uma leitura logo apos a escrita pode retornar uma copia antiga
+                // se a URL for identica. O parametro de query garante uma leitura fresca.
+                const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: 'no-store' })
           if (!res.ok) return []
                 const data = await res.json()
           return Array.isArray(data) ? data : []
