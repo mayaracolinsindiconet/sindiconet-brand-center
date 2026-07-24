@@ -5,7 +5,7 @@ import { readManifest } from '@/lib/blob-bank'
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get('status')
   const search = (req.nextUrl.searchParams.get('search') || '').trim().toLowerCase()
-  const pillar = req.nextUrl.searchParams.get('pillar') || ''
+  const style = req.nextUrl.searchParams.get('style') || ''
   const pageParam = parseInt(req.nextUrl.searchParams.get('page') || '', 10)
   const limitParam = parseInt(req.nextUrl.searchParams.get('limit') || '', 10)
 
@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
   const all = await readManifest()
   let filtered = status ? all.filter((e) => e.status === status) : all
 
-  if (pillar) {
-    filtered = filtered.filter((e) => e.pillar === pillar)
+  if (style) {
+    filtered = filtered.filter((e) => (e.styles || []).includes(style))
   }
 
   if (search) {
