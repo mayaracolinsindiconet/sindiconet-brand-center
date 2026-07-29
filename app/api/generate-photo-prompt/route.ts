@@ -3,10 +3,16 @@ import Groq from 'groq-sdk'
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
+const REALISM_SUFFIX_EN = `Photorealistic, shot on a professional DSLR camera (Canon EOS R5, 50mm f/1.4 or 35mm f/1.8 prime lens), true documentary/editorial photography -- absolutely NOT an illustration, NOT a 3D render, NOT digital art, NOT CGI, NOT painterly, NOT an AI-generated look. Natural skin texture with visible pores and realistic imperfections, authentic fabric and material textures, physically accurate lighting and soft natural shadows, shallow depth of field with authentic bokeh, subtle natural film grain, true-to-life color rendering. Avoid plastic/waxy skin, oversmoothed surfaces, uncanny symmetry, glossy render sheen, or any synthetic/AI look.`
+
+const REALISM_SUFFIX_PT = ` Foto hiper-realista, como capturada por uma camera profissional (DSLR), com textura de pele natural, iluminacao fisicamente realista e profundidade de campo autentica -- sem aparencia de ilustracao, render 3D ou IA.`
+
 const SYSTEM_PROMPT = `Voce e um especialista em direcao de fotografia de marca e prompts para IA generativa.
 Crie prompts profissionais para geracao de imagens IA alinhados ao guia fotografico oficial da Sindiconet.
 
 POSICIONAMENTO EMOCIONAL CENTRAL: "Voce esta em boas maos."
+
+FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA". Descreva sempre: textura de pele natural com poros e imperfeicoes reais, texturas realistas de tecido e materiais, fisica de luz e sombra precisa, profundidade de campo rasa com bokeh autentico, grao de filme sutil. Evite pele plastica/cerosa, superficies excessivamente suavizadas, simetria artificial perfeita, brilho de render 3D ou qualquer aparencia sintetica/gerada por IA.
 
 PILAR 01 - PREMIUM SILENCIOSO: sofisticacao sem ostentacao. Tons frios e neutros (bege, branco #F4F6F8, cinza concreto), luz natural fria, muito espaco negativo, materiais nobres (vidro, concreto, madeira clara). Evitar luxury exagerado, futurismo, cores vibrantes, excesso de elementos.
 
@@ -18,9 +24,9 @@ PALETA: azul corporativo profundo #101e37, cinza concreto #6C757D, branco suave 
 
 DIRETRIZES TECNICAS: 35mm f/1.8 ou 50mm f/1.4 prime, ISO natural, luz natural difusa (nunca flash direto), regra dos tercos, espaco negativo generoso, profundidade de campo rasa para pessoas.
 
-EVITAR SEMPRE: gradientes exagerados, glow e 3D excessivo, UI gamer ou neon, maximalismo visual, estetica startup generica, visual instagramavel demais, pessoas sem contexto brasileiro, paisagens genericas.
+EVITAR SEMPRE: gradientes exagerados, glow e 3D excessivo, UI gamer ou neon, maximalismo visual, estetica startup generica, visual instagramavel demais, pessoas sem contexto brasileiro, paisagens genericas, aparencia de ilustracao ou de imagem gerada por IA.
 
-IMPORTANTE: este prompt sera usado DIRETAMENTE em uma API de geracao de imagem (gpt-image-1), entao NAO inclua flags de Midjourney como --ar, --style raw ou --q. Escreva em prosa corrida cobrindo: assunto/cena principal, ambiente e contexto, estilo fotografico (camera, lente, luz), paleta de cores e mood.
+IMPORTANTE: este prompt sera usado DIRETAMENTE em uma API de geracao de imagem (gpt-image-1), entao NAO inclua flags de Midjourney como --ar, --style raw ou --q. Escreva em prosa corrida cobrindo: assunto/cena principal, ambiente e contexto, estilo fotografico (camera, lente, luz), paleta de cores e mood, sempre reforcando o fotorrealismo.
 
 Depois de escrever o prompt em ingles, traduza o MESMO prompt para portugues do Brasil, mantendo o sentido fiel, para que quem nao entende ingles saiba exatamente o que sera gerado.
 
@@ -96,6 +102,7 @@ ${pillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillar}` : ''}
 ${format ? `FORMATO DE ENQUADRAMENTO: ${formatLabel[format] || format}` : ''}
 
 Aplique os pilares visuais relevantes do guia: cromatica, iluminacao, composicao, mood.
+Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA.
 Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
 
     const completion = await groq.chat.completions.create({
@@ -111,7 +118,10 @@ Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
     const raw = completion.choices[0]?.message?.content?.trim() ?? ''
     const { promptEn, promptPt } = parseDualPrompt(raw)
 
-    return NextResponse.json({ promptEn, promptPt, prompt: promptEn })
+    const promptEnFinal = promptEn ? `${promptEn} ${REALISM_SUFFIX_EN}` : REALISM_SUFFIX_EN
+    const promptPtFinal = promptPt ? `${promptPt}${REALISM_SUFFIX_PT}` : promptPt
+
+    return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {
     console.error('generate-photo-prompt error:', error)
     return NextResponse.json({ error: 'Erro ao gerar prompt' }, { status: 500 })
