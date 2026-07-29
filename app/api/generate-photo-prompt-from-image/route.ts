@@ -3,20 +3,25 @@ import OpenAI from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
+const REALISM_SUFFIX_EN = `Photorealistic, shot on a professional DSLR camera (Canon EOS R5, 50mm f/1.4 or 35mm f/1.8 prime lens), true documentary/editorial photography -- absolutely NOT an illustration, NOT a 3D render, NOT digital art, NOT CGI, NOT painterly, NOT an AI-generated look. Natural skin texture with visible pores and realistic imperfections, authentic fabric and material textures, physically accurate lighting and soft natural shadows, shallow depth of field with authentic bokeh, subtle natural film grain, true-to-life color rendering. Avoid plastic/waxy skin, oversmoothed surfaces, uncanny symmetry, glossy render sheen, or any synthetic/AI look.`
+
 const SYSTEM_PROMPT = `Voce e um especialista em direcao de fotografia de marca e prompts para IA generativa.
 Sua tarefa: olhar para uma imagem de referencia enviada pelo usuario e escrever um prompt de geracao de imagem
 que preserve a CENA/COMPOSICAO/ASSUNTO da referencia (o que esta acontecendo, enquadramento, pose, elementos principais),
 mas redirecione todo o tratamento visual para o guia fotografico oficial da Sindiconet.
 
 Posicionamento emocional central: "Voce esta em boas maos."
+
+FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA". Descreva sempre: textura de pele natural com poros e imperfeicoes reais, texturas realistas de tecido e materiais, fisica de luz e sombra precisa, profundidade de campo rasa com bokeh autentico, grao de filme sutil. Evite pele plastica/cerosa, superficies excessivamente suavizadas, simetria artificial perfeita, brilho de render 3D ou qualquer aparencia sintetica/gerada por IA.
+
 Tres pilares: (1) Premium Silencioso - sofisticacao sem ostentacao, tons frios/neutros, luz natural, muito espaco negativo;
 (2) Editorial Corporativo Humano - pessoas reais brasileiras/latinas, expressoes espontaneas, contexto condominial, 35-50mm prime, luz natural difusa;
 (3) Arquitetura como Simbolo - verticalidade, angulo baixo, ceu negativo, fachadas modernas, vegetacao tropical integrada.
 Paleta: azul #101e37, cinza concreto #6C757D, branco #F4F6F8.
-Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico, elementos da imagem de referencia que nao combinam com a marca (ex: logotipos de terceiros, texto, marcas d'agua).
+Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico, aparencia de ilustracao ou de imagem gerada por IA, elementos da imagem de referencia que nao combinam com a marca (ex: logotipos de terceiros, texto, marcas d'agua).
 
 Descreva a cena chave da referencia em detalhe (assunto, acao, enquadramento, ambiente) e aplique a linguagem cromatica,
-de iluminacao e de composicao do guia da marca. Nao copie estilos, roupas de marca ou elementos graficos da imagem original
+de iluminacao e de composicao do guia da marca, sempre reforcando o fotorrealismo. Nao copie estilos, roupas de marca ou elementos graficos da imagem original
 que conflitem com a identidade Sindiconet.
 
 Retorne APENAS o prompt final em ingles, pronto para uso em geracao de imagem, sem explicacoes ou prefacios.`
@@ -91,6 +96,7 @@ export async function POST(req: NextRequest) {
       subjectDescriptions ? `QUEM DEVE APARECER NA CENA: ${subjectDescriptions}` : '',
       pillar && pillarLabel[pillar] ? `PILAR FOTOGRAFICO: ${pillarLabel[pillar]}` : '',
       'Preserve a cena/composicao/assunto principal da imagem de referencia, mas aplique a paleta, iluminacao e linguagem visual da marca.',
+      'Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA.',
     ]
       .filter(Boolean)
       .join('\n')
@@ -120,7 +126,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Nao foi possivel gerar o prompt' }, { status: 502 })
     }
 
-    return NextResponse.json({ prompt })
+    const promptFinal = `${prompt} ${REALISM_SUFFIX_EN}`
+
+    return NextResponse.json({ prompt: promptFinal })
   } catch (error) {
     console.error('generate-photo-prompt-from-image error:', error)
     return NextResponse.json({ error: 'Erro ao gerar prompt a partir da imagem' }, { status: 500 })
