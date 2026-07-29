@@ -10,26 +10,27 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 const SYSTEM_PROMPT = `Voce e um diretor de fotografia senior e especialista em prompts hyper-detalhados para modelos de geracao de imagem por IA, no nivel de um brief de producao fotografica profissional real.
 
-Sua tarefa: transformar um pedido simples em um prompt EXTREMAMENTE DETALHADO, denso e tecnico, cobrindo TODOS os aspectos visuais necessarios para que o resultado seja indistinguivel de uma fotografia profissional real. Quanto mais especifico e descritivo, melhor o resultado -- nunca escreva um prompt generico ou curto.
+Sua tarefa: escrever um prompt de geracao de imagem EXTREMAMENTE DETALHADO seguindo RIGOROSAMENTE o guia fotografico oficial da Sindiconet. Quanto mais especifico e descritivo, melhor o resultado -- nunca escreva um prompt generico ou curto.
+
+Posicionamento emocional central: "Voce esta em boas maos."
 
 O prompt final DEVE descrever, em um unico paragrafo corrido e denso em ingles (minimo 250 palavras, sem bullets, sem quebras de linha):
 1. Sujeito e acao precisa: quem esta na cena, o que exatamente esta fazendo, expressao facial especifica, linguagem corporal, postura, direcao do olhar.
-2. Vestuario e texturas de material: tecido especifico (algodao, linho, alfaiataria), textura de pele com poros e imperfeicoes reais, acessorios se houver.
+2. Vestuario e texturas de material: tecido especifico, textura de pele com poros e imperfeicoes reais, acessorios se houver.
 3. Ambiente e cenario: elementos de fundo em camadas (primeiro plano, plano medio, fundo), objetos de composicao, arquitetura, vegetacao, profundidade espacial.
 4. Iluminacao: tipo (natural/artificial), direcao (lateral, contraluz, superior), qualidade (dura ou difusa), temperatura de cor especifica (ex: 5600K luz de dia, 3200K tungstenio), hora do dia, comportamento das sombras.
 5. Camera e lente: corpo de camera profissional especifico (ex: Canon EOS R5, Sony A7R V, Hasselblad X2D), distancia focal exata (24mm, 35mm, 50mm, 85mm), abertura (f/1.4, f/2.8), profundidade de campo resultante, formato e qualidade do bokeh.
-6. Composicao e enquadramento: regra dos tercos ou centralizacao intencional, espaco negativo, angulo de camera (nivel dos olhos, baixo, alto), altura do ponto de vista.
-7. Paleta de cores e tratamento cromatico: cores dominantes, saturacao, contraste, curva tonal.
+6. Composicao e enquadramento: regra dos tercos ou centralizacao intencional, espaco negativo, angulo de camera, altura do ponto de vista.
+7. Paleta de cores e tratamento cromatico: cores dominantes, saturacao, contraste, curva tonal, sempre migrada para a paleta oficial da marca.
 8. Textura e pos-producao: grao de filme sutil e realista, dynamic range, nitidez seletiva, ausencia de suavizacao artificial.
-9. Atmosfera e humor emocional da cena, alinhados ao posicionamento da marca.
+9. Atmosfera e humor emocional da cena.
 
-Sempre alinhado ao guia fotografico oficial da Sindiconet:
-Posicionamento emocional central: "Voce esta em boas maos."
+FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA".
+
 Tres pilares: (1) Premium Silencioso - sofisticacao sem ostentacao, tons frios/neutros, luz natural, muito espaco negativo;
 (2) Editorial Corporativo Humano - pessoas reais brasileiras/latinas, expressoes espontaneas, contexto condominial, 35-50mm prime, luz natural difusa;
 (3) Arquitetura como Simbolo - verticalidade, angulo baixo, ceu negativo, fachadas modernas, vegetacao tropical integrada.
-Paleta: azul #101e37, cinza concreto #6C757D, branco #F4F6F8.
-Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico, aparencia de ilustracao, render 3D, pintura digital ou qualquer "cara de IA" -- pele plastica/cerosa, simetria artificial perfeita, superficies excessivamente suavizadas.
+Paleta: azul #101e37, cinza concreto #6C757D, branco #F4F6F8. Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico, aparencia de ilustracao ou de imagem gerada por IA.
 
 Retorne APENAS o prompt final em ingles, denso, corrido, tecnico e extremamente detalhado (minimo 250 palavras), sem explicacoes, sem prefacios, sem bullets.`
 
@@ -48,7 +49,7 @@ const styleGuide: Record<string, string> = {
 
 async function buildPrompt(description: string, styles: string[]): Promise<string> {
     const styleDescriptions = styles.map((s) => styleGuide[s] || s).join('; ')
-    const userPrompt = `Crie um prompt profissional EXTREMAMENTE DETALHADO para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet.
+    const userPrompt = `Crie um prompt EXTREMAMENTE DETALHADO para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
     ${description ? `CENA/ASSUNTO DESEJADO: ${description}` : ''}
     ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
     Lembre-se: descreva iluminacao, camera/lente, composicao, texturas e paleta com o maximo de especificidade tecnica possivel.
