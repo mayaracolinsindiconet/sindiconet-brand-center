@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { PhotoPillarsSection } from '@/components/photography/PhotoPillarsSection'
 import {
   IconConteudo,
   IconCursos,
@@ -21,8 +20,6 @@ const sections = [
   { id: 'golden-circle',  label: 'Golden Circle' },
   { id: 'posicionamento', label: 'Posicionamento' },
   { id: 'arquitetura',    label: 'Arquitetura de Marca' },
-  { id: 'fotografia',       label: 'Fotografia' },
-  { id: 'iconografia',     label: 'Iconografia' },
   { id: 'personalidade',  label: 'Personalidade & Voz' },
   { id: 'personas',       label: 'Personas' },
   { id: 'lideranca',      label: 'Liderança' },
@@ -358,53 +355,6 @@ export default function FundacaoPage() {
               </div>
             </SectionBlock>
 
-            {/* 05b · Fotografia */}
-            <SectionBlock id="fotografia" eyebrow="05b · Fotografia" title="Pilares Fotográficos">
-              <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
-                A linguagem visual da marca segue tres pilares fotograficos que orientam toda producao de imagem, humana ou gerada por IA.
-              </p>
-              <PhotoPillarsSection />
-            </SectionBlock>
-
-            {/* 05c · Iconografia */}
-            <SectionBlock id="iconografia" eyebrow="05c · Iconografia" title="Ícones">
-              <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
-                Para manter consistência visual em toda a marca, o SíndicoNet adota uma única biblioteca de ícones oficial: <strong className="text-[#101e37]">Streamline Regular</strong>. Nenhum outro pacote de ícones (Font Awesome, Material Icons, Feather, Heroicons, etc.) deve ser usado em materiais de marca, produtos ou conteúdo.
-              </p>
-              <Card className="mb-8 border-[#3e77db]/20 bg-gradient-to-br from-[#3e77db]/5 to-white">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3e77db] font-body mb-2">Biblioteca oficial</p>
-                <p className="font-headline font-bold text-xl text-[#101e37] mb-2">Streamline Regular</p>
-                <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed mb-4">
-                  Família de ícones de linha (line icons), traço uniforme, cantos levemente arredondados e estilo minimalista — alinhada à sofisticação sóbria da identidade visual SíndicoNet.
-                </p>
-                <a
-                  href="https://www.streamlinehq.com/icons/streamline-regular"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-semibold font-body text-[#3e77db] hover:text-[#1f3c6e] transition-colors"
-                >
-                  streamlinehq.com/icons/streamline-regular
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
-              </Card>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Regras de uso</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { title: 'Fonte única',       desc: 'Todo novo ícone precisa vir da família Streamline Regular. Não misturar com outras bibliotecas, mesmo em pequenos detalhes ou ícones pontuais.' },
-                  { title: 'Estilo "Regular"',   desc: 'Usar sempre a variante Regular (traço fino/médio), evitando Bold, Filled ou outras variações que fujam do padrão visual leve e sofisticado da marca.' },
-                  { title: 'Cor herdada',        desc: 'Ícones devem herdar a cor do contexto (azul #101e37, cinza #6C757D ou branco #F4F6F8), sem cores próprias ou gradientes.' },
-                  { title: 'Peso visual',        desc: 'Manter proporção e peso de traço consistentes entre ícones usados lado a lado, para não gerar ruído visual na composição.' },
-                ].map((r) => (
-                  <Card key={r.title}>
-                    <p className="font-headline font-bold text-base text-[#101e37] mb-1.5">{r.title}</p>
-                    <p className="font-body text-sm text-[#3D3D3D]/60 leading-relaxed">{r.desc}</p>
-                  </Card>
-                ))}
-              </div>
-            </SectionBlock>
-
             {/* 06 · Personalidade & Voz */}
             <SectionBlock id="personalidade" eyebrow="06 · Personalidade & Voz" title="Como Nos Expressamos">
               <Card className="mb-8 !bg-[#101e37] border-transparent">
@@ -539,7 +489,7 @@ export default function FundacaoPage() {
                       <div className="w-full aspect-[3/4] max-h-44 rounded-xl bg-white/5 border border-white/10 mb-6 overflow-hidden relative">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                            <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
+                          <circle cx="24" cy="18" r="9" stroke="white" strokeOpacity=".3" strokeWidth="1.5" />
                           <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="white" strokeOpacity=".3" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
                         </div>
@@ -598,7 +548,7 @@ export default function FundacaoPage() {
                       {[
                         { label: 'Liderança Estratégica', desc: '10+ anos estruturando o marketing do SíndicoNet. Liderou a aquisição pelo QuintoAndar e hoje conduz a transformação em plataforma de inteligência.' },
                         { label: 'Inovação & IA',          desc: 'Pioneira em trazer IA para a gestão condominial. Entusiasta de tecnologia desde sempre.' },
-                        { label: 'Autenticidade',          desc: 'Ûnica CEO do setor que é também síndica moradora. Vive as assembleias, as decisões difíceis e os resultados na pele.' },
+                        { label: 'Autenticidade',          desc: 'Única CEO do setor que é também síndica moradora. Vive as assembleias, as decisões difíceis e os resultados na pele.' },
                       ].map((item) => (
                         <div key={item.label} className="bg-[#F4F6F8] rounded-xl px-5 py-4">
                           <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3e77db] font-body mb-1.5">{item.label}</p>
@@ -620,7 +570,7 @@ export default function FundacaoPage() {
                     name: 'Julio Paim',
                     items: [
                       { label: 'Papel na Marca',  desc: 'Voz do Fundador, guardião da história e da missão.' },
-                      { label: 'Rebranding',      desc: 'Ponte entre o legado e a inovação.' },
+                        { label: 'Rebranding',      desc: 'Ponte entre o legado e a inovação.' },
                       { label: 'Posicionamento',  desc: 'Autoridade técnica e referência do setor.' },
                     ],
                   },
@@ -628,7 +578,7 @@ export default function FundacaoPage() {
                     name: 'Marjorie Albuquerque',
                     items: [
                       { label: 'Papel na Marca',  desc: 'Voz da inovação, liderança executiva e transformação digital.' },
-                       { label: 'Rebranding',      desc: 'Condutora da nova era AIFirst.' },
+                      { label: 'Rebranding',      desc: 'Condutora da nova era AIFirst.' },
                       { label: 'Posicionamento',  desc: 'Proximidade com o síndico, experiência real de gestão condominial.' },
                     ],
                   },
