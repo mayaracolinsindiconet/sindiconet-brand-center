@@ -7,14 +7,17 @@ import { addEntry, type BankEntry } from '@/lib/blob-bank'
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
+const REALISM_SUFFIX_EN = `Photorealistic, shot on a professional DSLR camera (Canon EOS R5, 50mm f/1.4 or 35mm f/1.8 prime lens), true documentary/editorial photography -- absolutely NOT an illustration, NOT a 3D render, NOT digital art, NOT CGI, NOT painterly, NOT an AI-generated look. Natural skin texture with visible pores and realistic imperfections, authentic fabric and material textures, physically accurate lighting and soft natural shadows, shallow depth of field with authentic bokeh, subtle natural film grain, true-to-life color rendering. Avoid plastic/waxy skin, oversmoothed surfaces, uncanny symmetry, glossy render sheen, or any synthetic/AI look.`
+
 const SYSTEM_PROMPT = `Voce e um especialista em direcao de fotografia de marca e prompts para IA generativa.
 Crie prompts profissionais para geracao de imagens IA alinhados ao guia fotografico oficial da Sindiconet.
 Posicionamento emocional central: "Voce esta em boas maos."
+FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA". Descreva sempre: textura de pele natural com poros e imperfeicoes reais, texturas realistas de tecido e materiais, fisica de luz e sombra precisa, profundidade de campo rasa com bokeh autentico, grao de filme sutil. Evite pele plastica/cerosa, superficies excessivamente suavizadas, simetria artificial perfeita, brilho de render 3D ou qualquer aparencia sintetica/gerada por IA.
 Tres pilares: (1) Premium Silencioso - sofisticacao sem ostentacao, tons frios/neutros, luz natural, muito espaco negativo;
 (2) Editorial Corporativo Humano - pessoas reais brasileiras/latinas, expressoes espontaneas, contexto condominial, 35-50mm prime, luz natural difusa;
 (3) Arquitetura como Simbolo - verticalidade, angulo baixo, ceu negativo, fachadas modernas, vegetacao tropical integrada.
-Paleta: azul #101e37, cinza concreto #6C757D, branco #F4F6F8. Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico.
-Retorne APENAS o prompt final em ingles, pronto para uso em geracao de imagem, sem explicacoes ou prefacios.`
+Paleta: azul #101e37, cinza concreto #6C757D, branco #F4F6F8. Evitar: luxury exagerado, futurismo, cores neon, poses artificiais, stock generico, aparencia de ilustracao ou de imagem gerada por IA.
+Retorne APENAS o prompt final em ingles, pronto para uso em geracao de imagem, sem explicacoes ou prefacios, sempre reforcando o fotorrealismo.`
 
 const styleGuide: Record<string, string> = {
   premium: 'premium silent quality, sophisticated restrained atmosphere, high-end residential condominium context, noble materials (glass, concrete, light wood), generous negative space',
@@ -52,6 +55,7 @@ async function buildPrompt(description: string, styles: string[], subjects: stri
     ${description ? `CENA/ASSUNTO DESEJADO: ${description}` : ''}
     ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
     ${subjectDescriptions ? `QUEM APARECE NA CENA: ${subjectDescriptions}` : ''}
+    Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA.
     Retorne APENAS o prompt final em ingles.`
 
   try {
@@ -65,13 +69,13 @@ async function buildPrompt(description: string, styles: string[], subjects: stri
       max_tokens: 450,
     })
     const prompt = completion.choices[0]?.message?.content?.trim()
-    if (prompt) return prompt
+    if (prompt) return `${prompt} ${REALISM_SUFFIX_EN}`.trim()
   } catch (err) {
     console.error('groq buildPrompt error:', err)
   }
   const styleTerms = styles.map((s) => styleGuide[s] || s).join(', ')
   const subjectTerms = subjects.map((s) => subjectGuide[s] || s).join(', ')
-  return `${description || 'professional property management scene'}, ${subjectTerms}, ${styleTerms}, editorial brand photography for Brazilian condominium management company, natural light, clean composition`
+  return `${description || 'professional property management scene'}, ${subjectTerms}, ${styleTerms}, editorial brand photography for Brazilian condominium management company, natural light, clean composition. ${REALISM_SUFFIX_EN}`
 }
 
 export async function POST(req: NextRequest) {
