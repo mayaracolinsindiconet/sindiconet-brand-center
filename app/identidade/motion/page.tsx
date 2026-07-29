@@ -74,7 +74,7 @@ export default function MotionPage() {
     <main>
       <SectionHero
         title="Motion"
-        description="O movimento é uma extensão da identidade visual, não um elemento à parte — deve reforçar a postura consultiva e confjC�vel da marca."
+        description="O movimento é uma extensão da identidade visual, não um elemento à parte — deve reforçar a postura consultiva e confiável da marca."
         breadcrumb={[
           { label: 'Identidade', href: '/identidade/logo' },
           { label: 'Motion', href: '/identidade/motion' },
@@ -90,7 +90,9 @@ export default function MotionPage() {
           'uma linguagem visual nova.'
         }
         background="white"
-      />
+      >
+        <div />
+      </SectionWrapper>
 
       <SectionWrapper
         id="alinhado"
