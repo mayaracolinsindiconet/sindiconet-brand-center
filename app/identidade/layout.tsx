@@ -56,6 +56,27 @@ const sidebarItems = [
       </svg>
     ),
   },
+  {
+    href: '/identidade/fotografia',
+    label: 'Fotografia',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2 5.5h2.2l.9-1.6h5.8l.9 1.6H14a1 1 0 011 1V12a1 1 0 01-1 1H2a1 1 0 01-1-1V6.5a1 1 0 011-1z"
+          stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+        <circle cx="8" cy="9" r="2.4" stroke="currentColor" strokeWidth="1.3" />
+      </svg>
+    ),
+  },
+  {
+    href: '/identidade/motion',
+    label: 'Motion',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.3" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M6.5 5.5L11 8L6.5 10.5V5.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
 ]
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
