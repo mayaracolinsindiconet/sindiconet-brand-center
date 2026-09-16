@@ -144,6 +144,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ prompt: promptFinal })
   } catch (error) {
     console.error('generate-photo-prompt-from-image error:', error)
-    return NextResponse.json({ error: 'Erro ao gerar prompt a partir da imagem' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Erro ao gerar prompt a partir da imagem'
+    return NextResponse.json({ error: `Erro ao gerar prompt a partir da imagem: ${message}` }, { status: 500 })
   }
 }
