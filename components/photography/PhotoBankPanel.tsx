@@ -76,11 +76,8 @@ export function PhotoBankPanel() {
   const [promptEn, setPromptEn] = useState('')
   const [promptPt, setPromptPt] = useState('')
   const [generatingPrompt, setGeneratingPrompt] = useState(false)
-  const [generatingImage, setGeneratingImage] = useState(false)
   const [formError, setFormError] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-  const [justGenerated, setJustGenerated] = useState<BankEntry | null>(null)
-  const [downloadingGenerated, setDownloadingGenerated] = useState(false)
+  const [promptCopied, setPromptCopied] = useState(false)
 
   const [approvedEntries, setApprovedEntries] = useState<BankEntry[]>([])
   const [loadingApproved, setLoadingApproved] = useState(true)
@@ -216,8 +213,6 @@ export function PhotoBankPanel() {
   async function generatePrompt() {
     setGeneratingPrompt(true)
     setFormError('')
-    setJustGenerated(null)
-    setSuccessMessage('')
     try {
       const endpoint = referenceImage ? '/api/generate-photo-prompt-from-image' : '/api/generate-photo-prompt'
       const body = referenceImage
@@ -244,33 +239,39 @@ export function PhotoBankPanel() {
     setStage('form')
   }
 
-  async function confirmAndGenerateImage() {
-    setGeneratingImage(true)
-    setFormError('')
+  async function copyPrompt() {
     try {
-      const res = await fetch('/api/generate-photo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptEn, format, description, styles: selectedStyles, subjects: selectedSubjects, pillar, referenceImage }),
-      })
-      if (!res.ok) throw new Error('Erro ao gerar imagem')
-      const data = await res.json()
-      setDescription('')
-      setSelectedStyles([])
-      setSelectedSubjects([])
-      setPromptEn('')
-      setPromptPt('')
-      setReferenceImage(null)
-      setReferenceImageName('')
-      setStage('form')
-      setJustGenerated(data.entry || null)
-      setSuccessMessage('Imagem gerada! Voce ja pode baixar abaixo. Ela so aparece no banco publico apos ser aprovada na revisao semanal.')
-      if (reviewPin) fetchPending(reviewPin)
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : 'Erro ao gerar imagem')
-    } finally {
-      setGeneratingImage(false)
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(promptEn)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = promptEn
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.focus()
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      setPromptCopied(true)
+      setTimeout(() => setPromptCopied(false), 2000)
+    } catch {
+      setFormError('Nao foi possivel copiar o prompt')
     }
+  }
+
+  function novoPrompt() {
+    setStage('form')
+    setDescription('')
+    setSelectedStyles([])
+    setSelectedSubjects([])
+    setReferenceImage(null)
+    setReferenceImageName('')
+    setPromptEn('')
+    setPromptPt('')
+    setFormError('')
+    setPromptCopied(false)
   }
 
   async function fetchPending(pin: string) {
@@ -425,16 +426,6 @@ export function PhotoBankPanel() {
     }
   }
 
-  async function downloadJustGenerated() {
-    if (!justGenerated) return
-    setDownloadingGenerated(true)
-    try {
-      await downloadImage(justGenerated)
-    } finally {
-      setDownloadingGenerated(false)
-    }
-  }
-
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -564,36 +555,16 @@ export function PhotoBankPanel() {
               </button>
 
               {formError && <p className="text-xs text-red-500 font-body mt-3 text-center">{formError}</p>}
-              {successMessage && <p className="text-xs text-[#318367] font-body mt-3 text-center">{successMessage}</p>}
-
-              {justGenerated && (
-                <div className="mt-5 p-4 rounded-xl bg-[#F4F6F8] border border-black/[0.06]">
-                  <div className="relative rounded-lg overflow-hidden bg-white aspect-[4/3] mb-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={justGenerated.imageUrl} alt={justGenerated.description || 'Imagem gerada'} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-[10px] font-body text-[#3D3D3D]/50">Pendente de revisao · disponivel so para voce por enquanto</p>
-                    <button
-                      onClick={downloadJustGenerated}
-                      disabled={downloadingGenerated}
-                      className="shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
-                    >
-                      {downloadingGenerated ? 'Baixando...' : 'Baixar'}
-                    </button>
-                  </div>
-                </div>
-              )}
 
               <p className="text-[10px] text-[#3D3D3D]/40 font-body mt-4 text-center">
-                Voce vai revisar o prompt antes da imagem ser gerada.
+                Voce vai revisar o prompt gerado antes de copia-lo.
               </p>
             </>
           )}
 
           {stage === 'preview' && (
             <>
-              <p className="text-sm font-semibold font-body text-[#101e37] mb-3">Confira o prompt antes de gerar a imagem</p>
+              <p className="text-sm font-semibold font-body text-[#101e37] mb-3">Prompt gerado</p>
 
               <div className="mb-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Prompt (ingles, enviado a IA)</p>
@@ -612,24 +583,28 @@ export function PhotoBankPanel() {
               <div className="flex gap-2">
                 <button
                   onClick={backToEdit}
-                  disabled={generatingImage}
-                  className="flex-1 py-3 rounded-xl bg-[#F4F6F8] hover:bg-black/5 text-[#3D3D3D]/70 text-sm font-semibold font-body transition-colors disabled:opacity-40"
+                  className="flex-1 py-3 rounded-xl bg-[#F4F6F8] hover:bg-black/5 text-[#3D3D3D]/70 text-sm font-semibold font-body transition-colors"
                 >
                   Editar
                 </button>
                 <button
-                  onClick={confirmAndGenerateImage}
-                  disabled={generatingImage}
-                  className="flex-1 py-3 rounded-xl bg-[#3e77db] hover:bg-[#2d63c8] text-white text-sm font-semibold font-body transition-colors disabled:opacity-40"
+                  onClick={copyPrompt}
+                  className="flex-1 py-3 rounded-xl bg-[#3e77db] hover:bg-[#2d63c8] text-white text-sm font-semibold font-body transition-colors"
                 >
-                  {generatingImage ? 'Gerando imagem...' : 'Confirmar e gerar imagem'}
+                  {promptCopied ? 'Copiado!' : 'Copiar prompt'}
+                </button>
+                <button
+                  onClick={novoPrompt}
+                  className="flex-1 py-3 rounded-xl bg-[#F4F6F8] hover:bg-black/5 text-[#3D3D3D]/70 text-sm font-semibold font-body transition-colors"
+                >
+                  Criar novo prompt
                 </button>
               </div>
 
               {formError && <p className="text-xs text-red-500 font-body mt-3 text-center">{formError}</p>}
 
               <p className="text-[10px] text-[#3D3D3D]/40 font-body mt-4 text-center">
-                Toda imagem gerada entra como pendente e precisa de revisao semanal antes de compor o banco oficial.
+                Copie o prompt para gerar a imagem na ferramenta de IA de sua preferencia.
               </p>
             </>
           )}
