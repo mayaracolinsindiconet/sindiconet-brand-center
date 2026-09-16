@@ -6,14 +6,14 @@ import { ColorPaletteCard } from '@/components/shared/ColorPaletteCard'
 const coresPrincipais = [
   { hex: '#3e77db', name: 'Principal', role: 'Principal', rgb: 'RGB 62 · 119 · 219',  cmyk: 'C72 M46 Y0 K14' },
   { hex: '#1f3c6e', name: 'Sombra',    role: 'Sombra',    rgb: 'RGB 31 · 60 · 110',   cmyk: 'C72 M45 Y0 K57' },
-  { hex: '#9fbbed', name: 'Luz',       role: 'Luz',       rgb: 'RGB 159 · 187 · 237', cmyk: 'C33 M21 Y0 K7'  },
+  { hex: '#2f59a4', name: 'Destaque',  role: 'Destaque',  rgb: 'RGB 47 · 89 · 164',   cmyk: 'C71 M46 Y0 K36' },
 ]
 
 // ─── Subtons (4) ──────────────────────────────────────────────────────────────
 const subtons = [
   { hex: '#101e37', name: 'Subtom 900', rgb: 'RGB 16 · 30 · 55',    cmyk: 'C71 M45 Y0 K78' },
-  { hex: '#3e77db', name: 'Subtom 600', rgb: 'RGB 62 · 119 · 219',  cmyk: 'C72 M46 Y0 K14' },
   { hex: '#6e99e4', name: 'Subtom 400', rgb: 'RGB 110 · 153 · 228', cmyk: 'C52 M33 Y0 K11' },
+  { hex: '#9fbbed', name: 'Subtom 300', rgb: 'RGB 159 · 187 · 237', cmyk: 'C33 M21 Y0 K7'  },
   { hex: '#cfddf6', name: 'Subtom 100', rgb: 'RGB 207 · 221 · 246', cmyk: 'C16 M10 Y0 K4'  },
 ]
 
