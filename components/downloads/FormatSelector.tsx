@@ -40,7 +40,7 @@ export function FormatSelector({ asset, open, onClose }: FormatSelectorProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full mb-2 right-0 z-50 w-64 bg-white rounded-2xl border border-black/8 shadow-xl p-3"
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 z-50 w-56 max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-black/8 shadow-xl p-3"
             role="dialog"
             aria-label={`Selecionar formato de ${asset.name}`}
           >

@@ -55,8 +55,8 @@ export function AssetCard({ asset }: AssetCardProps) {
   }
 
   return (
-    <div className="group bg-white rounded-2xl border border-black/5 overflow-hidden hover:border-[#9fbbed] hover:shadow-md transition-all duration-200">
-      <div className="h-28 bg-[#F4F6F8] flex items-center justify-center relative">
+    <div className="group bg-white rounded-2xl border border-black/5 hover:border-[#9fbbed] hover:shadow-md transition-all duration-200">
+      <div className="h-28 bg-[#F4F6F8] rounded-t-2xl overflow-hidden flex items-center justify-center relative">
         {asset.previewUrl ? (
           <Image src={asset.previewUrl} alt={asset.name} fill className="object-contain p-6" />
         ) : (
