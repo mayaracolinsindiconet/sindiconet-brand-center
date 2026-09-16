@@ -3,6 +3,7 @@ export const brand = {
     azul: {
       900: '#101e37', // ink / mais escuro
       800: '#1f3c6e', // sombra profunda
+      700: '#2f59a4', // destaque
       600: '#3e77db', // principal
       400: '#6e99e4', // subtom médio
       300: '#9fbbed', // luz
