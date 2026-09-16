@@ -113,7 +113,7 @@ Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilust
 Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
 
     const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
