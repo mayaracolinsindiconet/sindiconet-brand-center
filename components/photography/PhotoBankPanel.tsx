@@ -223,8 +223,8 @@ export function PhotoBankPanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-      if (!res.ok) throw new Error('Erro ao gerar prompt')
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar prompt')
       setPromptEn(data.promptEn || data.prompt || '')
       setPromptPt(data.promptPt || '')
       setStage('preview')
