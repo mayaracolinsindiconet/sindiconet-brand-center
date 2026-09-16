@@ -15,18 +15,15 @@ export interface Asset {
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function logoFormats(base: string) {
   return [
-    { ext: '.svg',     path: `${base}.svg`,    usage: 'Vetorial — recomendado' },
-    { ext: '.png',     path: `${base}.png`,    usage: '480px — digital' },
-    { ext: '.png @2x', path: `${base}@2x.png`, usage: '960px — retina' },
-    { ext: '.png @4x', path: `${base}@4x.png`, usage: '1920px — impressão' },
+    { ext: '.svg', path: `${base}.svg`,    usage: 'Vetorial — recomendado' },
+    { ext: '.png', path: `${base}@4x.png`, usage: '1920px — maior tamanho disponível, redimensione se precisar' },
   ]
 }
 
 function iconFormats(base: string) {
   return [
-    { ext: '.svg',     path: `${base}.svg`,    usage: 'Vetorial' },
-    { ext: '.png',     path: `${base}.png`,    usage: '64px' },
-    { ext: '.png @2x', path: `${base}@2x.png`, usage: '128px — retina' },
+    { ext: '.svg', path: `${base}.svg`,    usage: 'Vetorial — recomendado' },
+    { ext: '.png', path: `${base}@2x.png`, usage: '128px — maior tamanho disponível, redimensione se precisar' },
   ]
 }
 
