@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
     const completion = await groq.chat.completions.create({
       model: 'openai/gpt-oss-120b',
       temperature: 0.4,
-      max_tokens: 1024,
+      max_tokens: 1600,
+      reasoning_effort: 'low',
       messages: [
         { role: 'system', content: BRAND_VOICE_SYSTEM },
         {
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
           content: `${channelCtx}\n\nTEXTO ORIGINAL:\n"${text.trim()}"\n\nReescreva alinhado ao tom e arquétipo Síndiconet (O Guardião). Retorne o JSON.`,
         },
       ],
-    })
+    } as any)
 
     const raw = completion.choices[0]?.message?.content ?? ''
 
