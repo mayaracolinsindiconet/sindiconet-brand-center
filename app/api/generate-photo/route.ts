@@ -61,8 +61,9 @@ async function buildPrompt(description: string, styles: string[]): Promise<strin
                   { role: 'user', content: userPrompt },
                         ],
                 temperature: 0.7,
-                max_tokens: 900,
-        })
+                max_tokens: 1400,
+                reasoning_effort: 'low',
+        } as any)
         const prompt = completion.choices[0]?.message?.content?.trim()
         if (prompt) return prompt
   } catch (err) {
