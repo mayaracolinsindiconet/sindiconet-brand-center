@@ -79,6 +79,13 @@ function parseDualPrompt(raw: string): { promptEn: string; promptPt: string } {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json(
+        { error: 'IA de geracao de prompt nao configurada (GROQ_API_KEY ausente no servidor)' },
+        { status: 500 }
+      )
+    }
+
     const { description, styles, subjects, pillar, format } = await req.json()
 
     if (!description && (!styles || styles.length === 0) && (!subjects || subjects.length === 0)) {
@@ -124,6 +131,7 @@ Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
     return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {
     console.error('generate-photo-prompt error:', error)
-    return NextResponse.json({ error: 'Erro ao gerar prompt' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Erro ao gerar prompt'
+    return NextResponse.json({ error: `Erro ao gerar prompt: ${message}` }, { status: 500 })
   }
 }
