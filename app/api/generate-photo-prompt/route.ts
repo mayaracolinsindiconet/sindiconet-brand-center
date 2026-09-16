@@ -119,8 +119,11 @@ Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 600,
-    })
+      max_tokens: 1400,
+      // gpt-oss e um modelo de raciocinio: sem isso ele gasta os tokens
+      // "pensando" antes de escrever PROMPT_EN/PROMPT_PT, cortando a resposta.
+      reasoning_effort: 'low',
+    } as any)
 
     const raw = completion.choices[0]?.message?.content?.trim() ?? ''
     const { promptEn, promptPt } = parseDualPrompt(raw)
