@@ -36,7 +36,30 @@ Descreva a cena chave da referencia com o maximo de detalhe tecnico (assunto, ac
 de iluminacao e de composicao do guia da marca, sempre reforcando o fotorrealismo. Nao copie estilos, roupas de marca ou elementos graficos da imagem original
 que conflitem com a identidade Sindiconet.
 
-Retorne APENAS o prompt final em ingles, denso, corrido, tecnico e extremamente detalhado (minimo 250 palavras), sem explicacoes, sem prefacios, sem bullets.`
+Depois de escrever o prompt em ingles, traduza o MESMO prompt para portugues do Brasil, mantendo o sentido fiel, para que quem nao entende ingles saiba exatamente o que sera gerado.
+
+Responda EXATAMENTE neste formato, sem nada antes ou depois, sem markdown:
+PROMPT_EN: <prompt completo em ingles, denso, corrido, tecnico e extremamente detalhado (minimo 250 palavras), sem explicacoes, sem prefacios, sem bullets, em uma unica linha>
+PROMPT_PT: <traducao completa em portugues, em uma unica linha>`
+
+function parseDualPrompt(raw: string): { promptEn: string; promptPt: string } {
+  const enMatch = raw.match(/PROMPT_EN:\s*([\s\S]*?)(?:\n?PROMPT_PT:|$)/i)
+  const ptMatch = raw.match(/PROMPT_PT:\s*([\s\S]*)$/i)
+  const promptEn = (enMatch?.[1] || raw).trim()
+  const promptPt = (ptMatch?.[1] || '').trim()
+  return { promptEn, promptPt }
+}
+
+const REFUSAL_PATTERNS = [
+  /i'?m sorry,?\s*(but\s*)?i (can'?t|cannot|am unable to)/i,
+  /desculpe,?\s*(mas\s*)?(nao|não) posso/i,
+  /i can'?t (assist|help) with that/i,
+  /as an ai (language model|assistant)/i,
+]
+
+function looksLikeRefusal(text: string): boolean {
+  return REFUSAL_PATTERNS.some((re) => re.test(text))
+}
 
 const styleGuide: Record<string, string> = {
   premium:
@@ -131,17 +154,38 @@ export async function POST(req: NextRequest) {
         },
       ],
       temperature: 0.7,
-      max_tokens: 900,
+      max_tokens: 1400,
     })
 
-    const prompt = completion.choices[0]?.message?.content?.trim() ?? ''
-    if (!prompt) {
+    const raw = completion.choices[0]?.message?.content?.trim() ?? ''
+    if (!raw) {
       return NextResponse.json({ error: 'Nao foi possivel gerar o prompt' }, { status: 502 })
     }
 
-    const promptFinal = `${prompt} ${REALISM_SUFFIX_EN}`
+    if (looksLikeRefusal(raw)) {
+      return NextResponse.json(
+        {
+          error:
+            'A IA recusou analisar essa imagem de referencia (provavelmente por conteudo sensivel, rosto identificavel ou marca de terceiros na foto). Tente outra imagem de referencia ou descreva a cena pelo campo de texto.',
+        },
+        { status: 422 }
+      )
+    }
 
-    return NextResponse.json({ prompt: promptFinal })
+    const { promptEn, promptPt } = parseDualPrompt(raw)
+    if (!promptEn || looksLikeRefusal(promptEn)) {
+      return NextResponse.json(
+        {
+          error:
+            'A IA recusou analisar essa imagem de referencia (provavelmente por conteudo sensivel, rosto identificavel ou marca de terceiros na foto). Tente outra imagem de referencia ou descreva a cena pelo campo de texto.',
+        },
+        { status: 422 }
+      )
+    }
+
+    const promptEnFinal = `${promptEn} ${REALISM_SUFFIX_EN}`
+
+    return NextResponse.json({ promptEn: promptEnFinal, promptPt, prompt: promptEnFinal })
   } catch (error) {
     console.error('generate-photo-prompt-from-image error:', error)
     const message = error instanceof Error ? error.message : 'Erro ao gerar prompt a partir da imagem'
