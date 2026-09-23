@@ -4,12 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 
 const BANK_PIN_KEY = 'banco-imagens-pin'
 
-const PILLARS = [
-  { id: 'auto', label: 'Automatico (IA escolhe)' },
-  { id: 'premium-silencioso', label: 'Premium Silencioso' },
-  { id: 'editorial-humano', label: 'Editorial Corporativo Humano' },
-  { id: 'arquitetura-simbolo', label: 'Arquitetura como Simbolo' },
-]
+// O pilar fotografico nao e mais escolhido pelo usuario: a IA analisa a cena
+// descrita e decide internamente qual pilar (ou o especial de obra/reforma)
+// melhor se adequa. Ver PILLAR_AUTO usado no envio do formulario.
+const PILLAR_AUTO = 'auto'
 
 const STYLE_CHIPS = [
   { id: 'premium', label: 'Premium' },
@@ -72,7 +70,7 @@ export function PhotoBankPanel() {
   const [description, setDescription] = useState('')
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
-  const [pillar, setPillar] = useState(PILLARS[0].id)
+  const pillar = PILLAR_AUTO
   const [format, setFormat] = useState(FORMATS[2].id)
 
   const [promptEn, setPromptEn] = useState('')
@@ -435,25 +433,6 @@ export function PhotoBankPanel() {
         <div className="bg-white rounded-2xl border border-black/[0.06] p-6 md:p-8">
           {stage === 'form' && (
             <>
-              <div className="mb-5">
-                <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Pilar fotografico</label>
-                <div className="flex flex-wrap gap-2">
-                  {PILLARS.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setPillar(p.id)}
-                      className={
-                        'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
-                        (pillar === p.id ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
-                      }
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs font-body text-[#3D3D3D]/50 mt-1.5">No automatico, a IA escolhe o pilar que melhor se adequa a cena descrita.</p>
-              </div>
-
               <div className="mb-5">
                 <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Formato da imagem</label>
                 <div className="flex flex-wrap gap-2">
