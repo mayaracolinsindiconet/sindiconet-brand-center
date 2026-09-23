@@ -13,6 +13,8 @@ mas redirecione todo o tratamento visual para o guia fotografico oficial da Sind
 
 Posicionamento emocional central: "Voce esta em boas maos."
 
+INTERPRETACAO DO CONTEXTO ADICIONAL DO USUARIO (muito importante): se o usuario escrever um "CONTEXTO ADICIONAL", esse texto NAO e um trecho literal para copiar dentro do prompt final -- e uma intencao/orientacao sobre o que ele quer ver na cena. Interprete o sentido pretendido e use-o para guiar como voce descreve a cena da imagem de referencia, preenchendo com sua expertise fotografica tudo que ele nao especificou. Nunca apenas repita as palavras do usuario como se fossem o prompt final.
+
 O prompt final DEVE descrever, em um unico paragrafo corrido e denso em ingles (minimo 250 palavras, sem bullets, sem quebras de linha):
 1. Sujeito e acao precisa observados na referencia: quem esta na cena, o que exatamente esta fazendo, expressao facial especifica, linguagem corporal, postura, direcao do olhar.
 2. Vestuario e texturas de material: tecido especifico, textura de pele com poros e imperfeicoes reais, acessorios se houver.
@@ -126,10 +128,12 @@ export async function POST(req: NextRequest) {
 
     const userText = [
       'Analise a imagem de referencia anexada e crie um prompt de geracao de imagem EXTREMAMENTE DETALHADO seguindo RIGOROSAMENTE o guia fotografico da Sindiconet.',
-      description ? `CONTEXTO ADICIONAL DESEJADO PELO USUARIO: ${description}` : '',
+      description ? `CONTEXTO ADICIONAL (interprete a intencao, nao copie estas palavras literalmente): ${description}` : '',
       styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : '',
       subjectDescriptions ? `QUEM DEVE APARECER NA CENA: ${subjectDescriptions}` : '',
-      pillar && pillarLabel[pillar] ? `PILAR FOTOGRAFICO: ${pillarLabel[pillar]}` : '',
+      pillar && pillarLabel[pillar]
+        ? `PILAR FOTOGRAFICO: ${pillarLabel[pillar]}`
+        : 'PILAR FOTOGRAFICO: nao foi especificado pelo usuario -- analise a cena da imagem de referencia e escolha voce mesmo qual dos tres pilares (Premium Silencioso, Editorial Corporativo Humano ou Arquitetura como Simbolo) melhor se adequa, aplicando-o de forma coerente.',
       'Preserve a cena/composicao/assunto principal da imagem de referencia, mas aplique a paleta, iluminacao e linguagem visual da marca.',
       'Descreva iluminacao (direcao, qualidade, temperatura de cor), camera/lente (corpo especifico, distancia focal, abertura), composicao e texturas com o maximo de especificidade tecnica.',
       'Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA. O prompt final deve ter no minimo 250 palavras.',
