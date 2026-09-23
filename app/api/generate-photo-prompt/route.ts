@@ -20,9 +20,11 @@ PILAR 02 - EDITORIAL CORPORATIVO HUMANO: pessoas reais em ambientes reais, camer
 
 PILAR 03 - ARQUITETURA COMO SIMBOLO: solidez, verticalidade, permanencia. Linhas retas, angulo baixo, muito ceu negativo (azul #101e37 ou branco), fachadas modernas, vegetacao tropical integrada. Evitar predios genericos, angulos caoticos, fachadas deterioradas.
 
-PALETA: azul corporativo profundo #101e37, cinza concreto #6C757D, branco suave #F4F6F8, bege discreto. Ausente: saturacao agressiva, neon, gradientes pesados.
+PILAR ESPECIAL - OBRA / REFORMA / MANUTENCAO PREDIAL: quando a cena envolver obra, reforma, construcao, canteiro de obras ou manutencao predial, as regras de minimalismo dos pilares 01-03 (muito espaco negativo, "sem excesso de elementos") NAO se aplicam -- nesse caso o realismo do canteiro e que manda. Descreva o ambiente de obra de forma honesta e detalhada: andaimes, ferramentas e materiais de construcao organizados, EPIs visiveis e corretos (capacete, colete de sinalizacao, luvas, oculos de protecao), poeira sutil no ar, luz de trabalho (natural ou de canteiro), texturas de concreto/reboco/tijolo a vista. Mantenha o profissionalismo institucional evitando apenas: bagunca desorganizada, aparencia de abandono/depredacao, sujeira excessiva ou risco de seguranca evidente (sem EPI). A paleta de cores continua ancorada nos tons da marca sempre que possivel (concreto, bege, azul), mas cores de seguranca (laranja/amarelo dos EPIs e sinalizacao) sao esperadas e nao devem ser removidas.
 
-DIRETRIZES TECNICAS: 35mm f/1.8 ou 50mm f/1.4 prime, ISO natural, luz natural difusa (nunca flash direto), regra dos tercos, espaco negativo generoso, profundidade de campo rasa para pessoas.
+PALETA: azul corporativo profundo #101e37, cinza concreto #6C757D, branco suave #F4F6F8, bege discreto. Ausente: saturacao agressiva, neon, gradientes pesados. (Excecao: cores de seguranca/EPI em cenas de obra, ver PILAR ESPECIAL acima.)
+
+DIRETRIZES TECNICAS: 35mm f/1.8 ou 50mm f/1.4 prime, ISO natural, luz natural difusa (nunca flash direto), regra dos tercos, espaco negativo generoso, profundidade de campo rasa para pessoas. (Em cenas de obra, o enquadramento pode ser mais denso e documental, priorizando mostrar o trabalho sendo executado.)
 
 EVITAR SEMPRE: gradientes exagerados, glow e 3D excessivo, UI gamer ou neon, maximalismo visual, estetica startup generica, visual instagramavel demais, pessoas sem contexto brasileiro, paisagens genericas, aparencia de ilustracao ou de imagem gerada por IA.
 
@@ -44,7 +46,13 @@ const styleGuide: Record<string, string> = {
   servicos: 'skilled Brazilian maintenance professional, condominium service context (plumbing/electrical/cleaning/security/landscaping), realistic work environment',
   'tons-neutros': 'neutral muted color palette: beige, white #F4F6F8, concrete grey #6C757D, deep blue #101e37, no saturated colors',
   brasileiro: 'distinctly Brazilian urban context, Sao Paulo cityscape reference, tropical vegetation integrated with architecture, local Latin aesthetic',
-  obras: 'construction or renovation work in residential condominium, safety equipment (hard hat, vest), scaffolding, urban building site Brazil',
+  obras: 'active construction, renovation or building maintenance site inside or around a residential condominium, workers wearing correct safety equipment (hard hat, high-visibility vest, gloves, safety glasses), scaffolding, organized construction materials and tools (cement, bricks, rebar, wheelbarrows), realistic dust in the air, exposed concrete/plaster/brick textures, natural or worksite lighting, honest documentary framing of the work in progress -- not sanitized, not empty, not minimalist',
+}
+
+const OBRA_KEYWORDS = /\b(obras?|reforma[s]?|constru[cç][aã]o|canteiro|andaime|pedreiro|mestre de obras)\b/i
+
+function mentionsConstruction(description: string, styles: string[]): boolean {
+  return styles.includes('obras') || OBRA_KEYWORDS.test(description || '')
 }
 
 const subjectGuide: Record<string, string> = {
@@ -100,6 +108,8 @@ export async function POST(req: NextRequest) {
       .map((s) => subjectGuide[s] || s)
       .join('; ')
 
+    const isConstruction = mentionsConstruction(description || '', (styles || []) as string[])
+
     const userPrompt = `Crie um prompt profissional para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
 
 ${description ? `CENA/ASSUNTO DESEJADO: ${description}` : ''}
@@ -107,6 +117,7 @@ ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
 ${subjectDescriptions ? `QUEM APARECE NA CENA: ${subjectDescriptions}` : ''}
 ${pillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillar}` : ''}
 ${format ? `FORMATO DE ENQUADRAMENTO: ${formatLabel[format] || format}` : ''}
+${isConstruction ? '\nATENCAO: esta cena e de obra/reforma/manutencao predial -- aplique o PILAR ESPECIAL - OBRA / REFORMA / MANUTENCAO PREDIAL do guia (ignore o "muito espaco negativo" e o "sem excesso de elementos" dos pilares 01-03 neste caso especifico, mas mantenha o fotorrealismo e o profissionalismo institucional).' : ''}
 
 Aplique os pilares visuais relevantes do guia: cromatica, iluminacao, composicao, mood.
 Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA.
