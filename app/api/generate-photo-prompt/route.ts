@@ -12,6 +12,8 @@ Crie prompts profissionais para geracao de imagens IA alinhados ao guia fotograf
 
 POSICIONAMENTO EMOCIONAL CENTRAL: "Voce esta em boas maos."
 
+INTERPRETACAO DA DESCRICAO DO USUARIO (muito importante): o texto que o usuario escreve em "CENA/ASSUNTO DESEJADO" NAO e um trecho literal para copiar dentro do prompt final -- e um CONTEXTO/INTENCAO que descreve o que deve acontecer na cena. Sua tarefa e interpretar essa intencao e traduzi-la em uma cena fotografica completa e tecnica, preenchendo com sua expertise tudo que a descricao do usuario nao especificou: iluminacao, lente e camera, composicao, texturas, paleta, atmosfera. Nunca devolva o prompt apenas reformulando ou encurtando as palavras do usuario -- expanda-as com a linguagem fotografica completa exigida neste guia. Se a descricao usar termos coloquiais, giria ou abreviacoes, entenda o sentido pretendido e descreva a cena real correspondente, nunca as palavras em si.
+
 FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA". Descreva sempre: textura de pele natural com poros e imperfeicoes reais, texturas realistas de tecido e materiais, fisica de luz e sombra precisa, profundidade de campo rasa com bokeh autentico, grao de filme sutil. Evite pele plastica/cerosa, superficies excessivamente suavizadas, simetria artificial perfeita, brilho de render 3D ou qualquer aparencia sintetica/gerada por IA.
 
 PILAR 01 - PREMIUM SILENCIOSO: sofisticacao sem ostentacao. Tons frios e neutros (bege, branco #F4F6F8, cinza concreto), luz natural fria, muito espaco negativo, materiais nobres (vidro, concreto, madeira clara). Evitar luxury exagerado, futurismo, cores vibrantes, excesso de elementos.
@@ -77,6 +79,12 @@ const formatLabel: Record<string, string> = {
   paisagem: 'formato paisagem horizontal (proporcao 3:2)',
 }
 
+const pillarLabel: Record<string, string> = {
+  'premium-silencioso': 'PILAR 01 - Premium Silencioso',
+  'editorial-humano': 'PILAR 02 - Editorial Corporativo Humano',
+  'arquitetura-simbolo': 'PILAR 03 - Arquitetura como Simbolo',
+}
+
 function parseDualPrompt(raw: string): { promptEn: string; promptPt: string } {
   const enMatch = raw.match(/PROMPT_EN:\s*([\s\S]*?)(?:\n?PROMPT_PT:|$)/i)
   const ptMatch = raw.match(/PROMPT_PT:\s*([\s\S]*)$/i)
@@ -109,13 +117,14 @@ export async function POST(req: NextRequest) {
       .join('; ')
 
     const isConstruction = mentionsConstruction(description || '', (styles || []) as string[])
+    const isAutoPillar = !pillar || pillar === 'auto'
 
     const userPrompt = `Crie um prompt profissional para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
 
-${description ? `CENA/ASSUNTO DESEJADO: ${description}` : ''}
+${description ? `CONTEXTO/INTENCAO DA CENA (interprete o que isso significa e transforme em uma cena fotografica completa -- NAO copie estas palavras literalmente no prompt final): ${description}` : ''}
 ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
 ${subjectDescriptions ? `QUEM APARECE NA CENA: ${subjectDescriptions}` : ''}
-${pillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillar}` : ''}
+${!isAutoPillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillarLabel[pillar] || pillar}` : 'PILAR FOTOGRAFICO: nao foi especificado pelo usuario -- analise a cena descrita e escolha voce mesmo, com seu julgamento de diretor de fotografia, qual dos pilares (01 Premium Silencioso, 02 Editorial Corporativo Humano ou 03 Arquitetura como Simbolo -- ou o PILAR ESPECIAL de obra/reforma quando aplicavel) melhor se adequa a esta cena, e aplique-o de forma coerente e integral.'}
 ${format ? `FORMATO DE ENQUADRAMENTO: ${formatLabel[format] || format}` : ''}
 ${isConstruction ? '\nATENCAO: esta cena e de obra/reforma/manutencao predial -- aplique o PILAR ESPECIAL - OBRA / REFORMA / MANUTENCAO PREDIAL do guia (ignore o "muito espaco negativo" e o "sem excesso de elementos" dos pilares 01-03 neste caso especifico, mas mantenha o fotorrealismo e o profissionalismo institucional).' : ''}
 
