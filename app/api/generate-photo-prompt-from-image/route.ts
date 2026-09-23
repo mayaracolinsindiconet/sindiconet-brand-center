@@ -5,6 +5,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 const REALISM_SUFFIX_EN = `Photorealistic, shot on a professional DSLR camera (Canon EOS R5, 50mm f/1.4 or 35mm f/1.8 prime lens), true documentary/editorial photography -- absolutely NOT an illustration, NOT a 3D render, NOT digital art, NOT CGI, NOT painterly, NOT an AI-generated look. Natural skin texture with visible pores and realistic imperfections, authentic fabric and material textures, physically accurate lighting and soft natural shadows, shallow depth of field with authentic bokeh, subtle natural film grain, true-to-life color rendering. Avoid plastic/waxy skin, oversmoothed surfaces, uncanny symmetry, glossy render sheen, or any synthetic/AI look.`
 
+const REALISM_SUFFIX_PT = ` Foto hiper-realista, como capturada por uma camera profissional (DSLR), com textura de pele natural, iluminacao fisicamente realista e profundidade de campo autentica -- sem aparencia de ilustracao, render 3D ou IA.`
+
 const SYSTEM_PROMPT = `Voce e um diretor de fotografia senior e especialista em prompts hyper-detalhados para modelos de geracao de imagem por IA, no nivel de um brief de producao fotografica profissional real.
 
 Sua tarefa: olhar para uma imagem de referencia enviada pelo usuario e escrever um prompt de geracao de imagem
@@ -26,7 +28,7 @@ O prompt final DEVE descrever, em um unico paragrafo corrido e denso em ingles (
 8. Textura e pos-producao: grao de filme sutil e realista, dynamic range, nitidez seletiva, ausencia de suavizacao artificial.
 9. Atmosfera e humor emocional da cena.
 
-FOTORREALISMO OBRIGATORIO (prioridade maxima): o resultado precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura ou algo com "cara de IA".
+FOTORREALISMO OBRIGATORIO (prioridade maxima, SEM EXCECOES): TODA imagem gerada, sem excecao, precisa parecer uma fotografia real tirada com camera profissional (DSLR ou mirrorless), NUNCA uma ilustracao, render 3D, arte digital, pintura, cartoon ou algo com "cara de IA". Isso vale mesmo que a imagem de referencia enviada pelo usuario seja uma ilustracao, render, desenho ou tenha qualquer outro estilo nao-fotografico -- o prompt final deve SEMPRE redirecionar para fotografia realista, nunca preservar o estilo grafico da referencia.
 
 Tres pilares: (1) Premium Silencioso - sofisticacao sem ostentacao, tons frios/neutros, luz natural, muito espaco negativo;
 (2) Editorial Corporativo Humano - pessoas reais brasileiras/latinas, expressoes espontaneas, contexto condominial, 35-50mm prime, luz natural difusa;
@@ -188,8 +190,9 @@ export async function POST(req: NextRequest) {
     }
 
     const promptEnFinal = `${promptEn} ${REALISM_SUFFIX_EN}`
+    const promptPtFinal = promptPt ? `${promptPt}${REALISM_SUFFIX_PT}` : promptPt
 
-    return NextResponse.json({ promptEn: promptEnFinal, promptPt, prompt: promptEnFinal })
+    return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {
     console.error('generate-photo-prompt-from-image error:', error)
     const message = error instanceof Error ? error.message : 'Erro ao gerar prompt a partir da imagem'
