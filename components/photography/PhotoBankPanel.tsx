@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react'
 const BANK_PIN_KEY = 'banco-imagens-pin'
 
 const PILLARS = [
+  { id: 'auto', label: 'Automatico (IA escolhe)' },
   { id: 'premium-silencioso', label: 'Premium Silencioso' },
   { id: 'editorial-humano', label: 'Editorial Corporativo Humano' },
   { id: 'arquitetura-simbolo', label: 'Arquitetura como Simbolo' },
@@ -450,6 +451,7 @@ export function PhotoBankPanel() {
                     </button>
                   ))}
                 </div>
+                <p className="text-xs font-body text-[#3D3D3D]/50 mt-1.5">No automatico, a IA escolhe o pilar que melhor se adequa a cena descrita.</p>
               </div>
 
               <div className="mb-5">
