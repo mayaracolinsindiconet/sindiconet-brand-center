@@ -45,6 +45,12 @@ const styleGuide: Record<string, string> = {
     obras: 'construction or renovation work in residential condominium, safety equipment (hard hat, vest), scaffolding, urban building site Brazil',
 }
 
+// Reforco hardcoded de fotorrealismo: as imagens da Sindiconet devem SEMPRE
+// ser hiper-realistas, sem excecao -- este trecho e concatenado ao prompt
+// final independente do que o modelo de texto tenha gerado, para garantir
+// que a exigencia nunca dependa apenas do modelo seguir a instrucao.
+const REALISM_SUFFIX = `Photorealistic, shot on a professional DSLR camera (Canon EOS R5, 50mm f/1.4 or 35mm f/1.8 prime lens), true documentary/editorial photography -- absolutely NOT an illustration, NOT a 3D render, NOT digital art, NOT CGI, NOT painterly, NOT an AI-generated look. Natural skin texture with visible pores and realistic imperfections, authentic fabric and material textures, physically accurate lighting and soft natural shadows, shallow depth of field with authentic bokeh, subtle natural film grain, true-to-life color rendering. Avoid plastic/waxy skin, oversmoothed surfaces, uncanny symmetry, glossy render sheen, or any synthetic/AI look.`
+
 async function buildPrompt(description: string, styles: string[]): Promise<string> {
     const styleDescriptions = styles.map((s) => styleGuide[s] || s).join('; ')
     const userPrompt = `Crie um prompt EXTREMAMENTE DETALHADO para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
@@ -65,12 +71,12 @@ async function buildPrompt(description: string, styles: string[]): Promise<strin
                 reasoning_effort: 'low',
         } as any)
         const prompt = completion.choices[0]?.message?.content?.trim()
-        if (prompt) return prompt
+        if (prompt) return `${prompt} ${REALISM_SUFFIX}`
   } catch (err) {
         console.error('groq buildPrompt error:', err)
   }
     const styleTerms = styles.map((s) => styleGuide[s] || s).join(', ')
-    return `${description || 'professional property management scene'}, ${styleTerms}, editorial brand photography for Brazilian condominium management company, shot on a Canon EOS R5 with a 50mm f/1.8 prime lens, soft natural diffused daylight around 5600K, shallow depth of field with smooth authentic bokeh, realistic skin texture with visible pores, natural fabric texture, subtle film grain, true-to-life color rendering, balanced rule-of-thirds composition with generous negative space, muted institutional color palette, photorealistic, not an illustration, not a 3D render, not digital art`
+    return `${description || 'professional property management scene'}, ${styleTerms}, editorial brand photography for Brazilian condominium management company, shot on a Canon EOS R5 with a 50mm f/1.8 prime lens, soft natural diffused daylight around 5600K, shallow depth of field with smooth authentic bokeh, realistic skin texture with visible pores, natural fabric texture, subtle film grain, true-to-life color rendering, balanced rule-of-thirds composition with generous negative space, muted institutional color palette, ${REALISM_SUFFIX}`
 }
 
 export async function POST(req: NextRequest) {
