@@ -19,6 +19,7 @@ const STYLE_CHIPS = [
   { id: 'corporativo', label: 'Corporativo' },
   { id: 'tons-neutros', label: 'Tons Neutros' },
   { id: 'brasileiro', label: 'Contexto Brasileiro' },
+  { id: 'obras', label: 'Obra / Reforma' },
 ]
 
 const FORMATS = [
