@@ -15,7 +15,9 @@ export async function PATCH(
   const reviewNote = body.reviewNote as string | undefined
   const subjects = Array.isArray(body.subjects) ? (body.subjects as string[]) : undefined
 
-  if (!status && !subjects) {
+  const styles = Array.isArray(body.styles) ? (body.styles as string[]) : undefined
+
+  if (!status && !subjects && !styles) {
     return NextResponse.json({ error: 'Nada para atualizar' }, { status: 400 })
   }
   if (status && !['aprovado', 'reprovado', 'pendente'].includes(status)) {
@@ -30,6 +32,9 @@ export async function PATCH(
   }
   if (subjects) {
     patch.subjects = subjects
+  }
+  if (styles) {
+    patch.styles = styles
   }
 
   const updated = await updateEntry(id, patch)

@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
+import {
+  PRO_PROMPT_ADDENDUM,
+  PRO_STYLE_GUIDE,
+  COMMON_STYLE_GUIDE,
+  PRO_PILLAR_LABELS,
+  REALISM_SUFFIX_PRO_EN,
+  REALISM_SUFFIX_PRO_PT,
+  normalizeProfile,
+} from '@/lib/photo-profiles'
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
@@ -102,21 +111,23 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { description, styles, subjects, pillar, format } = await req.json()
+    const { description, styles, subjects, pillar, format, profile: rawProfile } = await req.json()
+    const profile = normalizeProfile(rawProfile)
+    const isPro = profile === 'pro'
 
     if (!description && (!styles || styles.length === 0) && (!subjects || subjects.length === 0)) {
       return NextResponse.json({ error: 'Forneca uma descricao, estilos ou quem aparece na cena' }, { status: 400 })
     }
 
     const styleDescriptions = ((styles || []) as string[])
-      .map((s) => styleGuide[s] || s)
+      .map((s) => styleGuide[s] || PRO_STYLE_GUIDE[s] || COMMON_STYLE_GUIDE[s] || s)
       .join('; ')
 
     const subjectDescriptions = ((subjects || []) as string[])
       .map((s) => subjectGuide[s] || s)
       .join('; ')
 
-    const isConstruction = mentionsConstruction(description || '', (styles || []) as string[])
+    const isConstruction = !isPro && mentionsConstruction(description || '', (styles || []) as string[])
     const isAutoPillar = !pillar || pillar === 'auto'
 
     const userPrompt = `Crie um prompt profissional para geracao de imagem IA seguindo RIGOROSAMENTE o guia fotografico da Sindiconet:
@@ -124,7 +135,8 @@ export async function POST(req: NextRequest) {
 ${description ? `CONTEXTO/INTENCAO DA CENA (interprete o que isso significa e transforme em uma cena fotografica completa -- NAO copie estas palavras literalmente no prompt final): ${description}` : ''}
 ${styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : ''}
 ${subjectDescriptions ? `QUEM APARECE NA CENA: ${subjectDescriptions}` : ''}
-${!isAutoPillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${pillarLabel[pillar] || pillar}` : 'PILAR FOTOGRAFICO: nao foi especificado pelo usuario -- analise a cena descrita e escolha voce mesmo, com seu julgamento de diretor de fotografia, qual dos pilares (01 Premium Silencioso, 02 Editorial Corporativo Humano ou 03 Arquitetura como Simbolo -- ou o PILAR ESPECIAL de obra/reforma quando aplicavel) melhor se adequa a esta cena, e aplique-o de forma coerente e integral.'}
+${isPro ? 'PERFIL: SINDICONET PRO -- aplique integralmente o bloco PERFIL ATIVO do sistema (paleta roxa, iluminacao PRO, menor nivel de tecnologia necessario, protagonista mulher com diversidade, sem cargos nem marcas no prompt).' : ''}
+${!isAutoPillar ? `PILAR FOTOGRAFICO PRINCIPAL: ${(isPro ? PRO_PILLAR_LABELS[pillar] : pillarLabel[pillar]) || pillar}` : 'PILAR FOTOGRAFICO: nao foi especificado pelo usuario -- analise a cena descrita e escolha voce mesmo, com seu julgamento de diretor de fotografia, qual dos pilares (01 Premium Silencioso, 02 Editorial Corporativo Humano ou 03 Arquitetura como Simbolo -- ou o PILAR ESPECIAL de obra/reforma quando aplicavel) melhor se adequa a esta cena, e aplique-o de forma coerente e integral.'}
 ${format ? `FORMATO DE ENQUADRAMENTO: ${formatLabel[format] || format}` : ''}
 ${isConstruction ? '\nATENCAO: esta cena e de obra/reforma/manutencao predial -- aplique o PILAR ESPECIAL - OBRA / REFORMA / MANUTENCAO PREDIAL do guia (ignore o "muito espaco negativo" e o "sem excesso de elementos" dos pilares 01-03 neste caso especifico, mas mantenha o fotorrealismo e o profissionalismo institucional).' : ''}
 
@@ -135,7 +147,7 @@ Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
     const completion = await groq.chat.completions.create({
       model: 'openai/gpt-oss-120b',
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: isPro ? `${SYSTEM_PROMPT}\n\n${PRO_PROMPT_ADDENDUM}` : SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
@@ -148,8 +160,10 @@ Siga o formato de resposta exigido (PROMPT_EN / PROMPT_PT).`
     const raw = completion.choices[0]?.message?.content?.trim() ?? ''
     const { promptEn, promptPt } = parseDualPrompt(raw)
 
-    const promptEnFinal = promptEn ? `${promptEn} ${REALISM_SUFFIX_EN}` : REALISM_SUFFIX_EN
-    const promptPtFinal = promptPt ? `${promptPt}${REALISM_SUFFIX_PT}` : promptPt
+    const suffixEn = isPro ? REALISM_SUFFIX_PRO_EN : REALISM_SUFFIX_EN
+    const suffixPt = isPro ? REALISM_SUFFIX_PRO_PT : REALISM_SUFFIX_PT
+    const promptEnFinal = promptEn ? `${promptEn} ${suffixEn}` : suffixEn
+    const promptPtFinal = promptPt ? `${promptPt}${suffixPt}` : promptPt
 
     return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {

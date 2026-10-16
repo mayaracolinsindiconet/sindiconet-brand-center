@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
   const search = (req.nextUrl.searchParams.get('search') || '').trim().toLowerCase()
   const style = req.nextUrl.searchParams.get('style') || ''
   const subject = req.nextUrl.searchParams.get('subject') || ''
+  const profile = req.nextUrl.searchParams.get('profile') || ''
   const pageParam = parseInt(req.nextUrl.searchParams.get('page') || '', 10)
   const limitParam = parseInt(req.nextUrl.searchParams.get('limit') || '', 10)
 
@@ -49,6 +50,14 @@ export async function GET(req: NextRequest) {
 
   if (style) {
     filtered = filtered.filter((e) => (e.styles || []).includes(style))
+  }
+
+  // Perfil: "pro" so mostra imagens com a tag PRO; "sindiconet" mostra as marcadas
+  // como SíndicoNet e tambem as antigas sem tag de perfil (anteriores ao PRO).
+  if (profile === 'pro') {
+    filtered = filtered.filter((e) => (e.styles || []).includes('sindiconet-pro'))
+  } else if (profile === 'sindiconet') {
+    filtered = filtered.filter((e) => (e.styles || []).includes('sindiconet') || !(e.styles || []).includes('sindiconet-pro'))
   }
 
   if (subject) {

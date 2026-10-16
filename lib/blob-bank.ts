@@ -1,4 +1,5 @@
 import { list, put } from '@vercel/blob'
+import { createHash } from 'crypto'
 
 // Manifesto do Banco de Imagens, persistido como um unico JSON no Vercel Blob.
 // Volume esperado e baixo (revisao semanal), entao um arquivo-manifesto unico
@@ -13,6 +14,8 @@ export interface BankEntry {
   subjects?: string[]
   pillar: string | null
   status: 'pendente' | 'aprovado' | 'reprovado'
+  // SHA-256 do arquivo original: identifica imagens EXATAMENTE iguais (byte a byte)
+  hash?: string
   createdAt: string
   reviewedAt?: string
   reviewNote?: string
@@ -68,4 +71,42 @@ export async function updateEntry(
 export async function deleteEntry(id: string): Promise<void> {
   const current = await readManifest()
   await writeManifest(current.filter((e) => e.id !== id))
+}
+
+export function sha256(buffer: Buffer | ArrayBuffer | Uint8Array): string {
+  return createHash('sha256').update(buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : buffer).digest('hex')
+}
+
+// Procura no banco (qualquer status) uma imagem com o mesmo hash.
+export function findDuplicate(entries: BankEntry[], hash: string): BankEntry | undefined {
+  return entries.find((e) => e.hash === hash)
+}
+
+// Calcula o hash das imagens antigas (enviadas antes da verificacao existir).
+// Processa em lotes para nao estourar o tempo da funcao; devolve quantas faltam.
+export async function backfillHashes(limit = 30): Promise<{ done: number; remaining: number; failed: number }> {
+  const current = await readManifest()
+  const pending = current.filter((e) => !e.hash && e.imageUrl)
+  const batch = pending.slice(0, limit)
+  let done = 0
+  let failed = 0
+  const hashes = new Map<string, string>()
+  await Promise.all(
+    batch.map(async (e) => {
+      try {
+        const res = await fetch(e.imageUrl, { cache: 'no-store' })
+        if (!res.ok) throw new Error(String(res.status))
+        hashes.set(e.id, sha256(await res.arrayBuffer()))
+        done++
+      } catch {
+        failed++
+      }
+    })
+  )
+  if (hashes.size > 0) {
+    // Le de novo antes de gravar, para nao sobrescrever mudancas feitas no meio do caminho.
+    const fresh = await readManifest()
+    await writeManifest(fresh.map((e) => (hashes.has(e.id) && !e.hash ? { ...e, hash: hashes.get(e.id) } : e)))
+  }
+  return { done, remaining: Math.max(0, pending.length - done - failed), failed }
 }

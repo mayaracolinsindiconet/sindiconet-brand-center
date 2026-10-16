@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import {
+  PRO_PROMPT_ADDENDUM,
+  PRO_STYLE_GUIDE,
+  COMMON_STYLE_GUIDE,
+  PRO_PILLAR_LABELS,
+  REALISM_SUFFIX_PRO_EN,
+  REALISM_SUFFIX_PRO_PT,
+  normalizeProfile,
+} from '@/lib/photo-profiles'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -102,7 +111,9 @@ const subjectGuide: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, description, styles, subjects, pillar } = await req.json()
+    const { imageBase64, description, styles, subjects, pillar, profile: rawProfile } = await req.json()
+    const profile = normalizeProfile(rawProfile)
+    const isPro = profile === 'pro'
 
     if (!imageBase64 || typeof imageBase64 !== 'string') {
       return NextResponse.json({ error: 'Envie uma imagem de referencia' }, { status: 400 })
@@ -115,7 +126,7 @@ export async function POST(req: NextRequest) {
     }
 
     const styleDescriptions = ((styles || []) as string[])
-      .map((s) => styleGuide[s] || s)
+      .map((s) => styleGuide[s] || PRO_STYLE_GUIDE[s] || COMMON_STYLE_GUIDE[s] || s)
       .join('; ')
 
     const subjectDescriptions = ((subjects || []) as string[])
@@ -134,8 +145,9 @@ export async function POST(req: NextRequest) {
       styleDescriptions ? `ESTILOS VISUAIS SELECIONADOS: ${styleDescriptions}` : '',
       subjectDescriptions ? `QUEM DEVE APARECER NA CENA: ${subjectDescriptions}` : '',
       pillar && pillarLabel[pillar]
-        ? `PILAR FOTOGRAFICO: ${pillarLabel[pillar]}`
+        ? `PILAR FOTOGRAFICO: ${isPro ? PRO_PILLAR_LABELS[pillar] : pillarLabel[pillar]}`
         : 'PILAR FOTOGRAFICO: nao foi especificado pelo usuario -- analise a cena da imagem de referencia e escolha voce mesmo qual dos tres pilares (Premium Silencioso, Editorial Corporativo Humano ou Arquitetura como Simbolo) melhor se adequa, aplicando-o de forma coerente.',
+      isPro ? 'PERFIL: SINDICONET PRO -- aplique integralmente o bloco PERFIL ATIVO do sistema (paleta roxa, iluminacao PRO, menor nivel de tecnologia necessario, protagonista mulher com diversidade, sem cargos nem marcas no prompt).' : '',
       'Preserve a cena/composicao/assunto principal da imagem de referencia, mas aplique a paleta, iluminacao e linguagem visual da marca.',
       'Descreva iluminacao (direcao, qualidade, temperatura de cor), camera/lente (corpo especifico, distancia focal, abertura), composicao e texturas com o maximo de especificidade tecnica.',
       'Lembre-se: fotorrealismo e prioridade maxima, o resultado nao pode parecer ilustracao, render 3D ou imagem gerada por IA. O prompt final deve ter no minimo 250 palavras.',
@@ -150,7 +162,7 @@ export async function POST(req: NextRequest) {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: isPro ? `${SYSTEM_PROMPT}\n\n${PRO_PROMPT_ADDENDUM}` : SYSTEM_PROMPT },
         {
           role: 'user',
           content: [
@@ -189,8 +201,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const promptEnFinal = `${promptEn} ${REALISM_SUFFIX_EN}`
-    const promptPtFinal = promptPt ? `${promptPt}${REALISM_SUFFIX_PT}` : promptPt
+    const suffixEn = isPro ? REALISM_SUFFIX_PRO_EN : REALISM_SUFFIX_EN
+    const suffixPt = isPro ? REALISM_SUFFIX_PRO_PT : REALISM_SUFFIX_PT
+    const promptEnFinal = `${promptEn} ${suffixEn}`
+    const promptPtFinal = promptPt ? `${promptPt}${suffixPt}` : promptPt
 
     return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {

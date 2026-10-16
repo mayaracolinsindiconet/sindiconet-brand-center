@@ -1,6 +1,16 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { upload } from '@vercel/blob/client'
+import {
+  DEFAULT_PROFILE,
+  PROFILE_OPTIONS,
+  SUBJECT_CHIPS,
+  getStyleChips,
+  getAllEntryTagChips,
+  profileTag,
+  type PhotoProfile,
+} from '@/lib/photo-profiles'
 
 const BANK_PIN_KEY = 'banco-imagens-pin'
 
@@ -9,40 +19,12 @@ const BANK_PIN_KEY = 'banco-imagens-pin'
 // melhor se adequa. Ver PILLAR_AUTO usado no envio do formulario.
 const PILLAR_AUTO = 'auto'
 
-const STYLE_CHIPS = [
-  { id: 'premium', label: 'Premium' },
-  { id: 'editorial', label: 'Editorial' },
-  { id: 'humano', label: 'Humano' },
-  { id: 'arquitetural', label: 'Arquitetural' },
-  { id: 'luz-natural', label: 'Luz Natural' },
-  { id: 'corporativo', label: 'Corporativo' },
-  { id: 'tons-neutros', label: 'Tons Neutros' },
-  { id: 'brasileiro', label: 'Contexto Brasileiro' },
-  { id: 'obras', label: 'Obra / Reforma' },
-]
+// As tags de estilo dependem do perfil escolhido (SíndicoNet ou PRO): ver lib/photo-profiles.ts
 
 const FORMATS = [
   { id: 'quadrado', label: 'Quadrado', hint: '1:1' },
   { id: 'retrato', label: 'Retrato', hint: '2:3' },
   { id: 'paisagem', label: 'Paisagem', hint: '3:2' },
-]
-
-const STYLE_FILTER_OPTIONS = [{ id: '', label: 'Todas as caracteristicas' }, ...STYLE_CHIPS]
-
-const SUBJECT_CHIPS = [
-  { id: 'mulher', label: 'Mulher' },
-  { id: 'homem', label: 'Homem' },
-  { id: 'sindico', label: 'Sindico(a)' },
-  { id: 'trabalhador', label: 'Trabalhador' },
-  { id: 'empresario', label: 'Empresario(a)' },
-  { id: 'idoso', label: 'Idoso(a)' },
-  { id: 'crianca', label: 'Crianca' },
-  { id: 'casal', label: 'Casal' },
-  { id: 'familia', label: 'Familia' },
-  { id: 'grupo', label: 'Grupo / Reuniao' },
-  { id: 'seguranca', label: 'Seguranca' },
-  { id: 'zelador', label: 'Zelador(a)' },
-  { id: 'sem-pessoas', label: 'Sem pessoas' },
 ]
 
 const SUBJECT_FILTER_OPTIONS = [{ id: '', label: 'Quem aparece: todos' }, ...SUBJECT_CHIPS]
@@ -71,6 +53,9 @@ export function PhotoBankPanel() {
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
   const pillar = PILLAR_AUTO
+  const [profile, setProfile] = useState<PhotoProfile>(DEFAULT_PROFILE)
+  const styleChips = getStyleChips(profile)
+  const styleFilterOptions = [{ id: '', label: 'Todas as caracteristicas' }, ...styleChips]
   const [format, setFormat] = useState(FORMATS[2].id)
 
   const [promptEn, setPromptEn] = useState('')
@@ -92,11 +77,15 @@ export function PhotoBankPanel() {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const [uploadProgress, setUploadProgress] = useState('')
+  // Tags pre-selecionadas para todas as imagens do proximo envio (o perfil ja entra marcado).
+  const [uploadTags, setUploadTags] = useState<string[]>([profileTag(DEFAULT_PROFILE)])
+  const [uploadSubjects, setUploadSubjects] = useState<string[]>([])
 
   const [lightboxEntry, setLightboxEntry] = useState<BankEntry | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [taggingSubjects, setTaggingSubjects] = useState<string[]>([])
+  const [taggingStyles, setTaggingStyles] = useState<string[]>([])
   const [savingTags, setSavingTags] = useState(false)
 
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
@@ -106,15 +95,19 @@ export function PhotoBankPanel() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStyle, setFilterStyle] = useState('')
   const [filterSubject, setFilterSubject] = useState('')
+  // Segue sozinho o botao SíndicoNet / PRO; 'todos' mostra o banco inteiro.
+  const [filterProfile, setFilterProfile] = useState<'auto' | 'todos'>('auto')
+  const activeProfileFilter = filterProfile === 'auto' ? profile : ''
   const [approvedPage, setApprovedPage] = useState(1)
   const [approvedTotal, setApprovedTotal] = useState(0)
   const [approvedTotalPages, setApprovedTotalPages] = useState(1)
 
-  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string; subject?: string }) => {
+  const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string; subject?: string; profile?: string }) => {
     const page = opts?.page ?? approvedPage
     const search = opts?.search ?? searchQuery
     const styleFilter = opts?.style ?? filterStyle
     const subjectFilter = opts?.subject ?? filterSubject
+    const profileFilter = opts?.profile ?? activeProfileFilter
     setLoadingApproved(true)
     try {
       const params = new URLSearchParams()
@@ -124,6 +117,7 @@ export function PhotoBankPanel() {
       if (search) params.set('search', search)
       if (styleFilter) params.set('style', styleFilter)
       if (subjectFilter) params.set('subject', subjectFilter)
+      if (profileFilter) params.set('profile', profileFilter)
       const res = await fetch('/api/photo-bank?' + params.toString())
       if (res.ok) {
         const data = await res.json()
@@ -137,12 +131,12 @@ export function PhotoBankPanel() {
     } finally {
       setLoadingApproved(false)
     }
-  }, [approvedPage, searchQuery, filterStyle, filterSubject])
+  }, [approvedPage, searchQuery, filterStyle, filterSubject, activeProfileFilter])
 
   useEffect(() => {
     fetchApproved()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvedPage, searchQuery, filterStyle, filterSubject])
+  }, [approvedPage, searchQuery, filterStyle, filterSubject, activeProfileFilter])
 
   // Debounce da busca por texto: atualiza searchQuery 400ms apos o usuario parar de digitar,
   // e volta para a pagina 1 sempre que o filtro mudar.
@@ -156,6 +150,7 @@ export function PhotoBankPanel() {
 
   useEffect(() => {
     setTaggingSubjects(lightboxEntry?.subjects || [])
+    setTaggingStyles(lightboxEntry?.styles || [])
   }, [lightboxEntry])
 
   function handleFilterStyleChange(value: string) {
@@ -173,6 +168,7 @@ export function PhotoBankPanel() {
     setSearchQuery('')
     setFilterStyle('')
     setFilterSubject('')
+    setFilterProfile('auto')
     setApprovedPage(1)
   }
 
@@ -181,12 +177,32 @@ export function PhotoBankPanel() {
     if (saved) setReviewPin(saved)
   }, [])
 
+  // Ao trocar o perfil, as tags de estilo sao filtradas automaticamente:
+  // as que nao existem no novo perfil saem da selecao e do filtro do banco.
+  function handleProfileChange(next: PhotoProfile) {
+    if (next === profile) return
+    const allowed = new Set(getStyleChips(next).map((c) => c.id))
+    setProfile(next)
+    setApprovedPage(1)
+    // A tag de perfil das imagens a enviar acompanha o botao escolhido.
+    setUploadTags((prev) => [...prev.filter((t) => t !== profileTag(profile)), profileTag(next)])
+    setSelectedStyles((prev) => prev.filter((id) => allowed.has(id)))
+    if (filterStyle && !allowed.has(filterStyle)) {
+      setFilterStyle('')
+      setApprovedPage(1)
+    }
+  }
+
   function toggleStyle(id: string) {
     setSelectedStyles((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
   }
 
   function toggleSubject(id: string) {
     setSelectedSubjects((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
+  }
+
+  function toggleTaggingStyle(id: string) {
+    setTaggingStyles((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id])
   }
 
   function toggleTaggingSubject(id: string) {
@@ -216,8 +232,8 @@ export function PhotoBankPanel() {
     try {
       const endpoint = referenceImage ? '/api/generate-photo-prompt-from-image' : '/api/generate-photo-prompt'
       const body = referenceImage
-        ? { imageBase64: referenceImage, description, styles: selectedStyles, subjects: selectedSubjects, pillar, format }
-        : { description, styles: selectedStyles, subjects: selectedSubjects, pillar, format }
+        ? { imageBase64: referenceImage, description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile }
+        : { description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile }
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -328,37 +344,116 @@ export function PhotoBankPanel() {
     }
   }
 
+  function toggleUploadTag(id: string) {
+    setUploadTags((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id])
+  }
+
+  function toggleUploadSubject(id: string) {
+    setUploadSubjects((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id])
+  }
+
+  // O banco aceita apenas JPG e PNG. O tipo e deduzido pelo tipo do arquivo ou, se o
+  // navegador nao informar, pela extensao. Devolve null quando nao for JPG/PNG.
+  function getAllowedContentType(file: File): 'image/jpeg' | 'image/png' | null {
+    const ext = (file.name.split('.').pop() || '').toLowerCase()
+    if (file.type === 'image/jpeg' || ext === 'jpg' || ext === 'jpeg') return 'image/jpeg'
+    if (file.type === 'image/png' || ext === 'png') return 'image/png'
+    return null
+  }
+
+  async function sha256Hex(file: File): Promise<string> {
+    const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer())
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('')
+  }
+
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || files.length === 0) return
     setUploading(true)
     setUploadError('')
-    const fileList = Array.from(files)
+    const allFiles = Array.from(files)
+    const fileList = allFiles.filter((f) => getAllowedContentType(f) !== null)
+    const rejected = allFiles.filter((f) => getAllowedContentType(f) === null).map((f) => f.name)
+    const pinHeaders = { 'x-bank-pin': reviewPin }
     let successCount = 0
     const failed: string[] = []
+    const duplicated: string[] = []
+
+    // Antes de enviar, garante que as imagens antigas do banco tenham o "codigo" de
+    // comparacao, para que a deteccao de imagens exatamente iguais valha para tudo.
+    try {
+      for (let round = 0; round < 40; round++) {
+        setUploadProgress('Verificando imagens ja existentes...')
+        const res = await fetch('/api/photo-bank/hashes', { method: 'POST', headers: pinHeaders })
+        if (!res.ok) break
+        const data = await res.json()
+        if (!data.remaining || (!data.done && !data.failed)) break
+      }
+    } catch {
+      // segue o envio mesmo sem a verificacao das antigas
+    }
+
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i]
-      setUploadProgress('Enviando ' + (i + 1) + '/' + fileList.length + '...')
+      const label = (i + 1) + '/' + fileList.length
       try {
-        const formData = new FormData()
-        formData.append('files', file)
-        const res = await fetch('/api/photo-bank/upload', {
+        // 1) codigo do arquivo + conferencia de duplicada ANTES de enviar
+        setUploadProgress('Conferindo ' + label + '...')
+        const hash = await sha256Hex(file)
+        const checkRes = await fetch('/api/photo-bank/check', {
           method: 'POST',
-          headers: { 'x-bank-pin': reviewPin },
-          body: formData,
+          headers: { 'Content-Type': 'application/json', ...pinHeaders },
+          body: JSON.stringify({ hash }),
         })
-        if (!res.ok) throw new Error()
+        if (!checkRes.ok) throw new Error('falha na conferencia de duplicadas')
+        const check = await checkRes.json()
+        if (check.duplicate) {
+          duplicated.push(file.name + ' (igual a "' + (check.duplicate.description || check.duplicate.id) + '", ' + check.duplicate.status + ')')
+          continue
+        }
+
+        // 2) envio direto ao armazenamento (sem limite de tamanho da funcao do servidor)
+        setUploadProgress('Enviando ' + label + '...')
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+        const blob = await upload('banco-imagens/' + Date.now() + '-' + safeName, file, {
+          access: 'public',
+          handleUploadUrl: '/api/photo-bank/upload-token',
+          headers: pinHeaders,
+          contentType: getAllowedContentType(file) || 'image/jpeg',
+          multipart: file.size > 15 * 1024 * 1024,
+        })
+
+        // 3) registro no banco com as tags pre-selecionadas
+        const regRes = await fetch('/api/photo-bank/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...pinHeaders },
+          body: JSON.stringify({ url: blob.url, fileName: file.name, hash, styles: uploadTags, subjects: uploadSubjects }),
+        })
+        if (regRes.status === 409) {
+          const dupData = await regRes.json().catch(() => ({}))
+          duplicated.push(file.name + ' (igual a "' + (dupData.duplicate?.description || 'imagem ja existente') + '")')
+          continue
+        }
+        if (!regRes.ok) throw new Error('falha ao registrar no banco')
         successCount++
-      } catch {
-        failed.push(file.name)
+      } catch (err) {
+        const reason = err instanceof Error && err.message ? err.message : 'erro desconhecido'
+        failed.push(file.name + ' [' + reason + ']')
       }
     }
     setUploadProgress('')
-    if (failed.length > 0) {
-      setUploadError(
-        successCount + ' imagem(ns) enviada(s) com sucesso. Falha ao enviar: ' + failed.join(', ')
-      )
+    const messages: string[] = []
+    if (successCount > 0) messages.push(successCount + ' imagem(ns) enviada(s).')
+    if (rejected.length > 0) {
+      messages.push('Ignorado(s) por nao ser JPG ou PNG: ' + rejected.join(', ') + '.')
     }
+    if (duplicated.length > 0) {
+      messages.push('Nao enviada(s) por ja existir uma imagem exatamente igual: ' + duplicated.join('; ') + '.')
+    }
+    if (failed.length > 0) {
+      messages.push('Falha ao enviar: ' + failed.join('; ') + '.')
+    }
+    if (messages.length > 0) setUploadError(messages.join(' '))
     setApprovedPage(1)
     await fetchApproved({ page: 1 })
     setUploading(false)
@@ -390,7 +485,7 @@ export function PhotoBankPanel() {
       const res = await fetch('/api/photo-bank/' + lightboxEntry.id, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-bank-pin': reviewPin },
-        body: JSON.stringify({ subjects: taggingSubjects }),
+        body: JSON.stringify({ subjects: taggingSubjects, styles: taggingStyles }),
       })
       if (!res.ok) throw new Error()
       const data = await res.json()
@@ -434,6 +529,29 @@ export function PhotoBankPanel() {
           {stage === 'form' && (
             <>
               <div className="mb-5">
+                <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Tipo de imagem</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {PROFILE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => handleProfileChange(opt.id)}
+                      aria-pressed={profile === opt.id}
+                      className={
+                        'px-4 py-3 rounded-xl text-left transition-colors border ' +
+                        (profile === opt.id
+                          ? 'bg-[#101e37] text-white border-[#101e37]'
+                          : 'bg-[#F4F6F8] text-[#3D3D3D]/70 border-transparent hover:border-black/10')
+                      }
+                    >
+                      <span className="block text-sm font-semibold font-body">{opt.label}</span>
+                      <span className="block text-[11px] font-body opacity-60">{opt.hint}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-5">
                 <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Formato da imagem</label>
                 <div className="flex flex-wrap gap-2">
                   {FORMATS.map((f) => (
@@ -465,7 +583,7 @@ export function PhotoBankPanel() {
               <div className="mb-6">
                 <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Estilo visual</label>
                 <div className="flex flex-wrap gap-2">
-                  {STYLE_CHIPS.map((chip) => (
+                  {styleChips.map((chip) => (
                     <button
                       key={chip.id}
                       onClick={() => toggleStyle(chip.id)}
@@ -546,7 +664,9 @@ export function PhotoBankPanel() {
 
           {stage === 'preview' && (
             <>
-              <p className="text-sm font-semibold font-body text-[#101e37] mb-3">Prompt gerado</p>
+              <p className="text-sm font-semibold font-body text-[#101e37] mb-3">
+                Prompt gerado <span className="font-normal text-[#3D3D3D]/50">({PROFILE_OPTIONS.find((o) => o.id === profile)?.label})</span>
+              </p>
 
               <div className="mb-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Prompt (ingles, enviado a IA)</p>
@@ -609,11 +729,19 @@ export function PhotoBankPanel() {
               className="flex-1 px-4 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] placeholder-[#3D3D3D]/40 bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             />
             <select
+              value={filterProfile}
+              onChange={(e) => { setFilterProfile(e.target.value as 'auto' | 'todos'); setApprovedPage(1) }}
+              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
+            >
+              <option value="auto">{'Tipo: ' + (profile === 'pro' ? 'SíndicoNet PRO' : 'SíndicoNet') + ' (automatico)'}</option>
+              <option value="todos">Tipo: todos</option>
+            </select>
+            <select
               value={filterStyle}
               onChange={(e) => handleFilterStyleChange(e.target.value)}
               className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             >
-              {STYLE_FILTER_OPTIONS.map((opt) => (
+              {styleFilterOptions.map((opt) => (
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
@@ -626,7 +754,7 @@ export function PhotoBankPanel() {
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
-            {(searchQuery || filterStyle || filterSubject) && (
+            {(searchQuery || filterStyle || filterSubject || filterProfile !== 'auto') && (
               <button
                 onClick={clearFilters}
                 className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
@@ -728,19 +856,62 @@ export function PhotoBankPanel() {
           ) : (
             <>
               <p className="text-sm font-semibold font-body text-[#101e37] mb-4 text-center">Revisao semanal</p>
-              <div className="max-w-md mx-auto mb-6 p-4 rounded-xl bg-[#F4F6F8] flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold font-body text-[#101e37]">Adicionar imagens existentes</p>
-                  <p className="text-[10px] font-body text-[#3D3D3D]/50">
-                    {uploading ? uploadProgress || 'Enviando...' : 'Fotos ja prontas entram direto como aprovadas.'}
-                  </p>
+              <div className="max-w-xl mx-auto mb-6 p-4 rounded-xl bg-[#F4F6F8]">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <div>
+                    <p className="text-xs font-semibold font-body text-[#101e37]">Adicionar imagens existentes</p>
+                    <p className="text-[10px] font-body text-[#3D3D3D]/50">
+                      {uploading
+                        ? uploadProgress || 'Enviando...'
+                        : 'Apenas JPG e PNG. Entram como aprovadas com as tags marcadas abaixo; imagens exatamente iguais as ja existentes sao bloqueadas.'}
+                    </p>
+                  </div>
+                  <label className={'shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body cursor-pointer transition-colors ' + (uploading ? 'opacity-50 pointer-events-none' : '')}>
+                    {uploading ? 'Enviando...' : 'Escolher arquivos'}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                      multiple
+                      className="hidden"
+                      onChange={handleUpload}
+                      disabled={uploading}
+                    />
+                  </label>
                 </div>
-                <label className="shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body cursor-pointer transition-colors">
-                  {uploading ? 'Enviando...' : 'Escolher arquivos'}
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleUpload} disabled={uploading} />
-                </label>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Tags de todas as imagens deste envio</p>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {getAllEntryTagChips().map((chip) => (
+                    <button
+                      key={chip.id}
+                      type="button"
+                      onClick={() => toggleUploadTag(chip.id)}
+                      className={
+                        'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                        (uploadTags.includes(chip.id) ? 'bg-[#101e37] text-white' : 'bg-white text-[#3D3D3D]/60')
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Quem aparece (opcional)</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {SUBJECT_CHIPS.map((chip) => (
+                    <button
+                      key={chip.id}
+                      type="button"
+                      onClick={() => toggleUploadSubject(chip.id)}
+                      className={
+                        'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                        (uploadSubjects.includes(chip.id) ? 'bg-[#101e37] text-white' : 'bg-white text-[#3D3D3D]/60')
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center max-w-md mx-auto">{uploadError}</p>}
+              {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center max-w-xl mx-auto">{uploadError}</p>}
 
               <EntryGrid
                 entries={pendingEntries}
@@ -817,6 +988,21 @@ export function PhotoBankPanel() {
 
               {reviewPin && (
                 <div className="mt-4 pt-4 border-t border-black/[0.06]">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-2">Tipo e tags desta imagem</p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {getAllEntryTagChips().map((chip) => (
+                      <button
+                        key={chip.id}
+                        onClick={() => toggleTaggingStyle(chip.id)}
+                        className={
+                          'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
+                          (taggingStyles.includes(chip.id) ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
+                        }
+                      >
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-2">Quem aparece nesta imagem</p>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {SUBJECT_CHIPS.map((chip) => (
