@@ -55,7 +55,7 @@ export function PhotoBankPanel() {
   const pillar = PILLAR_AUTO
   const [profile, setProfile] = useState<PhotoProfile>(DEFAULT_PROFILE)
   const styleChips = getStyleChips(profile)
-  const styleFilterOptions = [{ id: '', label: 'Todas as caracteristicas' }, ...styleChips]
+  const styleFilterOptions = [{ id: '', label: 'Todas as caracteristicas' }, ...getAllEntryTagChips()]
   const [format, setFormat] = useState(FORMATS[2].id)
 
   const [promptEn, setPromptEn] = useState('')
@@ -96,9 +96,9 @@ export function PhotoBankPanel() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStyle, setFilterStyle] = useState('')
   const [filterSubject, setFilterSubject] = useState('')
-  // Segue sozinho o botao SíndicoNet / PRO; 'todos' mostra o banco inteiro.
-  const [filterProfile, setFilterProfile] = useState<'auto' | 'todos'>('auto')
-  const activeProfileFilter = filterProfile === 'auto' ? profile : ''
+  // Filtro do banco e INDEPENDENTE do botao SíndicoNet / PRO usado na geracao de prompt.
+  const [filterProfile, setFilterProfile] = useState<'' | 'sindiconet' | 'pro'>('')
+  const activeProfileFilter = filterProfile
   const [approvedPage, setApprovedPage] = useState(1)
   const [approvedTotal, setApprovedTotal] = useState(0)
   const [approvedTotalPages, setApprovedTotalPages] = useState(1)
@@ -169,7 +169,7 @@ export function PhotoBankPanel() {
     setSearchQuery('')
     setFilterStyle('')
     setFilterSubject('')
-    setFilterProfile('auto')
+    setFilterProfile('')
     setApprovedPage(1)
   }
 
@@ -184,14 +184,9 @@ export function PhotoBankPanel() {
     if (next === profile) return
     const allowed = new Set(getStyleChips(next).map((c) => c.id))
     setProfile(next)
-    setApprovedPage(1)
     // A tag de perfil das imagens a enviar acompanha o botao escolhido.
     setUploadTags((prev) => [...prev.filter((t) => t !== profileTag(profile)), profileTag(next)])
     setSelectedStyles((prev) => prev.filter((id) => allowed.has(id)))
-    if (filterStyle && !allowed.has(filterStyle)) {
-      setFilterStyle('')
-      setApprovedPage(1)
-    }
   }
 
   function toggleStyle(id: string) {
@@ -502,9 +497,9 @@ export function PhotoBankPanel() {
       if (!res.ok) throw new Error()
       const data = await res.json()
       const updated = data.entry as BankEntry
-      setLightboxEntry(updated)
       setApprovedEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
       setPendingEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
+      setLightboxEntry(null)
     } catch {
       // usuario pode tentar novamente
     } finally {
@@ -742,11 +737,12 @@ export function PhotoBankPanel() {
             />
             <select
               value={filterProfile}
-              onChange={(e) => { setFilterProfile(e.target.value as 'auto' | 'todos'); setApprovedPage(1) }}
+              onChange={(e) => { setFilterProfile(e.target.value as '' | 'sindiconet' | 'pro'); setApprovedPage(1) }}
               className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             >
-              <option value="auto">{'Tipo: ' + (profile === 'pro' ? 'SíndicoNet PRO' : 'SíndicoNet') + ' (automatico)'}</option>
-              <option value="todos">Tipo: todos</option>
+              <option value="">Tipo: todos</option>
+              <option value="sindiconet">Tipo: SíndicoNet</option>
+              <option value="pro">Tipo: SíndicoNet PRO</option>
             </select>
             <select
               value={filterStyle}
@@ -766,7 +762,7 @@ export function PhotoBankPanel() {
                 <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
-            {(searchQuery || filterStyle || filterSubject || filterProfile !== 'auto') && (
+            {(searchQuery || filterStyle || filterSubject || filterProfile !== '') && (
               <button
                 onClick={clearFilters}
                 className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
