@@ -947,7 +947,7 @@ export function PhotoBankPanel() {
           onClick={() => setLightboxEntry(null)}
         >
           <div
-            className="relative max-w-3xl w-full bg-white rounded-2xl overflow-hidden"
+            className="relative max-w-3xl w-full max-h-[92vh] overflow-y-auto overscroll-contain bg-white rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -961,7 +961,7 @@ export function PhotoBankPanel() {
             <img
               src={lightboxEntry.imageUrl}
               alt={lightboxEntry.description}
-              className="w-full max-h-[70vh] object-contain bg-[#F4F6F8]"
+              className={"w-full object-contain bg-[#F4F6F8] " + (reviewPin ? "max-h-[38vh]" : "max-h-[70vh]")}
             />
             <div className="p-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1018,13 +1018,15 @@ export function PhotoBankPanel() {
                       </button>
                     ))}
                   </div>
-                  <button
-                    onClick={saveTags}
-                    disabled={savingTags}
-                    className="px-4 py-2 rounded-lg bg-[#101e37] hover:bg-[#0d1929] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
-                  >
-                    {savingTags ? 'Salvando...' : 'Salvar tags'}
-                  </button>
+                  <div className="sticky bottom-0 -mx-4 -mb-4 px-4 py-3 bg-white border-t border-black/[0.06]">
+                    <button
+                      onClick={saveTags}
+                      disabled={savingTags}
+                      className="px-4 py-2 rounded-lg bg-[#101e37] hover:bg-[#0d1929] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                    >
+                      {savingTags ? 'Salvando...' : 'Salvar tags'}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
