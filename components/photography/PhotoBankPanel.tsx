@@ -80,6 +80,7 @@ export function PhotoBankPanel() {
   // Tags pre-selecionadas para todas as imagens do proximo envio (o perfil ja entra marcado).
   const [uploadTags, setUploadTags] = useState<string[]>([profileTag(DEFAULT_PROFILE)])
   const [uploadSubjects, setUploadSubjects] = useState<string[]>([])
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
 
   const [lightboxEntry, setLightboxEntry] = useState<BankEntry | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -366,12 +367,23 @@ export function PhotoBankPanel() {
     return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('')
   }
 
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  function handlePickFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
     if (!files || files.length === 0) return
+    const picked = Array.from(files)
+    setUploadError('')
+    setPendingFiles((prev) => {
+      const keys = new Set(prev.map((f) => f.name + ':' + f.size))
+      return [...prev, ...picked.filter((f) => !keys.has(f.name + ':' + f.size))]
+    })
+    e.target.value = ''
+  }
+
+  async function handleUpload() {
+    if (pendingFiles.length === 0) return
     setUploading(true)
     setUploadError('')
-    const allFiles = Array.from(files)
+    const allFiles = pendingFiles
     const fileList = allFiles.filter((f) => getAllowedContentType(f) !== null)
     const rejected = allFiles.filter((f) => getAllowedContentType(f) === null).map((f) => f.name)
     const pinHeaders = { 'x-bank-pin': reviewPin }
@@ -457,7 +469,7 @@ export function PhotoBankPanel() {
     setApprovedPage(1)
     await fetchApproved({ page: 1 })
     setUploading(false)
-    e.target.value = ''
+    setPendingFiles([])
   }
 
   async function deleteApprovedEntry(id: string) {
@@ -863,17 +875,17 @@ export function PhotoBankPanel() {
                     <p className="text-[10px] font-body text-[#3D3D3D]/50">
                       {uploading
                         ? uploadProgress || 'Enviando...'
-                        : 'Apenas JPG e PNG. Entram como aprovadas com as tags marcadas abaixo; imagens exatamente iguais as ja existentes sao bloqueadas.'}
+                        : 'Apenas JPG e PNG. 1) Escolha as fotos, 2) marque as tags, 3) clique em Enviar. Imagens exatamente iguais as ja existentes sao bloqueadas.'}
                     </p>
                   </div>
                   <label className={'shrink-0 px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body cursor-pointer transition-colors ' + (uploading ? 'opacity-50 pointer-events-none' : '')}>
-                    {uploading ? 'Enviando...' : 'Escolher arquivos'}
+                    {uploading ? 'Enviando...' : pendingFiles.length > 0 ? 'Adicionar mais fotos' : 'Escolher arquivos'}
                     <input
                       type="file"
                       accept="image/jpeg,image/png,.jpg,.jpeg,.png"
                       multiple
                       className="hidden"
-                      onChange={handleUpload}
+                      onChange={handlePickFiles}
                       disabled={uploading}
                     />
                   </label>
@@ -911,6 +923,47 @@ export function PhotoBankPanel() {
                   ))}
                 </div>
               </div>
+              {pendingFiles.length > 0 && (
+                <div className="max-w-xl mx-auto mb-4 p-4 rounded-xl bg-[#F4F6F8]">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-2">
+                    {pendingFiles.length} {pendingFiles.length === 1 ? 'foto selecionada' : 'fotos selecionadas'}
+                  </p>
+                  <ul className="mb-3 max-h-32 overflow-y-auto space-y-1">
+                    {pendingFiles.map((f, idx) => (
+                      <li key={f.name + f.size} className="flex items-center justify-between gap-2 text-xs font-body text-[#3D3D3D]/70">
+                        <span className="truncate">{f.name}</span>
+                        <button
+                          type="button"
+                          disabled={uploading}
+                          onClick={() => setPendingFiles((prev) => prev.filter((_, i) => i !== idx))}
+                          className="shrink-0 text-[#3D3D3D]/40 hover:text-red-500 disabled:opacity-40"
+                          aria-label={'Remover ' + f.name}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleUpload}
+                      disabled={uploading}
+                      className="px-4 py-2 rounded-lg bg-[#101e37] hover:bg-[#0d1929] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                    >
+                      {uploading ? 'Enviando...' : 'Enviar ' + pendingFiles.length + (pendingFiles.length === 1 ? ' foto' : ' fotos')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPendingFiles([])}
+                      disabled={uploading}
+                      className="px-4 py-2 rounded-lg bg-white text-[#3D3D3D]/60 text-xs font-semibold font-body disabled:opacity-40"
+                    >
+                      Limpar
+                    </button>
+                  </div>
+                </div>
+              )}
               {uploadError && <p className="text-xs text-red-500 font-body mb-4 text-center max-w-xl mx-auto">{uploadError}</p>}
 
               <EntryGrid
