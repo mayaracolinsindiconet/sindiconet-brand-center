@@ -32,9 +32,14 @@ const SEARCH_SYNONYMS: Record<string, string[]> = {
 export async function GET(req: NextRequest) {
   const status = req.nextUrl.searchParams.get('status')
   const search = (req.nextUrl.searchParams.get('search') || '').trim().toLowerCase()
-  const style = req.nextUrl.searchParams.get('style') || ''
-  const subject = req.nextUrl.searchParams.get('subject') || ''
-  const profile = req.nextUrl.searchParams.get('profile') || ''
+  // Filtros aceitam varios valores separados por virgula (ex: style=premium,editorial).
+  const parseList = (key: string) =>
+    (req.nextUrl.searchParams.get(key) || '').split(',').map((v) => v.trim()).filter(Boolean)
+  const styleList = parseList('style')
+  const subjectList = parseList('subject')
+  const profileList = parseList('profile')
+  // "all": a imagem precisa ter todas as tags marcadas; "any": basta ter uma delas.
+  const matchAny = req.nextUrl.searchParams.get('match') === 'any'
   const pageParam = parseInt(req.nextUrl.searchParams.get('page') || '', 10)
   const limitParam = parseInt(req.nextUrl.searchParams.get('limit') || '', 10)
 
@@ -48,20 +53,27 @@ export async function GET(req: NextRequest) {
   const all = await readManifest()
   let filtered = status ? all.filter((e) => e.status === status) : all
 
-  if (style) {
-    filtered = filtered.filter((e) => (e.styles || []).includes(style))
+  const matches = (have: string[], wanted: string[]) =>
+    matchAny ? wanted.some((w) => have.includes(w)) : wanted.every((w) => have.includes(w))
+
+  if (styleList.length > 0) {
+    filtered = filtered.filter((e) => matches(e.styles || [], styleList))
   }
 
-  // Perfil: "pro" so mostra imagens com a tag PRO; "sindiconet" mostra as marcadas
+  // Tipo (perfil): "pro" so mostra imagens com a tag PRO; "sindiconet" mostra as marcadas
   // como SíndicoNet e tambem as antigas sem tag de perfil (anteriores ao PRO).
-  if (profile === 'pro') {
-    filtered = filtered.filter((e) => (e.styles || []).includes('sindiconet-pro'))
-  } else if (profile === 'sindiconet') {
-    filtered = filtered.filter((e) => (e.styles || []).includes('sindiconet') || !(e.styles || []).includes('sindiconet-pro'))
+  // Quando os dois estao marcados, mostra as imagens de qualquer um dos tipos.
+  if (profileList.length > 0) {
+    filtered = filtered.filter((e) => {
+      const st = e.styles || []
+      const isPro = st.includes('sindiconet-pro')
+      const isSn = st.includes('sindiconet') || !isPro
+      return (profileList.includes('pro') && isPro) || (profileList.includes('sindiconet') && isSn)
+    })
   }
 
-  if (subject) {
-    filtered = filtered.filter((e) => (e.subjects || []).includes(subject))
+  if (subjectList.length > 0) {
+    filtered = filtered.filter((e) => matches(e.subjects || [], subjectList))
   }
 
   if (search) {

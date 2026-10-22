@@ -6,6 +6,8 @@ import {
   COMMON_STYLE_GUIDE,
   PRO_PILLAR_LABELS,
   REALISM_SUFFIX_PRO_EN,
+  LIGHTWEIGHT_SUFFIX_EN,
+  LIGHTWEIGHT_SUFFIX_PT,
   REALISM_SUFFIX_PRO_PT,
   normalizeProfile,
 } from '@/lib/photo-profiles'
@@ -111,7 +113,7 @@ const subjectGuide: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, description, styles, subjects, pillar, profile: rawProfile } = await req.json()
+    const { imageBase64, description, styles, subjects, pillar, profile: rawProfile, lightweight } = await req.json()
     const profile = normalizeProfile(rawProfile)
     const isPro = profile === 'pro'
 
@@ -203,8 +205,11 @@ export async function POST(req: NextRequest) {
 
     const suffixEn = isPro ? REALISM_SUFFIX_PRO_EN : REALISM_SUFFIX_EN
     const suffixPt = isPro ? REALISM_SUFFIX_PRO_PT : REALISM_SUFFIX_PT
-    const promptEnFinal = `${promptEn} ${suffixEn}`
-    const promptPtFinal = promptPt ? `${promptPt}${suffixPt}` : promptPt
+    const light = lightweight === true
+    const promptEnBase = `${promptEn} ${suffixEn}`
+    const promptPtBase = promptPt ? `${promptPt}${suffixPt}` : promptPt
+    const promptEnFinal = light ? `${promptEnBase} ${LIGHTWEIGHT_SUFFIX_EN}` : promptEnBase
+    const promptPtFinal = light && promptPtBase ? `${promptPtBase}${LIGHTWEIGHT_SUFFIX_PT}` : promptPtBase
 
     return NextResponse.json({ promptEn: promptEnFinal, promptPt: promptPtFinal, prompt: promptEnFinal })
   } catch (error) {

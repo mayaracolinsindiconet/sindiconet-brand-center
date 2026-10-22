@@ -9,6 +9,8 @@ import {
   getStyleChips,
   getAllEntryTagChips,
   profileTag,
+  TAG_SINDICONET,
+  TAG_PRO,
   type PhotoProfile,
 } from '@/lib/photo-profiles'
 
@@ -27,9 +29,67 @@ const FORMATS = [
   { id: 'paisagem', label: 'Paisagem', hint: '3:2' },
 ]
 
-const SUBJECT_FILTER_OPTIONS = [{ id: '', label: 'Quem aparece: todos' }, ...SUBJECT_CHIPS]
+const LOGO_URL = '/assets/logos/sindiconet-simbolo-branca.svg'
+const LOGO_RATIO = 88 / 99 // largura / altura do simbolo
+const MAX_SMALL_BYTES = 50 * 1024
+
+const PROFILE_FILTER_CHIPS = [
+  { id: 'sindiconet', label: 'SíndicoNet' },
+  { id: 'pro', label: 'SíndicoNet PRO' },
+]
+
+function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob)
+    const img = new Image()
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img) }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('imagem')) }
+    img.src = url
+  })
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas'))), type, quality)
+  })
+}
+
+function drawScene(img: HTMLImageElement, logo: HTMLImageElement | null, width: number, height: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('canvas')
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, width, height)
+  ctx.drawImage(img, 0, 0, width, height)
+  if (logo) {
+    // Monograma branco, 80% de opacidade, no lado direito e centralizado na vertical.
+    const logoH = Math.min(height * 0.2, width * 0.2 / LOGO_RATIO)
+    const logoW = logoH * LOGO_RATIO
+    ctx.globalAlpha = 0.8
+    ctx.drawImage(logo, width - logoW - width * 0.04, (height - logoH) / 2, logoW, logoH)
+    ctx.globalAlpha = 1
+  }
+  return canvas
+}
 
 const APPROVED_PAGE_SIZE = 12
+
+// Lista de paginas clicaveis; 0 representa "..." quando ha muitas paginas.
+function getPageList(current: number, total: number): number[] {
+  if (total <= 9) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages = new Set<number>([1, total, current - 1, current, current + 1])
+  const sorted = Array.from(pages).filter((n) => n >= 1 && n <= total).sort((a, b) => a - b)
+  const out: number[] = []
+  sorted.forEach((n, i) => {
+    if (i > 0 && n - sorted[i - 1] > 1) out.push(0)
+    out.push(n)
+  })
+  return out
+}
 
 type BankEntry = {
   id: string
@@ -55,7 +115,7 @@ export function PhotoBankPanel() {
   const pillar = PILLAR_AUTO
   const [profile, setProfile] = useState<PhotoProfile>(DEFAULT_PROFILE)
   const styleChips = getStyleChips(profile)
-  const styleFilterOptions = [{ id: '', label: 'Todas as caracteristicas' }, ...getAllEntryTagChips()]
+  const styleFilterChips = getAllEntryTagChips().filter((c) => c.id !== TAG_SINDICONET && c.id !== TAG_PRO)
   const [format, setFormat] = useState(FORMATS[2].id)
 
   const [promptEn, setPromptEn] = useState('')
@@ -94,11 +154,17 @@ export function PhotoBankPanel() {
 
   const [searchInput, setSearchInput] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterStyle, setFilterStyle] = useState('')
-  const [filterSubject, setFilterSubject] = useState('')
+  const [filterStyles, setFilterStyles] = useState<string[]>([])
+  const [filterSubjects, setFilterSubjects] = useState<string[]>([])
+  const [filterMatch, setFilterMatch] = useState<'all' | 'any'>('all')
+  const [withMonogram, setWithMonogram] = useState(true)
+  const [lightweight, setLightweight] = useState(false)
+  const [downloadMode, setDownloadMode] = useState<'original' | 'small' | null>(null)
   // Filtro do banco e INDEPENDENTE do botao SíndicoNet / PRO usado na geracao de prompt.
-  const [filterProfile, setFilterProfile] = useState<'' | 'sindiconet' | 'pro'>('')
-  const activeProfileFilter = filterProfile
+  const [filterProfiles, setFilterProfiles] = useState<string[]>([])
+  const activeProfileFilter = filterProfiles.join(',')
+  const filterStylesKey = filterStyles.join(',')
+  const filterSubjectsKey = filterSubjects.join(',')
   const [approvedPage, setApprovedPage] = useState(1)
   const [approvedTotal, setApprovedTotal] = useState(0)
   const [approvedTotalPages, setApprovedTotalPages] = useState(1)
@@ -106,8 +172,8 @@ export function PhotoBankPanel() {
   const fetchApproved = useCallback(async (opts?: { page?: number; search?: string; style?: string; subject?: string; profile?: string }) => {
     const page = opts?.page ?? approvedPage
     const search = opts?.search ?? searchQuery
-    const styleFilter = opts?.style ?? filterStyle
-    const subjectFilter = opts?.subject ?? filterSubject
+    const styleFilter = opts?.style ?? filterStylesKey
+    const subjectFilter = opts?.subject ?? filterSubjectsKey
     const profileFilter = opts?.profile ?? activeProfileFilter
     setLoadingApproved(true)
     try {
@@ -119,6 +185,7 @@ export function PhotoBankPanel() {
       if (styleFilter) params.set('style', styleFilter)
       if (subjectFilter) params.set('subject', subjectFilter)
       if (profileFilter) params.set('profile', profileFilter)
+      params.set('match', filterMatch)
       const res = await fetch('/api/photo-bank?' + params.toString())
       if (res.ok) {
         const data = await res.json()
@@ -132,12 +199,12 @@ export function PhotoBankPanel() {
     } finally {
       setLoadingApproved(false)
     }
-  }, [approvedPage, searchQuery, filterStyle, filterSubject, activeProfileFilter])
+  }, [approvedPage, searchQuery, filterStylesKey, filterSubjectsKey, activeProfileFilter, filterMatch])
 
   useEffect(() => {
     fetchApproved()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approvedPage, searchQuery, filterStyle, filterSubject, activeProfileFilter])
+  }, [approvedPage, searchQuery, filterStylesKey, filterSubjectsKey, activeProfileFilter, filterMatch])
 
   // Debounce da busca por texto: atualiza searchQuery 400ms apos o usuario parar de digitar,
   // e volta para a pagina 1 sempre que o filtro mudar.
@@ -154,22 +221,31 @@ export function PhotoBankPanel() {
     setTaggingStyles(lightboxEntry?.styles || [])
   }, [lightboxEntry])
 
-  function handleFilterStyleChange(value: string) {
-    setFilterStyle(value)
+  function toggleIn(list: string[], id: string) {
+    return list.includes(id) ? list.filter((x) => x !== id) : [...list, id]
+  }
+
+  function toggleFilterStyle(id: string) {
+    setFilterStyles((prev) => toggleIn(prev, id))
     setApprovedPage(1)
   }
 
-  function handleFilterSubjectChange(value: string) {
-    setFilterSubject(value)
+  function toggleFilterSubject(id: string) {
+    setFilterSubjects((prev) => toggleIn(prev, id))
+    setApprovedPage(1)
+  }
+
+  function toggleFilterProfile(id: string) {
+    setFilterProfiles((prev) => toggleIn(prev, id))
     setApprovedPage(1)
   }
 
   function clearFilters() {
     setSearchInput('')
     setSearchQuery('')
-    setFilterStyle('')
-    setFilterSubject('')
-    setFilterProfile('')
+    setFilterStyles([])
+    setFilterSubjects([])
+    setFilterProfiles([])
     setApprovedPage(1)
   }
 
@@ -228,8 +304,8 @@ export function PhotoBankPanel() {
     try {
       const endpoint = referenceImage ? '/api/generate-photo-prompt-from-image' : '/api/generate-photo-prompt'
       const body = referenceImage
-        ? { imageBase64: referenceImage, description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile }
-        : { description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile }
+        ? { imageBase64: referenceImage, description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile, lightweight }
+        : { description, styles: selectedStyles, subjects: selectedSubjects, pillar, format, profile, lightweight }
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -507,16 +583,70 @@ export function PhotoBankPanel() {
     }
   }
 
-  async function downloadImage(entry: BankEntry) {
+  async function downloadImage(entry: BankEntry, mode: 'original' | 'small' = 'original') {
     setDownloadingId(entry.id)
+    setDownloadMode(mode)
     try {
       const res = await fetch(entry.imageUrl)
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
+      const sourceBlob = await res.blob()
+      const baseName = (entry.description || entry.id).replace(/[^a-zA-Z0-9-_ ]/g, '')
+      let outBlob: Blob = sourceBlob
+      let ext = (entry.imageUrl.split('.').pop() || 'png').split('?')[0].toLowerCase()
+      let suffix = ''
+
+      if (withMonogram || mode === 'small') {
+        const img = await loadImageFromBlob(sourceBlob)
+        let logo: HTMLImageElement | null = null
+        if (withMonogram) {
+          const logoRes = await fetch(LOGO_URL)
+          logo = await loadImageFromBlob(await logoRes.blob())
+        }
+        const w0 = img.naturalWidth
+        const h0 = img.naturalHeight
+
+        if (mode === 'small') {
+          // Procura a maior qualidade possivel que caiba em 50 KB; so reduz as dimensoes
+          // quando a qualidade necessaria ficaria baixa demais.
+          const scales = [1, 0.85, 0.7, 0.6, 0.5, 0.42, 0.35, 0.3]
+          const GOOD_QUALITY = 0.75
+          let best: Blob | null = null
+          for (const sc of scales) {
+            const canvas = drawScene(img, logo, Math.max(1, Math.round(w0 * sc)), Math.max(1, Math.round(h0 * sc)))
+            let lo = 0.4
+            let hi = 0.95
+            let fit: Blob | null = null
+            let fitQ = 0
+            const top = await canvasToBlob(canvas, 'image/jpeg', hi)
+            if (top.size <= MAX_SMALL_BYTES) { fit = top; fitQ = hi } else {
+              for (let i = 0; i < 7; i++) {
+                const mid = (lo + hi) / 2
+                const b = await canvasToBlob(canvas, 'image/jpeg', mid)
+                if (b.size <= MAX_SMALL_BYTES) { fit = b; fitQ = mid; lo = mid } else { hi = mid }
+              }
+            }
+            if (fit) {
+              best = fit
+              if (fitQ >= GOOD_QUALITY) break
+            }
+          }
+          if (!best) {
+            const canvas = drawScene(img, logo, Math.max(1, Math.round(w0 * 0.25)), Math.max(1, Math.round(h0 * 0.25)))
+            best = await canvasToBlob(canvas, 'image/jpeg', 0.4)
+          }
+          outBlob = best
+          ext = 'jpg'
+          suffix = '-50kb'
+        } else {
+          const canvas = drawScene(img, logo, w0, h0)
+          const isPng = ext === 'png'
+          outBlob = await canvasToBlob(canvas, isPng ? 'image/png' : 'image/jpeg', isPng ? undefined : 0.95)
+        }
+      }
+
+      const url = URL.createObjectURL(outBlob)
       const a = document.createElement('a')
       a.href = url
-      const ext = (entry.imageUrl.split('.').pop() || 'png').split('?')[0]
-      a.download = (entry.description || entry.id).replace(/[^a-zA-Z0-9-_ ]/g, '') + '.' + ext
+      a.download = baseName + suffix + '.' + ext
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -525,6 +655,7 @@ export function PhotoBankPanel() {
       window.open(entry.imageUrl, '_blank')
     } finally {
       setDownloadingId(null)
+      setDownloadMode(null)
     }
   }
 
@@ -574,6 +705,24 @@ export function PhotoBankPanel() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="mb-5">
+                <label className="block text-sm font-semibold font-body text-[#101e37] mb-2">Peso do arquivo</label>
+                <button
+                  type="button"
+                  onClick={() => setLightweight((v) => !v)}
+                  aria-pressed={lightweight}
+                  className={
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold font-body transition-colors ' +
+                    (lightweight ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60')
+                  }
+                >
+                  Imagem leve (ate 50 KB)
+                </button>
+                <p className="text-[10px] font-body text-[#3D3D3D]/50 mt-1.5">
+                  Adiciona ao prompt o direcional para a imagem sair leve, sem perder qualidade.
+                </p>
               </div>
 
               <div className="mb-5">
@@ -735,40 +884,91 @@ export function PhotoBankPanel() {
               placeholder="Buscar por descricao, estilo, mulher, sindico..."
               className="flex-1 px-4 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] placeholder-[#3D3D3D]/40 bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
             />
-            <select
-              value={filterProfile}
-              onChange={(e) => { setFilterProfile(e.target.value as '' | 'sindiconet' | 'pro'); setApprovedPage(1) }}
-              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
-            >
-              <option value="">Tipo: todos</option>
-              <option value="sindiconet">Tipo: SíndicoNet</option>
-              <option value="pro">Tipo: SíndicoNet PRO</option>
-            </select>
-            <select
-              value={filterStyle}
-              onChange={(e) => handleFilterStyleChange(e.target.value)}
-              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
-            >
-              {styleFilterOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>{opt.label}</option>
-              ))}
-            </select>
-            <select
-              value={filterSubject}
-              onChange={(e) => handleFilterSubjectChange(e.target.value)}
-              className="px-3 py-2.5 rounded-xl border border-black/10 text-xs font-body text-[#3D3D3D] bg-[#F4F6F8] focus:outline-none focus:ring-2 focus:ring-[#3e77db]/30"
-            >
-              {SUBJECT_FILTER_OPTIONS.map((opt) => (
-                <option key={opt.id} value={opt.id}>{opt.label}</option>
-              ))}
-            </select>
-            {(searchQuery || filterStyle || filterSubject || filterProfile !== '') && (
+            {(searchQuery || filterStyles.length > 0 || filterSubjects.length > 0 || filterProfiles.length > 0) && (
               <button
                 onClick={clearFilters}
                 className="shrink-0 px-3 py-2.5 rounded-xl text-xs font-semibold font-body text-[#3D3D3D]/50 hover:text-red-500 transition-colors"
               >
                 Limpar
               </button>
+            )}
+          </div>
+
+          <div className="mb-4 space-y-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Tipo</p>
+              <div className="flex flex-wrap gap-1.5">
+                {PROFILE_FILTER_CHIPS.map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => toggleFilterProfile(chip.id)}
+                    aria-pressed={filterProfiles.includes(chip.id)}
+                    className={
+                      'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                      (filterProfiles.includes(chip.id) ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60 hover:bg-black/5')
+                    }
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Caracteristicas</p>
+              <div className="flex flex-wrap gap-1.5">
+                {styleFilterChips.map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => toggleFilterStyle(chip.id)}
+                    aria-pressed={filterStyles.includes(chip.id)}
+                    className={
+                      'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                      (filterStyles.includes(chip.id) ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60 hover:bg-black/5')
+                    }
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body mb-1.5">Quem aparece</p>
+              <div className="flex flex-wrap gap-1.5">
+                {SUBJECT_CHIPS.map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => toggleFilterSubject(chip.id)}
+                    aria-pressed={filterSubjects.includes(chip.id)}
+                    className={
+                      'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                      (filterSubjects.includes(chip.id) ? 'bg-[#3e77db] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60 hover:bg-black/5')
+                    }
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {(filterStyles.length + filterSubjects.length > 1) && (
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-[#3D3D3D]/40 font-body">Mostrar imagens com</p>
+                {(['all', 'any'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => { setFilterMatch(m); setApprovedPage(1) }}
+                    className={
+                      'px-2.5 py-1 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                      (filterMatch === m ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60 hover:bg-black/5')
+                    }
+                  >
+                    {m === 'all' ? 'todas as selecionadas' : 'qualquer uma'}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -815,9 +1015,26 @@ export function PhotoBankPanel() {
                   >
                     Anterior
                   </button>
-                  <p className="text-[11px] font-body text-[#3D3D3D]/40">
-                    Pagina {approvedPage} de {approvedTotalPages}
-                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-1">
+                    {getPageList(approvedPage, approvedTotalPages).map((item, idx) =>
+                      item === 0 ? (
+                        <span key={'gap' + idx} className="px-1 text-[11px] text-[#3D3D3D]/40">...</span>
+                      ) : (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => setApprovedPage(item)}
+                          aria-current={item === approvedPage ? 'page' : undefined}
+                          className={
+                            'min-w-[28px] px-2 py-1.5 rounded-lg text-[11px] font-semibold font-body transition-colors ' +
+                            (item === approvedPage ? 'bg-[#101e37] text-white' : 'bg-[#F4F6F8] text-[#3D3D3D]/60 hover:bg-black/5')
+                          }
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  </div>
                   <button
                     onClick={() => setApprovedPage((p) => Math.min(approvedTotalPages, p + 1))}
                     disabled={approvedPage >= approvedTotalPages}
@@ -1017,11 +1234,18 @@ export function PhotoBankPanel() {
                 <p className="text-xs font-body text-[#3D3D3D]/60 line-clamp-1">{lightboxEntry.description}</p>
                 <div className="flex gap-2 shrink-0">
                 <button
-                  onClick={() => downloadImage(lightboxEntry)}
+                  onClick={() => downloadImage(lightboxEntry, 'original')}
                   disabled={downloadingId === lightboxEntry.id}
                   className="px-4 py-2 rounded-lg bg-[#3e77db] hover:bg-[#2d63c8] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
                 >
-                  {downloadingId === lightboxEntry.id ? 'Baixando...' : 'Baixar'}
+                  {downloadingId === lightboxEntry.id && downloadMode === 'original' ? 'Baixando...' : 'Baixar'}
+                </button>
+                <button
+                  onClick={() => downloadImage(lightboxEntry, 'small')}
+                  disabled={downloadingId === lightboxEntry.id}
+                  className="px-4 py-2 rounded-lg bg-[#101e37] hover:bg-[#0d1929] text-white text-xs font-semibold font-body transition-colors disabled:opacity-40"
+                >
+                  {downloadingId === lightboxEntry.id && downloadMode === 'small' ? 'Gerando...' : 'Baixar até 50 KB'}
                 </button>
                 {reviewPin && (
                   <button
@@ -1034,6 +1258,15 @@ export function PhotoBankPanel() {
                 )}
                 </div>
               </div>
+              <label className="mt-3 flex items-center gap-2 text-xs font-body text-[#3D3D3D]/70 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={withMonogram}
+                  onChange={(e) => setWithMonogram(e.target.checked)}
+                  className="w-4 h-4 accent-[#101e37]"
+                />
+                Adicionar monograma SíndicoNet (80% de opacidade, lado direito) ao baixar
+              </label>
 
               {reviewPin && (
                 <div className="mt-4 pt-4 border-t border-black/[0.06]">
