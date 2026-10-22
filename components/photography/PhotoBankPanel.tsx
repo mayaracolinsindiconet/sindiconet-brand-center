@@ -66,11 +66,12 @@ function drawScene(img: HTMLImageElement, logo: HTMLImageElement | null, width: 
   ctx.fillRect(0, 0, width, height)
   ctx.drawImage(img, 0, 0, width, height)
   if (logo) {
-    // Monograma branco, 80% de opacidade, no lado direito e centralizado na vertical.
-    const logoH = Math.min(height * 0.2, width * 0.2 / LOGO_RATIO)
+    // Monograma branco, 80% de opacidade, no canto inferior direito, com margem de seguranca.
+    const logoH = Math.min(height * 0.1, width * 0.1 / LOGO_RATIO)
     const logoW = logoH * LOGO_RATIO
+    const margin = Math.min(width, height) * 0.05
     ctx.globalAlpha = 0.8
-    ctx.drawImage(logo, width - logoW - width * 0.04, (height - logoH) / 2, logoW, logoH)
+    ctx.drawImage(logo, width - logoW - margin, height - logoH - margin, logoW, logoH)
     ctx.globalAlpha = 1
   }
   return canvas
@@ -1265,7 +1266,7 @@ export function PhotoBankPanel() {
                   onChange={(e) => setWithMonogram(e.target.checked)}
                   className="w-4 h-4 accent-[#101e37]"
                 />
-                Adicionar monograma SíndicoNet (80% de opacidade, lado direito) ao baixar
+                Adicionar monograma SíndicoNet (80% de opacidade, canto inferior direito) ao baixar
               </label>
 
               {reviewPin && (
