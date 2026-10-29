@@ -11,7 +11,7 @@ interface LogoVariantGridProps {
   onSelect: (variant: LogoVariant, colorMode: LogoColorMode) => void
 }
 
-const variants: LogoVariant[]   = ['mista', 'simbolo', 'mista-headline']
+const variants: LogoVariant[]   = ['mista', 'simbolo']
 const colorModes: LogoColorMode[] = ['colorida', 'preta', 'branca']
 
 const variantLabel: Record<LogoVariant, string> = {

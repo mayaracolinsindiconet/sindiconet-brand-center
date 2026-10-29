@@ -298,9 +298,9 @@ export default function FundacaoPage() {
                 </Card>
                 <Card className="border-[#3e77db]/20 bg-gradient-to-br from-[#3e77db]/5 to-white">
                   <span className="text-[10px] font-semibold uppercase tracking-wider font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">2026</span>
-                  <p className="font-headline font-bold text-xl text-[#101e37] mt-4 mb-3">A plataforma definitiva de gestão condominial.</p>
+                  <p className="font-headline font-bold text-xl text-[#101e37] mt-4 mb-3">A plataforma de inteligência da gestão condominial.</p>
                   <ul className="space-y-2">
-                    {['Marca única e forte com múltiplos canais integrados', 'Tom proativo: "Elevamos a sua gestão à alta performance."', 'Síndico visto como estrategista de negócios'].map((item) => (
+                    {['Marca única, sem submarcas — canais com nome literal, sempre "com IA"', 'IA que responde com base em 30 anos de conteúdo condominial', 'Convite: "Pergunte ao SíndicoNet."'].map((item) => (
                       <li key={item} className="flex items-start gap-2 text-sm font-body text-[#3D3D3D]/70">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#3e77db] shrink-0" />{item}
                       </li>
@@ -308,19 +308,83 @@ export default function FundacaoPage() {
                   </ul>
                 </Card>
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Taglines</p>
-              <div className="space-y-3">
-                <Card>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-2">Principal</p>
-                  <p className="font-headline font-bold text-2xl text-[#101e37]">Transformando gestores em estrategistas.</p>
-                </Card>
-                <Card>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-2">Suporte</p>
-                  <p className="font-body text-base text-[#3D3D3D]/75 leading-relaxed">
-                    "Conteúdo, conexões e inteligência artificial para gestores condominiais."
-                  </p>
-                  <p className="font-body text-xs text-[#3D3D3D]/40 mt-3">Ideal para assinaturas de e-mail, seções "Sobre Nós" e materiais institucionais.</p>
-                </Card>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Quem somos, como assinamos e o convite que fazemos</p>
+              <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 mb-10">
+                {/* Escada: posicionamento → tagline → chamada */}
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-black/8 bg-[#F4F6F8] px-6 py-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/45 font-body mb-2">Posicionamento · Quem somos</p>
+                    <p className="font-headline font-bold text-2xl md:text-3xl text-[#101e37] leading-tight">A plataforma de inteligência da gestão condominial</p>
+                  </div>
+                  <div className="rounded-2xl border border-[#3e77db]/10 bg-[#e6ecf8] px-6 py-5 md:ml-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/45 font-body mb-2">Tagline · Assinatura de marca</p>
+                    <p className="font-headline font-bold text-xl md:text-2xl text-[#101e37] leading-tight">Inteligência para quem cuida de condomínio.</p>
+                    <p className="font-body text-sm text-[#3D3D3D]/60 mt-2">Em peças pequenas: “Inteligência para quem cuida.”</p>
+                  </div>
+                  <div className="rounded-2xl bg-[#3e77db] px-6 py-5 md:ml-12">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/80 font-body mb-2">Chamada · O convite</p>
+                    <p className="font-headline font-bold text-2xl md:text-3xl text-white leading-tight">Pergunte ao SíndicoNet.</p>
+                  </div>
+                </div>
+
+                {/* Apoio: suporte, diferencial, regras */}
+                <div className="space-y-6">
+                  {[
+                    {
+                      title: 'Suporte',
+                      desc: 'O que existe dentro: IA com Conteúdo, Cursos, Fornecedores, Comunidade, Dados e Eventos. Num só lugar.',
+                      icon: (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+                          <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+                          <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: 'Diferencial',
+                      desc: 'Contra a IA genérica: a IA que responde com base em 30 anos de conteúdo condominial.',
+                      icon: (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" /><path d="M9 12l2 2 4-4" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      title: 'Regras',
+                      desc: 'Arquétipo Guardião · marca única, sem submarcas · canais com nome literal, sempre “com IA”.',
+                      icon: (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M6 12.5l4 4 8-9" />
+                        </svg>
+                      ),
+                    },
+                  ].map((item) => (
+                    <div key={item.title} className="flex items-start gap-4">
+                      <span className="shrink-0 w-12 h-12 rounded-full border-2 border-[#3e77db]/60 text-[#3e77db] flex items-center justify-center">
+                        {item.icon}
+                      </span>
+                      <div>
+                        <p className="font-headline font-bold text-lg text-[#101e37]">{item.title}</p>
+                        <p className="font-body text-sm text-[#3D3D3D]/65 leading-relaxed mt-1">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Manifesto */}
+              <div className="rounded-2xl bg-[#3e77db] px-6 py-8 md:px-10 md:py-10">
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#101e37] font-body mb-6">
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#101e37]" />
+                  Manifesto · O convite é uma pergunta
+                </p>
+                <div className="space-y-5 font-headline text-lg md:text-xl text-white leading-relaxed max-w-3xl">
+                  <p>Há 30 anos, alguém cuida de condomínio. E há 30 anos, essa pessoa pergunta. Pode multar? Pode cobrar? Pode reformar? Quem paga? Quem decide?</p>
+                  <p>Cada pergunta virou uma matéria. Uma coluna. Uma decisão comentada. Um curso. Uma cotação. Um encontro. Catorze mil respostas, escritas por quem entende de condomínio.</p>
+                  <p>Hoje, cada uma delas responde à sua pergunta. Não uma inteligência que sabe de tudo. Uma inteligência que sabe de condomínio.</p>
+                  <p>Dentro do conteúdo. Da capacitação. Dos fornecedores. Da comunidade. Dos dados. Dos eventos. Num só lugar. Para quem cuida.</p>
+                </div>
+                <p className="font-headline font-bold text-3xl md:text-4xl text-[#101e37] mt-8">Pergunte ao SíndicoNet.</p>
               </div>
             </SectionBlock>
 

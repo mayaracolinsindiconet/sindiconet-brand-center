@@ -286,12 +286,40 @@ export function PhotoBankPanel() {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => {
-      setReferenceImage(typeof reader.result === 'string' ? reader.result : null)
+    reader.onload = async () => {
+      const original = typeof reader.result === 'string' ? reader.result : null
+      if (!original) return
+      // Reduz a imagem de referencia antes de enviar: a Vercel recusa
+      // requisicoes acima de 4,5 MB (erro 413) e a IA de visao nao precisa
+      // de mais que ~1280 px para ler a cena.
+      const compact = await shrinkReferenceImage(original).catch(() => original)
+      setReferenceImage(compact)
       setReferenceImageName(file.name)
     }
     reader.readAsDataURL(file)
     e.target.value = ''
+  }
+
+  function shrinkReferenceImage(dataUrl: string, maxSide = 1280, quality = 0.85): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+        const w = Math.max(1, Math.round(img.width * scale))
+        const h = Math.max(1, Math.round(img.height * scale))
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return reject(new Error('canvas indisponivel'))
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, w, h)
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', quality))
+      }
+      img.onerror = () => reject(new Error('imagem invalida'))
+      img.src = dataUrl
+    })
   }
 
   function clearReferenceImage() {
@@ -313,7 +341,15 @@ export function PhotoBankPanel() {
         body: JSON.stringify(body),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || 'Erro ao gerar prompt')
+      if (!res.ok) {
+        const fallback =
+          res.status === 413
+            ? 'Erro ao gerar prompt: a imagem de referencia e grande demais. Tente outra imagem.'
+            : res.status === 504
+              ? 'Erro ao gerar prompt: a IA demorou demais para responder. Tente de novo.'
+              : `Erro ao gerar prompt (codigo ${res.status})`
+        throw new Error(data.error || fallback)
+      }
       setPromptEn(data.promptEn || data.prompt || '')
       setPromptPt(data.promptPt || '')
       setStage('preview')

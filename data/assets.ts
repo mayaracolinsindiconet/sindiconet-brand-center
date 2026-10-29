@@ -63,40 +63,6 @@ export const assets: Asset[] = [
     formats: logoFormats('/assets/logos/sindiconet-mista-cinza'),
   },
 
-  // ── Logos Síndiconet — Mista Headline ─────────────────────────────────────
-  {
-    id: 'sindiconet-mista-headline-colorida',
-    name: 'Logo Mista com Headline — Colorida',
-    type: 'logo', product: 'brand', version: '2.0', updatedAt: '2026-06-30',
-    previewUrl: '/assets/logos/sindiconet-mista-headline-colorida.svg',
-    usageContext: 'Com tagline em fundos claros.',
-    formats: logoFormats('/assets/logos/sindiconet-mista-headline-colorida'),
-  },
-  {
-    id: 'sindiconet-mista-headline-branca',
-    name: 'Logo Mista com Headline — Branca',
-    type: 'logo', product: 'brand', version: '2.0', updatedAt: '2026-06-30',
-    previewUrl: '/assets/logos/sindiconet-mista-headline-branca.svg',
-    usageContext: 'Com tagline em fundos escuros.',
-    formats: logoFormats('/assets/logos/sindiconet-mista-headline-branca'),
-  },
-  {
-    id: 'sindiconet-mista-headline-preta',
-    name: 'Logo Mista com Headline — Versão Escura',
-    type: 'logo', product: 'brand', version: '2.0', updatedAt: '2026-06-30',
-    previewUrl: '/assets/logos/sindiconet-mista-headline-preta.svg',
-    usageContext: 'Com tagline — símbolo colorido, texto branco.',
-    formats: logoFormats('/assets/logos/sindiconet-mista-headline-preta'),
-  },
-  {
-    id: 'sindiconet-mista-headline-cinza',
-    name: 'Logo Mista com Headline — Cinza',
-    type: 'logo', product: 'brand', version: '2.0', updatedAt: '2026-06-30',
-    previewUrl: '/assets/logos/sindiconet-mista-headline-cinza.svg',
-    usageContext: 'Com tagline para impressão em escala de cinza.',
-    formats: logoFormats('/assets/logos/sindiconet-mista-headline-cinza'),
-  },
-
   // ── Logos Síndiconet — Símbolo ────────────────────────────────────────────
   {
     id: 'sindiconet-simbolo-colorida',
