@@ -31,13 +31,21 @@ const sections = [
 function SectionBlock({ id, eyebrow, title, children }: {
   id: string; eyebrow: string; title: string; children: React.ReactNode
 }) {
+  const [num, ...rest] = eyebrow.split(' · ')
+  const label = rest.length ? rest.join(' · ') : num
   return (
     <section id={id} className="scroll-mt-24">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-0.5 h-6 rounded-full bg-[#3e77db] shrink-0" />
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3e77db] font-body mb-0.5">{eyebrow}</p>
-          <h2 className="font-headline font-bold text-2xl text-[#101e37]">{title}</h2>
+      <div className="relative mb-10 pt-6">
+        {rest.length > 0 && (
+          <span aria-hidden="true" className="absolute -top-2 right-0 font-headline font-bold text-[88px] md:text-[120px] leading-none text-[#3e77db]/[0.07] select-none pointer-events-none">
+            {num}
+          </span>
+        )}
+        <div className="relative">
+          <p className="inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3e77db] font-body mb-3">
+            <span className="w-6 h-px bg-[#3e77db]" />{label}
+          </p>
+          <h2 className="font-headline font-bold text-3xl md:text-4xl text-[#101e37] leading-tight">{title}</h2>
         </div>
       </div>
       {children}
@@ -46,13 +54,18 @@ function SectionBlock({ id, eyebrow, title, children }: {
 }
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`bg-white rounded-2xl border border-black/8 p-6 ${className}`}>{children}</div>
+  return (
+    <div className={`bg-white rounded-2xl border border-[#101e37]/[0.06] p-6 shadow-[0_1px_2px_rgba(16,30,55,0.04),0_12px_32px_-18px_rgba(16,30,55,0.18)] transition-shadow duration-200 hover:shadow-[0_1px_2px_rgba(16,30,55,0.05),0_18px_40px_-18px_rgba(16,30,55,0.26)] ${className}`}>
+      {children}
+    </div>
+  )
 }
 
 function Quote({ children }: { children: React.ReactNode }) {
   return (
-    <blockquote className="relative pl-6 border-l-2 border-[#3e77db] my-6">
-      <p className="font-body text-[#3D3D3D]/75 text-lg leading-relaxed italic">{children}</p>
+    <blockquote className="relative my-8 rounded-2xl bg-white border border-[#101e37]/[0.06] px-8 py-7 md:px-10">
+      <span aria-hidden="true" className="absolute -top-5 left-7 w-10 h-10 rounded-xl bg-[#3e77db] text-white flex items-center justify-center font-headline font-bold text-2xl leading-none">“</span>
+      <p className="font-headline text-[#101e37] text-xl md:text-2xl leading-snug">{children}</p>
     </blockquote>
   )
 }
@@ -87,21 +100,40 @@ export default function FundacaoPage() {
     <div className="min-h-screen bg-[#F4F6F8]">
 
       {/* Hero */}
-      <div className="bg-[#101e37] pt-28 pb-16 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 60% at 70% 30%, rgba(62,119,219,0.18) 0%, transparent 70%)' }} />
+      <div className="bg-[#101e37] pt-28 pb-20 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 70% at 80% 20%, rgba(62,119,219,0.32) 0%, transparent 70%), radial-gradient(ellipse 50% 60% at 0% 100%, rgba(31,60,110,0.6) 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'linear-gradient(to bottom, black, transparent 85%)' }} />
+        <img src="/assets/logos/sindiconet-simbolo-branca.svg" alt="" aria-hidden="true"
+          className="hidden md:block absolute right-[-60px] top-1/2 -translate-y-1/2 w-[440px] opacity-[0.06] pointer-events-none select-none" />
         <div className="max-w-7xl mx-auto relative">
           <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-            className="text-[#6e99e4] text-xs font-semibold uppercase tracking-[0.2em] font-body mb-4">
-            Brand Guide Estratégico · 2026
+            className="inline-flex items-center gap-2.5 text-[#6e99e4] text-xs font-semibold uppercase tracking-[0.2em] font-body mb-5">
+            <span className="w-6 h-px bg-[#6e99e4]" />Brand Guide Estratégico · 2026
           </motion.p>
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
-            className="font-headline font-bold text-5xl md:text-7xl text-white leading-[1.05] mb-4">
+            className="font-headline font-bold text-5xl md:text-7xl text-white leading-[1.05] mb-5">
             Branding
           </motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.2 }}
-            className="font-body text-white/50 text-lg max-w-xl">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.15 }}
+            className="font-body text-white/60 text-lg max-w-xl mb-10">
             Os alicerces estratégicos que definem nossa verdade, nosso lugar no mundo e como nos expressamos.
           </motion.p>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.25 }}
+            className="flex flex-col md:flex-row md:items-stretch gap-3 max-w-4xl">
+            <div className="flex-1 rounded-2xl bg-white/[0.06] border border-white/10 backdrop-blur-sm px-6 py-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45 font-body mb-2">Tagline</p>
+              <p className="font-headline font-bold text-xl md:text-2xl text-white leading-snug">Inteligência para quem cuida de condomínio.</p>
+            </div>
+            <div className="rounded-2xl bg-[#3e77db] px-6 py-5 md:min-w-[280px]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70 font-body mb-2">O convite</p>
+              <p className="font-headline font-bold text-xl md:text-2xl text-white leading-snug">Pergunte ao SíndicoNet.</p>
+            </div>
+          </motion.div>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {['30 anos de conteúdo condominial', 'Catorze mil respostas', 'Arquétipo Guardião'].map((chip) => (
+              <span key={chip} className="px-3 py-1.5 rounded-full border border-white/15 text-white/70 text-xs font-body">{chip}</span>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -157,13 +189,12 @@ export default function FundacaoPage() {
           </aside>
 
           {/* Content */}
-          <main className="space-y-20 min-w-0">
+          <main className="space-y-24 min-w-0">
 
             {/* 00 · Manifesto */}
             <section id="manifesto" className="scroll-mt-24">
               <div className="relative rounded-3xl bg-[#3e77db] overflow-hidden px-6 py-10 md:px-12 md:py-14">
                 <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 80% at 100% 0%, rgba(255,255,255,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 70% at 0% 100%, rgba(16,30,55,0.35) 0%, transparent 65%)' }} />
-                <span className="absolute -top-6 right-6 md:right-10 font-headline font-bold text-[180px] leading-none text-white/10 select-none pointer-events-none" aria-hidden="true">?</span>
                 <div className="relative">
                   <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#101e37] font-body mb-8">
                     <span className="w-3 h-3 rounded-full border-2 border-[#101e37]" />
@@ -190,16 +221,17 @@ export default function FundacaoPage() {
               <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
                 Este documento não é um manual de regras visuais. É uma bússola estratégica que define nossa verdade, nosso lugar no mundo e como nos expressamos.
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div aria-hidden="true" className="hidden sm:block absolute top-1/2 left-8 right-8 h-px bg-gradient-to-r from-[#3e77db]/10 via-[#3e77db]/30 to-[#3e77db]/60" />
                 {[
                   { year: '1996', role: 'Resolvedor',   desc: 'O síndico resolvia problemas operacionais do dia a dia.', highlight: false },
                   { year: '2015', role: 'Gestor',        desc: 'Profissionalização da gestão condominial no Brasil.',     highlight: false },
                   { year: '2026', role: 'Estrategista',  desc: 'IA, dados e alta performance definem a nova era.',        highlight: true  },
                 ].map((step) => (
-                  <Card key={step.year} className={step.highlight ? 'border-[#3e77db]/20 bg-gradient-to-br from-[#3e77db]/5 to-white' : ''}>
-                    <p className="text-[10px] font-mono font-bold text-[#3D3D3D]/30 mb-1">{step.year}</p>
-                    <p className={`font-headline font-bold text-2xl mb-2 ${step.highlight ? 'text-[#3e77db]' : 'text-[#101e37]'}`}>{step.role}</p>
-                    <p className="font-body text-sm text-[#3D3D3D]/60 leading-relaxed">{step.desc}</p>
+                  <Card key={step.year} className={`relative ${step.highlight ? '!bg-[#3e77db] !border-transparent' : ''}`}>
+                    <p className={`inline-block text-[11px] font-mono font-bold px-2 py-0.5 rounded-md mb-3 ${step.highlight ? 'bg-white/20 text-white' : 'bg-[#3e77db]/10 text-[#3e77db]'}`}>{step.year}</p>
+                    <p className={`font-headline font-bold text-2xl mb-2 ${step.highlight ? 'text-white' : 'text-[#101e37]'}`}>{step.role}</p>
+                    <p className={`font-body text-sm leading-relaxed ${step.highlight ? 'text-white/85' : 'text-[#3D3D3D]/60'}`}>{step.desc}</p>
                   </Card>
                 ))}
               </div>
@@ -217,13 +249,13 @@ export default function FundacaoPage() {
                   { value: '46%',     label: 'Dos síndicos já atuam profissionalmente' },
                   { value: '72%',     label: 'Buscaram cursos de qualificação' },
                 ].map((stat) => (
-                  <Card key={stat.label} className="text-center">
-                    <p className="font-headline font-bold text-3xl text-[#3e77db] mb-1">{stat.value}</p>
+                  <Card key={stat.label} className="text-center !py-7 bg-gradient-to-b from-white to-[#eef3fc]">
+                    <p className="font-headline font-bold text-4xl text-[#3e77db] mb-2">{stat.value}</p>
                     <p className="font-body text-xs text-[#3D3D3D]/55 leading-snug">{stat.label}</p>
                   </Card>
                 ))}
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Três ondas que redefiniram o papel do síndico</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Três ondas que redefiniram o papel do síndico</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
                 {[
                   { year: '2020', wave: '1ª Onda', name: 'Pandemia',            desc: 'Home-office intensificou a vida em condomínio. Moradores mais exigentes. Gestão exponencialmente mais complexa.' },
@@ -240,7 +272,7 @@ export default function FundacaoPage() {
                   </Card>
                 ))}
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Fundamentos estratégicos</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Fundamentos estratégicos</p>
               <div className="rounded-2xl border border-black/8 overflow-hidden">
                 <table className="w-full">
                   <thead>
@@ -273,7 +305,7 @@ export default function FundacaoPage() {
               <Quote>
                 Acreditamos que uma gestão inteligente transforma a vida do síndico, do administrador e de milhões de pessoas. Quando o condomínio está em ordem, a vida de todos flui melhor.
               </Quote>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4 mt-10">Como fazemos — o tripé fundamental</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5 mt-10">Como fazemos — o tripé fundamental</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                 {[
                   { num: '01', title: 'Conteúdo',               desc: 'Curadoria rigorosa e informação de alto valor. Transformamos dados complexos em conhecimento acionável, garantindo que cada decisão do gestor seja embasada e segura.' },
@@ -281,13 +313,13 @@ export default function FundacaoPage() {
                   { num: '03', title: 'Inteligência Artificial', desc: 'O motor da gestão escalável. Soluções digitais que absorvem a carga operacional, reduzem o atrito diário e liberam o síndico para a estratégia.' },
                 ].map((p) => (
                   <Card key={p.num}>
-                    <span className="font-headline font-bold text-4xl text-[#cfddf6] leading-none block mb-3">{p.num}</span>
+                    <span className="inline-flex w-10 h-10 rounded-xl bg-[#3e77db]/10 text-[#3e77db] font-headline font-bold text-sm items-center justify-center mb-4">{p.num}</span>
                     <p className="font-headline font-bold text-lg text-[#101e37] mb-2">{p.title}</p>
                     <p className="font-body text-sm text-[#3D3D3D]/60 leading-relaxed">{p.desc}</p>
                   </Card>
                 ))}
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">O que fazemos — plataforma integrada</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">O que fazemos — plataforma integrada</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { num: '01', name: 'Conteúdo',   desc: 'A principal fonte de informação e atualização do mercado condominial.' },
@@ -298,8 +330,8 @@ export default function FundacaoPage() {
                   { num: '06', name: 'Comunidade',  desc: 'O espaço seguro para troca de experiências e resolução colaborativa.' },
                   { num: '07', name: 'Conexão',     desc: 'Canal direto de relacionamento e engajamento com os principais players do setor.' },
                 ].map((ch) => (
-                  <div key={ch.num} className="flex items-start gap-4 bg-white rounded-xl border border-black/8 px-5 py-4">
-                    <span className="font-mono text-[10px] font-bold text-[#3D3D3D]/25 shrink-0 mt-0.5">{ch.num}</span>
+                  <div key={ch.num} className="flex items-start gap-4 bg-white rounded-xl border border-[#101e37]/[0.06] px-5 py-4 transition-colors hover:border-[#3e77db]/30">
+                    <span className="font-mono text-[11px] font-bold text-[#3e77db] bg-[#3e77db]/10 rounded-md px-1.5 py-0.5 shrink-0">{ch.num}</span>
                     <div>
                       <p className="font-headline font-bold text-base text-[#101e37]">{ch.name}</p>
                       <p className="font-body text-xs text-[#3D3D3D]/55 mt-0.5 leading-relaxed">{ch.desc}</p>
@@ -311,8 +343,8 @@ export default function FundacaoPage() {
 
             {/* 04 · Posicionamento */}
             <SectionBlock id="posicionamento" eyebrow="04 · Posicionamento" title="Evolução do Discurso">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                <Card className="opacity-60">
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-stretch gap-4 mb-14">
+                <Card className="!bg-[#F4F6F8] !shadow-none">
                   <span className="text-[10px] font-semibold uppercase tracking-wider font-body bg-[#101e37]/8 text-[#101e37] px-2.5 py-1 rounded-lg">Antes</span>
                   <p className="font-headline font-bold text-xl text-[#3D3D3D] mt-4 mb-3">O maior portal de conteúdo para síndicos.</p>
                   <ul className="space-y-2">
@@ -323,7 +355,12 @@ export default function FundacaoPage() {
                     ))}
                   </ul>
                 </Card>
-                <Card className="border-[#3e77db]/20 bg-gradient-to-br from-[#3e77db]/5 to-white">
+                <div className="flex items-center justify-center" aria-hidden="true">
+                  <span className="w-10 h-10 rounded-full bg-[#3e77db] text-white flex items-center justify-center rotate-90 md:rotate-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </span>
+                </div>
+                <Card className="!border-[#3e77db]/25 ring-1 ring-[#3e77db]/10">
                   <span className="text-[10px] font-semibold uppercase tracking-wider font-body bg-[#3e77db]/8 text-[#3e77db] px-2.5 py-1 rounded-lg">2026</span>
                   <p className="font-headline font-bold text-xl text-[#101e37] mt-4 mb-3">A plataforma de inteligência da gestão condominial.</p>
                   <ul className="space-y-2">
@@ -335,27 +372,27 @@ export default function FundacaoPage() {
                   </ul>
                 </Card>
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Quem somos, como assinamos e o convite que fazemos</p>
-              <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-8 mb-10">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Quem somos, como assinamos e o convite que fazemos</p>
+              <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 mb-10 items-stretch">
                 {/* Escada: posicionamento → tagline → chamada */}
                 <div className="space-y-3">
-                  <div className="rounded-2xl border border-black/8 bg-[#F4F6F8] px-6 py-5">
+                  <div className="rounded-2xl border border-[#101e37]/[0.06] bg-white px-6 py-5 border-l-4 !border-l-[#101e37]">
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/45 font-body mb-2">Posicionamento · Quem somos</p>
                     <p className="font-headline font-bold text-2xl md:text-3xl text-[#101e37] leading-tight">A plataforma de inteligência da gestão condominial</p>
                   </div>
-                  <div className="rounded-2xl border border-[#3e77db]/10 bg-[#e6ecf8] px-6 py-5 md:ml-6">
+                  <div className="rounded-2xl border border-[#3e77db]/10 bg-[#e6ecf8] px-6 py-5 border-l-4 !border-l-[#6e99e4]">
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-[#3D3D3D]/45 font-body mb-2">Tagline · Assinatura de marca</p>
                     <p className="font-headline font-bold text-xl md:text-2xl text-[#101e37] leading-tight">Inteligência para quem cuida de condomínio.</p>
                     <p className="font-body text-sm text-[#3D3D3D]/60 mt-2">Em peças pequenas: “Inteligência para quem cuida.”</p>
                   </div>
-                  <div className="rounded-2xl bg-[#3e77db] px-6 py-5 md:ml-12">
+                  <div className="rounded-2xl bg-[#3e77db] px-6 py-5 border-l-4 border-l-[#1f3c6e]">
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-white/80 font-body mb-2">Chamada · O convite</p>
                     <p className="font-headline font-bold text-2xl md:text-3xl text-white leading-tight">Pergunte ao SíndicoNet.</p>
                   </div>
                 </div>
 
                 {/* Apoio: suporte, diferencial, regras */}
-                <div className="space-y-6">
+                <div className="rounded-2xl bg-white border border-[#101e37]/[0.06] p-6 flex flex-col justify-between gap-6">
                   {[
                     {
                       title: 'Suporte',
@@ -387,7 +424,7 @@ export default function FundacaoPage() {
                     },
                   ].map((item) => (
                     <div key={item.title} className="flex items-start gap-4">
-                      <span className="shrink-0 w-12 h-12 rounded-full border-2 border-[#3e77db]/60 text-[#3e77db] flex items-center justify-center">
+                      <span className="shrink-0 w-11 h-11 rounded-xl bg-[#3e77db]/10 text-[#3e77db] flex items-center justify-center">
                         {item.icon}
                       </span>
                       <div>
@@ -406,7 +443,7 @@ export default function FundacaoPage() {
                 Optamos por concentrar toda a nossa força e autoridade em um único nome: <strong className="text-[#101e37]">SíndicoNet</strong>. Criar submarcas dilui o poder do nosso ecossistema. Temos uma única marca forte que atua através de diferentes canais especializados.
               </p>
               {/* Marca-mãe */}
-              <div className="relative rounded-2xl bg-[#101e37] overflow-hidden px-6 py-6 md:px-8 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="relative rounded-2xl bg-[#1f3c6e] overflow-hidden px-6 py-6 md:px-8 flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 120% at 85% 50%, rgba(62,119,219,0.30) 0%, transparent 70%)' }} />
                 <img src="/assets/logos/sindiconet-simbolo-branca.svg" alt="" className="relative w-12 h-12 shrink-0" />
                 <div className="relative">
@@ -424,33 +461,31 @@ export default function FundacaoPage() {
               {/* Canais */}
               <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
                 {[
-                  { name: 'Conteúdo',     desc: 'Informação e atualização do mercado condominial.', bg: '#3e77db', text: '#ffffff', icon: IconConteudo,  full: false },
-                  { name: 'Cursos',       desc: 'Capacitação e certificação para quem cuida.',      bg: '#F57A0C', text: '#ffffff', icon: IconCursos,    full: false },
-                  { name: 'Fornecedores', desc: 'Cotações e serviços para o condomínio.',            bg: '#f6be52', text: '#3e3015', icon: IconCoteibem,  full: false },
-                  { name: 'Comunidade',   desc: 'Troca de experiências entre síndicos.',             bg: '#41ae89', text: '#ffffff', icon: IconConviver,  full: false },
-                  { name: 'PRO',          desc: 'Gestão profissional apoiada por IA.',               bg: '#7441AC', text: '#ffffff', icon: IconPro,       full: false },
-                  { name: 'Conexão',      desc: 'Relacionamento com os players do setor.',          bg: '#3A2156', text: '#ffffff', icon: IconConexao,   full: true  },
-                  { name: 'Eventos',      desc: 'Conhecimento e networking ao vivo.',                bg: '#2f62c0', text: '#ffffff', icon: IconEventos,   full: true  },
-                  { name: 'Downloads',    desc: 'Materiais prontos para usar.',                      bg: '#101e37', text: '#ffffff', icon: IconDownloads, full: false },
+                  { name: 'Conteúdo',     desc: 'Informação e atualização do mercado condominial.', color: '#3e77db', icon: IconConteudo,  full: false },
+                  { name: 'Cursos',       desc: 'Capacitação e certificação para quem cuida.',      color: '#F57A0C', icon: IconCursos,    full: false },
+                  { name: 'Fornecedores', desc: 'Cotações e serviços para o condomínio.',            color: '#f6be52', icon: IconCoteibem,  full: false },
+                  { name: 'Comunidade',   desc: 'Troca de experiências entre síndicos.',             color: '#41ae89', icon: IconConviver,  full: false },
+                  { name: 'PRO',          desc: 'Gestão profissional apoiada por IA.',               color: '#7441AC', icon: IconPro,       full: false },
+                  { name: 'Conexão',      desc: 'Relacionamento com os players do setor.',          color: '#3A2156', icon: IconConexao,   full: true  },
+                  { name: 'Eventos',      desc: 'Conhecimento e networking ao vivo.',                color: '#3e77db', icon: IconEventos,   full: true  },
+                  { name: 'Downloads',    desc: 'Materiais prontos para usar.',                      color: '#1f3c6e', icon: IconDownloads, full: false },
                 ].map((ch) => {
                   const Icon = ch.icon
+                  // Amarelo claro não tem contraste em fundo branco: o ícone usa um tom mais escuro
+                  const iconColor = ch.color === '#f6be52' ? '#b8860b' : ch.color
                   return (
                     <div
                       key={ch.name}
-                      className="group relative rounded-2xl p-4 sm:p-5 min-h-[140px] flex flex-col justify-between overflow-hidden transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                      style={{ backgroundColor: ch.bg, color: ch.text }}
+                      className="relative rounded-2xl bg-white border border-[#101e37]/[0.06] p-4 sm:p-5 min-h-[150px] flex flex-col justify-between overflow-hidden shadow-[0_1px_2px_rgba(16,30,55,0.04),0_12px_32px_-18px_rgba(16,30,55,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-18px_rgba(16,30,55,0.28)]"
                     >
-                      <div className="absolute -right-8 -bottom-10 w-32 h-32 rounded-full pointer-events-none" style={{ backgroundColor: ch.text, opacity: 0.07 }} />
-                      <span
-                        className="relative w-11 h-11 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: ch.text === '#ffffff' ? 'rgba(255,255,255,0.16)' : 'rgba(62,48,21,0.10)' }}
-                      >
+                      <span aria-hidden="true" className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: ch.color }} />
+                      <span className="w-11 h-11 rounded-xl flex items-center justify-center mt-1" style={{ backgroundColor: `${ch.color}1f`, color: iconColor }}>
                         {/* Ícones de 69px têm respiro interno; os de traço cheio são reduzidos para o mesmo peso visual */}
                         <Icon className={ch.full ? 'w-[22px] h-[22px]' : 'w-11 h-11'} />
                       </span>
-                      <div className="relative mt-6">
-                        <p className="font-headline font-bold text-lg leading-tight">{ch.name}</p>
-                        <p className="font-body text-xs leading-snug mt-1" style={{ opacity: 0.75 }}>{ch.desc}</p>
+                      <div className="mt-6">
+                        <p className="font-headline font-bold text-lg leading-tight text-[#101e37]">{ch.name}</p>
+                        <p className="font-body text-xs leading-snug mt-1 text-[#3D3D3D]/60">{ch.desc}</p>
                       </div>
                     </div>
                   )
@@ -460,28 +495,28 @@ export default function FundacaoPage() {
 
             {/* 06 · Personalidade & Voz */}
             <SectionBlock id="personalidade" eyebrow="06 · Personalidade & Voz" title="Como Nos Expressamos">
-              <Card className="mb-8 !bg-[#101e37] border-transparent">
+              <Card className="mb-10 !bg-[#3e77db] !border-transparent relative overflow-hidden">
                 <div className="flex items-start gap-6">
-                  <div className="shrink-0 w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <div className="shrink-0 w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center">
                     <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
                       <path d="M16 4L4 10v8c0 6.627 5.148 11.346 12 12 6.852-.654 12-5.373 12-12v-8L16 4z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
                       <path d="M12 16l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 font-body mb-1">Arquétipo da Marca</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-white/70 font-body mb-1">Arquétipo da Marca</p>
                     <p className="font-headline font-bold text-2xl text-white mb-2">The Guardian · O Guardião</p>
-                    <p className="font-body text-white/60 text-sm leading-relaxed mb-4">Somos o porto seguro do gestor — base sólida para inovar com segurança.</p>
+                    <p className="font-body text-white/90 text-sm leading-relaxed mb-4">Somos o porto seguro do gestor — base sólida para inovar com segurança.</p>
                     <div className="flex flex-wrap gap-2">
                       {['Proteção', 'Orientação', 'Estabilidade'].map((attr) => (
-                        <span key={attr} className="px-3 py-1 rounded-lg bg-white/10 text-white/80 text-xs font-semibold font-body">{attr}</span>
+                        <span key={attr} className="px-3 py-1 rounded-lg bg-white/15 text-white text-xs font-semibold font-body">{attr}</span>
                       ))}
                     </div>
                   </div>
                 </div>
               </Card>
 
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Os 4 atributos do tom de voz</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Os 4 atributos do tom de voz</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                 {[
                   { attr: 'Autoritário', nuance: 'mas não arrogante',      desc: 'Falamos com a propriedade de quem conhece o mercado há décadas.' },
@@ -490,7 +525,7 @@ export default function FundacaoPage() {
                   { attr: 'Visionário',  nuance: 'mas pé no chão',          desc: 'Apontamos tendências (como IA), mas sempre com foco na aplicação real.' },
                 ].map((t) => (
                   <Card key={t.attr} className="flex items-start gap-4">
-                    <div className="w-0.5 h-10 rounded-full bg-[#3e77db] shrink-0 mt-1" />
+                    <div className="w-1 self-stretch rounded-full bg-gradient-to-b from-[#3e77db] to-[#3e77db]/20 shrink-0" />
                     <div>
                       <p className="font-headline font-bold text-lg text-[#101e37]">{t.attr}</p>
                       <p className="text-[10px] font-semibold text-[#3D3D3D]/40 font-body mb-2">{t.nuance}</p>
@@ -500,7 +535,7 @@ export default function FundacaoPage() {
                 ))}
               </div>
 
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">O que dizemos vs. o que evitamos</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">O que dizemos vs. o que evitamos</p>
               <div className="rounded-2xl border border-black/8 overflow-hidden">
                 <div className="grid grid-cols-2 bg-[#F4F6F8] border-b border-black/8">
                   <div className="px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#318367] font-body">✓ O que dizemos</div>
@@ -524,7 +559,7 @@ export default function FundacaoPage() {
                 ))}
               </div>
 
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4 mt-10">Diferenciais competitivos</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5 mt-10">Diferenciais competitivos</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { num: '01', title: 'Pioneirismo e Autoridade',   desc: 'Quase 30 anos ditando os rumos do mercado condominial. Nossa história se confunde com a evolução da profissão de síndico no Brasil.' },
@@ -533,7 +568,7 @@ export default function FundacaoPage() {
                   { num: '04', title: 'Inovação Contínua',          desc: 'Pioneiros na adoção de Inteligência Artificial e novas tecnologias para transformar a gestão condominial no Brasil.' },
                 ].map((d) => (
                   <Card key={d.num} className="flex gap-4">
-                    <span className="font-headline font-bold text-4xl text-[#cfddf6] leading-none shrink-0">{d.num}</span>
+                    <span className="inline-flex w-10 h-10 rounded-xl bg-[#3e77db]/10 text-[#3e77db] font-headline font-bold text-sm items-center justify-center shrink-0">{d.num}</span>
                     <div>
                       <p className="font-headline font-bold text-base text-[#101e37] mb-1">{d.title}</p>
                       <p className="font-body text-sm text-[#3D3D3D]/60 leading-relaxed">{d.desc}</p>
@@ -666,7 +701,7 @@ export default function FundacaoPage() {
 
 
               {/* Posicionamento comparativo */}
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Perfis de Liderança — Posicionamento</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Perfis de Liderança — Posicionamento</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   {
@@ -715,13 +750,13 @@ export default function FundacaoPage() {
                   { num: '05', title: 'Jogamos limpo',              desc: 'Fazemos o que é certo, sem atalhos nem jeitinhos.' },
                 ].map((p) => (
                   <Card key={p.num}>
-                    <span className="font-headline font-bold text-4xl text-[#cfddf6] leading-none block mb-3">{p.num}</span>
+                    <span className="inline-flex w-10 h-10 rounded-xl bg-[#3e77db]/10 text-[#3e77db] font-headline font-bold text-sm items-center justify-center mb-4">{p.num}</span>
                     <p className="font-headline font-bold text-base text-[#101e37] mb-1.5">{p.title}</p>
                     <p className="font-body text-sm text-[#3D3D3D]/60 leading-relaxed">{p.desc}</p>
                   </Card>
                 ))}
               </div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#3D3D3D]/35 font-body mb-4">Como atuamos no dia a dia</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#101e37]/45 font-body mb-5">Como atuamos no dia a dia</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
                   { title: 'Resolve a dor dos clientes',    desc: 'Exerce escuta ativa e garante a resolução do problema, reconhecendo de forma empática as necessidades das pessoas.' },
