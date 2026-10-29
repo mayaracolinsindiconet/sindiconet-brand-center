@@ -15,6 +15,7 @@ import {
 
 // ─── Section registry ─────────────────────────────────────────────────────────
 const sections = [
+  { id: 'manifesto',      label: 'Manifesto' },
   { id: 'contexto',       label: 'Contexto' },
   { id: 'mercado',        label: 'Mercado' },
   { id: 'golden-circle',  label: 'Golden Circle' },
@@ -58,7 +59,7 @@ function Quote({ children }: { children: React.ReactNode }) {
 
 // ─── Page ───────────────────────────────────────────────────────────
 export default function FundacaoPage() {
-  const [active, setActive] = useState('contexto')
+  const [active, setActive] = useState('manifesto')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
 
@@ -141,7 +142,7 @@ export default function FundacaoPage() {
                     <button onClick={() => scrollTo(s.id)}
                       className={`w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-body transition-all ${active === s.id ? 'bg-white text-[#3e77db] font-semibold shadow-sm' : 'text-[#3D3D3D]/55 hover:text-[#3D3D3D] hover:bg-white/60'}`}>
                       <span className={`shrink-0 text-[10px] font-mono font-bold transition-colors ${active === s.id ? 'text-[#3e77db]' : 'text-[#3D3D3D]/25'}`}>
-                        0{i + 1}
+                        {String(i).padStart(2, '0')}
                       </span>
                       {s.label}
                       {active === s.id && (
@@ -157,6 +158,32 @@ export default function FundacaoPage() {
 
           {/* Content */}
           <main className="space-y-20 min-w-0">
+
+            {/* 00 · Manifesto */}
+            <section id="manifesto" className="scroll-mt-24">
+              <div className="relative rounded-3xl bg-[#3e77db] overflow-hidden px-6 py-10 md:px-12 md:py-14">
+                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 80% at 100% 0%, rgba(255,255,255,0.18) 0%, transparent 60%), radial-gradient(ellipse 60% 70% at 0% 100%, rgba(16,30,55,0.35) 0%, transparent 65%)' }} />
+                <span className="absolute -top-6 right-6 md:right-10 font-headline font-bold text-[180px] leading-none text-white/10 select-none pointer-events-none" aria-hidden="true">?</span>
+                <div className="relative">
+                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#101e37] font-body mb-8">
+                    <span className="w-3 h-3 rounded-full border-2 border-[#101e37]" />
+                    Manifesto · O convite é uma pergunta
+                  </p>
+                  <div className="space-y-6 max-w-3xl font-headline text-white">
+                    <p className="text-2xl md:text-3xl font-semibold leading-snug">
+                      Há 30 anos, alguém cuida de condomínio. E há 30 anos, essa pessoa pergunta.{' '}
+                      <span className="text-[#101e37]">Pode multar? Pode cobrar? Pode reformar? Quem paga? Quem decide?</span>
+                    </p>
+                    <p className="text-lg md:text-xl leading-relaxed text-white/90">Cada pergunta virou uma matéria. Uma coluna. Uma decisão comentada. Um curso. Uma cotação. Um encontro. Catorze mil respostas, escritas por quem entende de condomínio.</p>
+                    <p className="text-lg md:text-xl leading-relaxed text-white/90">Hoje, cada uma delas responde à sua pergunta. Não uma inteligência que sabe de tudo. Uma inteligência que sabe de condomínio.</p>
+                    <p className="text-lg md:text-xl leading-relaxed text-white/90">Dentro do conteúdo. Da capacitação. Dos fornecedores. Da comunidade. Dos dados. Dos eventos. Num só lugar. Para quem cuida.</p>
+                  </div>
+                  <div className="mt-10 pt-8 border-t border-white/20">
+                    <p className="font-headline font-bold text-4xl md:text-5xl text-[#101e37] leading-tight">Pergunte ao SíndicoNet.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* 01 · Contexto */}
             <SectionBlock id="contexto" eyebrow="01 · Contexto" title="A Próxima Evolução">
@@ -371,21 +398,6 @@ export default function FundacaoPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Manifesto */}
-              <div className="rounded-2xl bg-[#3e77db] px-6 py-8 md:px-10 md:py-10">
-                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#101e37] font-body mb-6">
-                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#101e37]" />
-                  Manifesto · O convite é uma pergunta
-                </p>
-                <div className="space-y-5 font-headline text-lg md:text-xl text-white leading-relaxed max-w-3xl">
-                  <p>Há 30 anos, alguém cuida de condomínio. E há 30 anos, essa pessoa pergunta. Pode multar? Pode cobrar? Pode reformar? Quem paga? Quem decide?</p>
-                  <p>Cada pergunta virou uma matéria. Uma coluna. Uma decisão comentada. Um curso. Uma cotação. Um encontro. Catorze mil respostas, escritas por quem entende de condomínio.</p>
-                  <p>Hoje, cada uma delas responde à sua pergunta. Não uma inteligência que sabe de tudo. Uma inteligência que sabe de condomínio.</p>
-                  <p>Dentro do conteúdo. Da capacitação. Dos fornecedores. Da comunidade. Dos dados. Dos eventos. Num só lugar. Para quem cuida.</p>
-                </div>
-                <p className="font-headline font-bold text-3xl md:text-4xl text-[#101e37] mt-8">Pergunte ao SíndicoNet.</p>
-              </div>
             </SectionBlock>
 
             {/* 05 · Arquitetura de Marca */}
@@ -393,26 +405,53 @@ export default function FundacaoPage() {
               <p className="font-body text-[#3D3D3D]/65 text-base leading-relaxed mb-8 max-w-2xl">
                 Optamos por concentrar toda a nossa força e autoridade em um único nome: <strong className="text-[#101e37]">SíndicoNet</strong>. Criar submarcas dilui o poder do nosso ecossistema. Temos uma única marca forte que atua através de diferentes canais especializados.
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* Marca-mãe */}
+              <div className="relative rounded-2xl bg-[#101e37] overflow-hidden px-6 py-6 md:px-8 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 120% at 85% 50%, rgba(62,119,219,0.30) 0%, transparent 70%)' }} />
+                <img src="/assets/logos/sindiconet-simbolo-branca.svg" alt="" className="relative w-12 h-12 shrink-0" />
+                <div className="relative">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#6e99e4] font-body mb-1">Marca única</p>
+                  <p className="font-headline font-bold text-2xl text-white leading-tight">SíndicoNet</p>
+                  <p className="font-body text-sm text-white/55 mt-1">Um nome, toda a autoridade. Os canais levam nome literal e vivem dentro da marca.</p>
+                </div>
+              </div>
+
+              {/* Conector */}
+              <div className="flex justify-center" aria-hidden="true">
+                <div className="w-px h-6 bg-gradient-to-b from-[#101e37]/40 to-[#3e77db]/20" />
+              </div>
+
+              {/* Canais */}
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
                 {[
-                  { name: 'Conteúdo',   bg: '#3e77db', text: '#fff',    icon: IconConteudo  },
-                  { name: 'Cursos',     bg: '#F57A0C', text: '#fff',    icon: IconCursos    },
-                  { name: 'Fornecedores', bg: '#f6be52', text: '#3e3015', icon: IconCoteibem  },
-                  { name: 'Comunidade', bg: '#41ae89', text: '#fff',    icon: IconConviver  },
-                  { name: 'PRO',        bg: '#7441AC', text: '#fff',    icon: IconPro       },
-                  { name: 'Conexão',    bg: '#3A2156', text: '#fff',    icon: IconConexao   },
-                  { name: 'Eventos',    bg: '#3e77db', text: '#fff',    icon: IconEventos   },
-                  { name: 'Downloads',  bg: '#3e77db', text: '#fff',    icon: IconDownloads },
+                  { name: 'Conteúdo',     desc: 'Informação e atualização do mercado condominial.', bg: '#3e77db', text: '#ffffff', icon: IconConteudo,  full: false },
+                  { name: 'Cursos',       desc: 'Capacitação e certificação para quem cuida.',      bg: '#F57A0C', text: '#ffffff', icon: IconCursos,    full: false },
+                  { name: 'Fornecedores', desc: 'Cotações e serviços para o condomínio.',            bg: '#f6be52', text: '#3e3015', icon: IconCoteibem,  full: false },
+                  { name: 'Comunidade',   desc: 'Troca de experiências entre síndicos.',             bg: '#41ae89', text: '#ffffff', icon: IconConviver,  full: false },
+                  { name: 'PRO',          desc: 'Gestão profissional apoiada por IA.',               bg: '#7441AC', text: '#ffffff', icon: IconPro,       full: false },
+                  { name: 'Conexão',      desc: 'Relacionamento com os players do setor.',          bg: '#3A2156', text: '#ffffff', icon: IconConexao,   full: true  },
+                  { name: 'Eventos',      desc: 'Conhecimento e networking ao vivo.',                bg: '#2f62c0', text: '#ffffff', icon: IconEventos,   full: true  },
+                  { name: 'Downloads',    desc: 'Materiais prontos para usar.',                      bg: '#101e37', text: '#ffffff', icon: IconDownloads, full: false },
                 ].map((ch) => {
                   const Icon = ch.icon
                   return (
-                    <div key={ch.name} className="relative rounded-xl p-4 h-20 flex items-end" style={{ backgroundColor: ch.bg }}>
-                      {Icon && (
-                        <div className="absolute top-2 right-2 w-11 h-11" style={{ color: ch.text }}>
-                          <Icon className="w-full h-full" />
-                        </div>
-                      )}
-                      <p className="font-headline font-bold text-sm leading-tight" style={{ color: ch.text }}>{ch.name}</p>
+                    <div
+                      key={ch.name}
+                      className="group relative rounded-2xl p-4 sm:p-5 min-h-[140px] flex flex-col justify-between overflow-hidden transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                      style={{ backgroundColor: ch.bg, color: ch.text }}
+                    >
+                      <div className="absolute -right-8 -bottom-10 w-32 h-32 rounded-full pointer-events-none" style={{ backgroundColor: ch.text, opacity: 0.07 }} />
+                      <span
+                        className="relative w-11 h-11 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: ch.text === '#ffffff' ? 'rgba(255,255,255,0.16)' : 'rgba(62,48,21,0.10)' }}
+                      >
+                        {/* Ícones de 69px têm respiro interno; os de traço cheio são reduzidos para o mesmo peso visual */}
+                        <Icon className={ch.full ? 'w-[22px] h-[22px]' : 'w-11 h-11'} />
+                      </span>
+                      <div className="relative mt-6">
+                        <p className="font-headline font-bold text-lg leading-tight">{ch.name}</p>
+                        <p className="font-body text-xs leading-snug mt-1" style={{ opacity: 0.75 }}>{ch.desc}</p>
+                      </div>
                     </div>
                   )
                 })}
