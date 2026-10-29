@@ -265,10 +265,10 @@ export default function FundacaoPage() {
                 {[
                   { num: '01', name: 'Conteúdo',   desc: 'A principal fonte de informação e atualização do mercado condominial.' },
                   { num: '02', name: 'Cursos',      desc: 'A trilha definitiva para a capacitação e certificação de excelência.' },
-                  { num: '03', name: 'Coteibem',    desc: 'O maior e mais seguro marketplace do setor condominial.' },
+                  { num: '03', name: 'Fornecedores', desc: 'O maior e mais seguro marketplace do setor condominial.' },
                   { num: '04', name: 'Eventos',     desc: 'Experiências imersivas que unem conhecimento e networking qualificado.' },
                   { num: '05', name: 'PRO',         desc: 'O ecossistema premium impulsionado por IA para alta performance.' },
-                  { num: '06', name: 'Conviver',    desc: 'O espaço seguro para troca de experiências e resolução colaborativa.' },
+                  { num: '06', name: 'Comunidade',  desc: 'O espaço seguro para troca de experiências e resolução colaborativa.' },
                   { num: '07', name: 'Conexão',     desc: 'Canal direto de relacionamento e engajamento com os principais players do setor.' },
                 ].map((ch) => (
                   <div key={ch.num} className="flex items-start gap-4 bg-white rounded-xl border border-black/8 px-5 py-4">
@@ -397,8 +397,8 @@ export default function FundacaoPage() {
                 {[
                   { name: 'Conteúdo',   bg: '#3e77db', text: '#fff',    icon: IconConteudo  },
                   { name: 'Cursos',     bg: '#F57A0C', text: '#fff',    icon: IconCursos    },
-                  { name: 'Coteibem',   bg: '#f6be52', text: '#3e3015', icon: IconCoteibem  },
-                  { name: 'Conviver',   bg: '#41ae89', text: '#fff',    icon: IconConviver  },
+                  { name: 'Fornecedores', bg: '#f6be52', text: '#3e3015', icon: IconCoteibem  },
+                  { name: 'Comunidade', bg: '#41ae89', text: '#fff',    icon: IconConviver  },
                   { name: 'PRO',        bg: '#7441AC', text: '#fff',    icon: IconPro       },
                   { name: 'Conexão',    bg: '#3A2156', text: '#fff',    icon: IconConexao   },
                   { name: 'Eventos',    bg: '#3e77db', text: '#fff',    icon: IconEventos   },

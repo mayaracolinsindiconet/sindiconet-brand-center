@@ -290,10 +290,10 @@ export const assets: Asset[] = [
   },
   {
     id: 'icon-conviver',
-    name: 'Ícone Conviver/Creator',
+    name: 'Ícone Comunidade/Creator',
     type: 'icon', product: 'conviver', version: '1.0', updatedAt: '2026-05-01',
     previewUrl: '/assets/icons/conviver/conviver.svg',
-    usageContext: 'Ícone principal do produto Conviver.',
+    usageContext: 'Ícone principal do canal Comunidade.',
     formats: iconFormats('/assets/icons/conviver/conviver'),
   },
   {
@@ -301,15 +301,15 @@ export const assets: Asset[] = [
     name: 'Ícone Creator',
     type: 'icon', product: 'conviver', version: '1.0', updatedAt: '2026-05-01',
     previewUrl: '/assets/icons/conviver/creator.svg',
-    usageContext: 'Ícone do Creator dentro do Conviver.',
+    usageContext: 'Ícone do Creator dentro da Comunidade.',
     formats: iconFormats('/assets/icons/conviver/creator'),
   },
   {
     id: 'icon-coteibem',
-    name: 'Ícone Coteibem',
+    name: 'Ícone Fornecedores',
     type: 'icon', product: 'coteibem', version: '1.0', updatedAt: '2026-05-01',
     previewUrl: '/assets/icons/coteibem/coteibem.svg',
-    usageContext: 'Ícone principal do produto Coteibem.',
+    usageContext: 'Ícone principal do canal Fornecedores.',
     formats: iconFormats('/assets/icons/coteibem/coteibem'),
   },
   {

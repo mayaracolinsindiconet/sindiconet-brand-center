@@ -56,8 +56,8 @@ const sections = [
 // ─── Short name labels shown in the switcher ──────────────────────────────────
 const shortNames: Record<ProductSlug, string> = {
   conteudo: 'Conteúdo',
-  conviver: 'Conviver',
-  coteibem: 'Coteibem',
+  conviver: 'Comunidade',
+  coteibem: 'Fornecedores',
   cursos:   'Cursos',
   empregos: 'Empregos',
   creators: 'Conexão',

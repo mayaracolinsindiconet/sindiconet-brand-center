@@ -17,8 +17,8 @@ const typeLabels: Record<string, string> = { logo: 'Logo', icon: 'Ícone', font:
 const productLabels: Record<string, string> = {
   brand:     'Marca Principal',
   conteudo:  'Conteúdo',
-  conviver:  'Conviver/Creator',
-  coteibem:  'Coteibem',
+  conviver:  'Comunidade/Creator',
+  coteibem:  'Fornecedores',
   cursos:    'Cursos',
   creators:  'Conexão',
   empregos:  'Empregos',

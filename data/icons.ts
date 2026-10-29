@@ -16,11 +16,11 @@ export const productIcons: Record<ProductSlug, ProductIcon[]> = {
     { slug: 'download', label: 'Download', path: '/assets/icons/conteudo/download.svg' },
   ],
   conviver: [
-    { slug: 'conviver', label: 'Conviver', path: '/assets/icons/conviver/conviver.svg' },
+    { slug: 'conviver', label: 'Comunidade', path: '/assets/icons/conviver/conviver.svg' },
     { slug: 'creator',  label: 'Creator',  path: '/assets/icons/conviver/creator.svg'  },
   ],
   coteibem: [
-    { slug: 'coteibem', label: 'Coteibem', path: '/assets/icons/coteibem/coteibem.svg' },
+    { slug: 'coteibem', label: 'Fornecedores', path: '/assets/icons/coteibem/coteibem.svg' },
   ],
   cursos: [
     { slug: 'cursos', label: 'Cursos', path: '/assets/icons/cursos/cursos.svg' },

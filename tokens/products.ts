@@ -38,7 +38,7 @@ export const products = {
 
   // ── CONVIVER E CREATORS ──────────────────────────────────────────────────
   conviver: {
-    name: 'Síndiconet Conviver e Creators',
+    name: 'Síndiconet Comunidade e Creators',
     slug: 'conviver' as const,
     colors: {
       primary:   '#41ae89',
@@ -51,7 +51,7 @@ export const products = {
 
   // ── COTEIBEM ─────────────────────────────────────────────────────────────
   coteibem: {
-    name: 'Síndiconet Coteibem',
+    name: 'Síndiconet Fornecedores',
     slug: 'coteibem' as const,
     colors: {
       primary:   '#f6be52',
